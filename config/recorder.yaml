@@ -1,0 +1,34 @@
+purge_keep_days: 5
+purge_interval: 1
+
+include:
+  domains:
+    - device_tracker
+    - light
+    - media_player
+  entities:
+    - binary_sensor.back_door_state
+    - binary_sensor.front_door_state
+    - person.pedro
+    - person.joana
+    - sensor.living_room_temperature
+    - sensor.living_room_humidity
+    - sensor.master_bedroom_temperature
+    - sensor.master_bedroom_humidity
+    - sensor.kids_bedroom_temperature
+    - sensor.kids_bedroom_humidity
+    - switch.living_room_outlet
+    - switch.lower_floor_outlet
+
+exclude:
+  domains:
+    - automation
+    - group
+    - input_boolean
+    - input_select
+    - sun
+    - timer
+    - updater
+    - weather
+    - weblink
+    - zone

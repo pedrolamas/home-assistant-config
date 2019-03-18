@@ -1,0 +1,34 @@
+include:
+  domains:
+    - media_player
+  entities:
+    - binary_sensor.back_door_state
+    - binary_sensor.front_door_state
+    - device_tracker.pedro_oneplus6
+    - device_tracker.joana_oneplus6
+    - light.lamp_1
+    - light.lamp_2
+    - light.lamp_3
+    - light.lamp_4
+    - sensor.living_room_temperature
+    - sensor.living_room_humidity
+    - sensor.master_bedroom_temperature
+    - sensor.master_bedroom_humidity
+    - sensor.kids_bedroom_temperature
+    - sensor.kids_bedroom_humidity
+    - switch.living_room_outlet
+    - switch.lower_floor_outlet
+
+exclude:
+  domains:
+    - automation
+    - group
+    - input_boolean
+    - input_select
+    - person
+    - sun
+    - timer
+    - updater
+    - weather
+    - weblink
+    - zone

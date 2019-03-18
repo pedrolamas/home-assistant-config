@@ -1,0 +1,214 @@
+#- platform: time_date
+#  display_options:
+#    - 'time'
+#    - 'date'
+#    - 'date_time'
+#    - 'time_date'
+#    - 'time_utc'
+#    - 'beat'
+
+- platform: worldclock
+  name: Eastern Time Zone
+  time_zone: EST5EDT
+
+- platform: worldclock
+  name: Pacific Time Zone
+  time_zone: PST8PDT
+
+#- platform: metoffice
+#  api_key: !secret metoffice_api_key
+#  monitored_conditions:
+#    - weather
+#    - temperature
+#    - feels_like_temperature
+#    - wind_speed
+#    - wind_direction
+#    - wind_gust
+#    - visibility
+#    - visibility_distance
+
+- platform: pi_hole
+  host: !secret pi_hole_host
+
+- platform: syncthru
+  name: Samsung M2070 Series
+  resource: !secret samsung_m2070_printer_resource
+
+#- platform: google_travel_time
+#  name: Pedro to Home
+#  api_key: !secret google_travel_time_api_key
+#  origin: device_tracker.pedro_oneplus6
+#  destination: zone.home
+#  travel_mode: transit
+
+- platform: moon
+
+- platform: mqtt
+  name: Living Room Temperature
+  device_class: temperature
+  state_topic: "zigbee2mqtt/LivingRoomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "°C"
+  value_template: >-
+    {{ value_json.temperature }}
+- platform: mqtt
+  name: Living Room Humidity
+  device_class: humidity
+  state_topic: "zigbee2mqtt/LivingRoomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value_json.humidity }}
+- platform: mqtt
+  name: Living Room Pressure
+  device_class: pressure
+  state_topic: "zigbee2mqtt/LivingRoomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "kPa"
+  value_template: >-
+    {{ value_json.pressure }}
+- platform: mqtt
+  name: Living Room Battery
+  device_class: battery
+  state_topic: "zigbee2mqtt/LivingRoomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value_json.battery }}
+- platform: mqtt
+  name: Living Room Link Quality
+  state_topic: "zigbee2mqtt/LivingRoomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "-"
+  value_template: >-
+    {{ value_json.linkquality }}
+
+- platform: mqtt
+  name: Master Bedroom Temperature
+  device_class: temperature
+  state_topic: "zigbee2mqtt/MasterBedroomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "°C"
+  value_template: >-
+    {{ value_json.temperature }}
+- platform: mqtt
+  name: Master Bedroom Humidity
+  device_class: humidity
+  state_topic: "zigbee2mqtt/MasterBedroomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value_json.humidity }}
+- platform: mqtt
+  name: Master Bedroom Pressure
+  device_class: pressure
+  state_topic: "zigbee2mqtt/MasterBedroomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "kPa"
+  value_template: >-
+    {{ value_json.pressure }}
+- platform: mqtt
+  name: Master Bedroom Battery
+  device_class: battery
+  state_topic: "zigbee2mqtt/MasterBedroomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value_json.battery }}
+- platform: mqtt
+  name: Master Bedroom Link Quality
+  state_topic: "zigbee2mqtt/MasterBedroomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "-"
+  value_template: >-
+    {{ value_json.linkquality }}
+
+- platform: mqtt
+  name: Kids Bedroom Temperature
+  device_class: temperature
+  state_topic: "zigbee2mqtt/KidsBedroomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "°C"
+  value_template: >-
+    {{ value_json.temperature }}
+- platform: mqtt
+  name: Kids Bedroom Humidity
+  device_class: humidity
+  state_topic: "zigbee2mqtt/KidsBedroomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value_json.humidity }}
+- platform: mqtt
+  name: Kids Bedroom Pressure
+  device_class: pressure
+  state_topic: "zigbee2mqtt/KidsBedroomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "kPa"
+  value_template: >-
+    {{ value_json.pressure }}
+- platform: mqtt
+  name: Kids Bedroom Battery
+  device_class: battery
+  state_topic: "zigbee2mqtt/KidsBedroomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value_json.battery }}
+- platform: mqtt
+  name: Kids Bedroom Link Quality
+  state_topic: "zigbee2mqtt/KidsBedroomClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "-"
+  value_template: >-
+    {{ value_json.linkquality }}
+
+- platform: "mqtt"
+  name: Back Door Battery
+  device_class: battery
+  state_topic: "zigbee2mqtt/BackDoor"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value_json.battery }}
+- platform: "mqtt"
+  name: Back Door Link Quality
+  state_topic: "zigbee2mqtt/BackDoor"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "-"
+  value_template: >-
+    {{ value_json.linkquality }}
+
+- platform: "mqtt"
+  name: Front Door Battery
+  device_class: battery
+  state_topic: "zigbee2mqtt/FrontDoor"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value_json.battery }}
+- platform: "mqtt"
+  name: Front Door Link Quality
+  state_topic: "zigbee2mqtt/FrontDoor"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "-"
+  value_template: >-
+    {{ value_json.linkquality }}
+
+- platform: template
+  sensors:
+    lg_smart_tv_is_playing:
+      entity_id: media_player.lg_smart_tv
+      value_template: 0
+      icon_template: >-
+        {% if is_state('media_player.lg_smart_tv', 'playing') %}mdi:pause{% else %}mdi:play{% endif %}
+    pedro_phone_battery:
+      unit_of_measurement: "%"
+      device_class: battery
+      value_template: >-
+        {{ state_attr('device_tracker.pedro_oneplus6', 'battery') }}
+    joana_phone_battery:
+      unit_of_measurement: "%"
+      device_class: battery
+      value_template: >-
+        {{ state_attr('device_tracker.joana_oneplus6', 'battery') }}

@@ -1,0 +1,62 @@
+title: Ambient
+icon: mdi:thermometer
+cards:
+  - type: custom:vertical-stack-in-card
+    title: Living Room
+    cards:
+      - type: horizontal-stack
+        title: Living Room
+        cards:
+          - type: sensor
+            name: Temperature
+            entity: sensor.living_room_temperature
+            graph: line
+          - type: sensor
+            name: Humidity
+            entity: sensor.living_room_humidity
+            graph: line
+      - type: glance
+        show_name: false
+        entities:
+          - sensor.living_room_pressure
+          - sensor.living_room_battery
+
+  - type: custom:vertical-stack-in-card
+    title: Master Bedroom
+    cards:
+      - type: horizontal-stack
+        title: Master Bedroom
+        cards:
+          - type: sensor
+            name: Temperature
+            entity: sensor.master_bedroom_temperature
+            graph: line
+          - type: sensor
+            name: Humidity
+            entity: sensor.master_bedroom_humidity
+            graph: line
+      - type: glance
+        show_name: false
+        entities:
+          - sensor.master_bedroom_pressure
+          - sensor.master_bedroom_battery
+
+  - type: custom:vertical-stack-in-card
+    title: Kids Bedroom
+    cards:
+      - type: horizontal-stack
+        title: Kids Bedroom
+        cards:
+          - type: sensor
+            name: Temperature
+            entity: sensor.kids_bedroom_temperature
+            graph: line
+          - type: sensor
+            name: Humidity
+            entity: sensor.kids_bedroom_humidity
+            graph: line
+      - type: glance
+        show_name: false
+        entities:
+          - sensor.kids_bedroom_pressure
+          - sensor.kids_bedroom_battery

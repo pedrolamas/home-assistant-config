@@ -1,0 +1,16 @@
+title: Media
+icon: mdi:television
+cards:
+  - type: vertical-stack
+    title: LG Smart TV
+    cards:
+      - type: conditional
+        conditions:
+          - entity: media_player.lg_smart_tv
+            state_not: "off"
+        card: !include media_remote.yaml
+        
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - media_player.lg_smart_tv

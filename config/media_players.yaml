@@ -1,0 +1,3 @@
+- platform: webostv
+  name: LG Smart TV
+  host: !secret lg_smart_tv_host

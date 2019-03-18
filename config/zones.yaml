@@ -1,0 +1,29 @@
+- name: Home
+  latitude: !secret home_latitude
+  longitude: !secret home_longitude
+  radius: 100
+  icon: mdi:home-variant
+
+- name: School
+  latitude: !secret school_latitude
+  longitude: !secret school_longitude
+  radius: 100
+  icon: mdi:school
+
+- name: Work
+  latitude: !secret work_latitude
+  longitude: !secret work_longitude
+  radius: 150
+  icon: mdi:domain
+
+- name: Porto, Portugal
+  latitude: 41.157944
+  longitude: -8.629105
+  radius: 12000
+  icon: mdi:flag
+
+- name: Seattle, USA
+  latitude: 47.607135
+  longitude: -122.242807
+  radius: 15000
+  icon: mdi:flag

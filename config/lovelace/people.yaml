@@ -1,0 +1,18 @@
+title: People
+icon: mdi:account-outline
+cards:
+  - type: glance
+    title: Pedro
+    entities:
+      - entity: device_tracker.pedro_oneplus6
+        name: Status
+      - entity: sensor.pedro_phone_battery
+        name: Phone Battery
+
+  - type: glance
+    title: Joana
+    entities:
+      - entity: device_tracker.joana_oneplus6
+        name: Status
+      - entity: sensor.joana_phone_battery
+        name: Phone Battery

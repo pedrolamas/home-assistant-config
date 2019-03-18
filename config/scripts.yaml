@@ -1,0 +1,4 @@
+ifttt_notify:
+  sequence:
+    - service: ifttt.trigger
+      data_template: {"event":"homeassistant-notification", "value1":"{{ message }}"}

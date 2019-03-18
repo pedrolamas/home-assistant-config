@@ -1,0 +1,12 @@
+title: Map
+icon: mdi:map-outline
+panel: true
+cards:
+  - type: map
+    title: Map
+    entities:
+      - device_tracker.pedro_oneplus6
+      - device_tracker.joana_oneplus6
+      - zone.home
+      - zone.work
+      - zone.school

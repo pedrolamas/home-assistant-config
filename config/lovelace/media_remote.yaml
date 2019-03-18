@@ -1,0 +1,111 @@
+type: vertical-stack
+cards:
+  - type: horizontal-stack
+    cards:
+      - type: entity-button
+        entity: switch.lg_smart_tv_volume_mute
+        name: " "
+        icon: mdi:volume-mute
+        tap_action:
+          action: toggle
+      - type: entity-button
+        entity: media_player.lg_smart_tv
+        name: " "
+        icon: mdi:volume-low
+        tap_action:
+          action: call-service
+          service: media_player.volume_down
+          service_data:
+            entity_id: media_player.lg_smart_tv
+      - type: entity-button
+        entity: media_player.lg_smart_tv
+        name: " "
+        icon: mdi:volume-high
+        tap_action:
+          action: call-service
+          service: media_player.volume_up
+          service_data:
+            entity_id: media_player.lg_smart_tv
+  
+  - type: horizontal-stack
+    cards:
+      - type: entity-button
+        entity: media_player.lg_smart_tv
+        name: " "
+        icon: mdi:skip-previous
+        tap_action:
+          action: call-service
+          service: media_player.media_previous_track
+          service_data:
+            entity_id: media_player.lg_smart_tv
+      - type: entity-button
+        entity: sensor.lg_smart_tv_is_playing
+        name: " "
+        tap_action:
+          action: call-service
+          service: media_player.media_play_pause
+          service_data:
+            entity_id: media_player.lg_smart_tv
+      - type: entity-button
+        entity: media_player.lg_smart_tv
+        name: " "
+        icon: mdi:skip-next
+        tap_action:
+          action: call-service
+          service: media_player.media_next_track
+          service_data:
+            entity_id: media_player.lg_smart_tv
+
+  - type: horizontal-stack
+    cards:
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_live_tv
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "Live TV"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_fire_tv_cube
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "Fire TV Cube"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_xbox_one_x
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "Xbox One X"
+
+  - type: horizontal-stack
+    cards:
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_netflix
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "Netflix"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_plex
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "Plex"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_youtube
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "YouTube"

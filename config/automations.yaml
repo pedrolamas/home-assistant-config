@@ -1,0 +1,109 @@
+- alias: Back Door open, send notification
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.back_door_state
+      to: "on"
+  action:
+    - service: script.ifttt_notify
+      data_template:
+        message: "ALERT: Back Door opened!"
+
+- alias: Front Door open, send notification
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.front_door_state
+      to: "on"
+  action:
+    - service: script.ifttt_notify
+      data_template:
+        message: "ALERT: Front Door opened!"
+
+- alias: Back Door open, turn on Lamp 3
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.back_door_state
+      to: "on"
+  condition:
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: light.lamp_3
+        state: "off"
+      - condition: state
+        entity_id: input_boolean.turn_off_lamp_3_on_back_door_close
+        state: "on"
+  action:
+    - service: light.turn_on
+      entity_id: light.lamp_3
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.turn_off_lamp_3_on_back_door_close
+
+- alias: Back Door closed for 30s, turn off Lamp 3
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.back_door_state
+      to: "off"
+      for:
+        seconds: 30
+  condition:
+    - condition: state
+      entity_id: input_boolean.turn_off_lamp_3_on_back_door_close
+      state: "on"
+  action:
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.turn_off_lamp_3_on_back_door_close
+    - service: light.turn_off
+      entity_id: light.lamp_3
+
+- alias: Front Door open, turn on Lamp 2
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.front_door_state
+      to: "on"
+  condition:
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: light.lamp_2
+        state: "off"
+      - condition: state
+        entity_id: input_boolean.turn_off_lamp_2_on_front_door_close
+        state: "on"
+  action:
+    - service: light.turn_on
+      entity_id: light.lamp_2
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.turn_off_lamp_2_on_front_door_close
+
+- alias: Front Door closed, turn off Lamp 3 after 30s
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.front_door_state
+      to: "off"
+      for:
+        seconds: 30
+  condition:
+    - condition: state
+      entity_id: input_boolean.turn_off_lamp_2_on_front_door_close
+      state: "on"
+  action:
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.turn_off_lamp_2_on_front_door_close
+    - service: light.turn_off
+      entity_id: light.lamp_2
+
+- alias: Update available, send notification
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: updater.updater
+  action:
+    service: script.ifttt_notify
+    data_template:
+      message: "Home Assistant update available!"

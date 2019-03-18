@@ -1,0 +1,20 @@
+title: Lights
+icon: mdi:lightbulb-outline
+cards:
+  - type: entities
+    title: Living Room
+    show_header_toggle: false
+    entities:
+      - entity: light.living_room
+        name: All Lamps
+      - type: divider
+      - entity: light.lamp_1
+      - entity: light.lamp_2
+      - entity: light.lamp_3
+
+  - type: entities
+    title: Master Bedroom
+    show_header_toggle: false
+    entities:
+      - entity: light.master_bedroom
+        name: All Lamps

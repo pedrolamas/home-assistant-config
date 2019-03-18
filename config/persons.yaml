@@ -1,0 +1,9 @@
+- id: pedro
+  name: Pedro
+  device_trackers:
+    - device_tracker.pedro_oneplus6
+
+- id: joana
+  name: Joana
+  device_trackers:
+    - device_tracker.joana_oneplus6

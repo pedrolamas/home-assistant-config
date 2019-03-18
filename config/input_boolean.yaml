@@ -1,0 +1,5 @@
+turn_off_lamp_3_on_back_door_close:
+  initial: off
+
+turn_off_lamp_2_on_front_door_close:
+  initial: off
