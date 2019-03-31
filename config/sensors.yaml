@@ -163,7 +163,7 @@
   value_template: >-
     {{ value_json.linkquality }}
 
-- platform: "mqtt"
+- platform: mqtt
   name: Back Door Battery
   device_class: battery
   state_topic: "zigbee2mqtt/BackDoor"
@@ -171,7 +171,7 @@
   unit_of_measurement: "%"
   value_template: >-
     {{ value_json.battery }}
-- platform: "mqtt"
+- platform: mqtt
   name: Back Door Link Quality
   state_topic: "zigbee2mqtt/BackDoor"
   availability_topic: "zigbee2mqtt/bridge/state"
@@ -179,7 +179,7 @@
   value_template: >-
     {{ value_json.linkquality }}
 
-- platform: "mqtt"
+- platform: mqtt
   name: Front Door Battery
   device_class: battery
   state_topic: "zigbee2mqtt/FrontDoor"
@@ -187,7 +187,7 @@
   unit_of_measurement: "%"
   value_template: >-
     {{ value_json.battery }}
-- platform: "mqtt"
+- platform: mqtt
   name: Front Door Link Quality
   state_topic: "zigbee2mqtt/FrontDoor"
   availability_topic: "zigbee2mqtt/bridge/state"
@@ -197,17 +197,20 @@
 
 - platform: template
   sensors:
+
     lg_smart_tv_is_playing:
       entity_id: media_player.lg_smart_tv
       value_template: 0
       icon_template: >-
         {% if is_state('media_player.lg_smart_tv', 'playing') %}mdi:pause{% else %}mdi:play{% endif %}
-    pedro_phone_battery:
+
+    pedro_oneplus6_battery:
       unit_of_measurement: "%"
       device_class: battery
       value_template: >-
         {{ state_attr('device_tracker.pedro_oneplus6', 'battery') }}
-    joana_phone_battery:
+
+    joana_oneplus6_battery:
       unit_of_measurement: "%"
       device_class: battery
       value_template: >-

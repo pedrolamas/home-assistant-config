@@ -1,4 +1,10 @@
-ifttt_notify:
+send_notification:
   sequence:
-    - service: ifttt.trigger
-      data_template: {"event":"homeassistant-notification", "value1":"{{ message }}"}
+    - service: notify.pushbullet
+      data_template:
+        title: "Home Assistant"
+        message: "{{ message }}"
+#    - service: ifttt.trigger
+#      data_template:
+#        event: "homeassistant-notification"
+#        value1: "{{ message }}"

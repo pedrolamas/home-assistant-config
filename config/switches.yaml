@@ -1,20 +1,22 @@
-- platform: "mqtt"
+- platform: mqtt
   name: Living Room Outlet
   state_topic: "zigbee2mqtt/LivingRoomOutlet"
   availability_topic: "zigbee2mqtt/bridge/state"
   payload_off: "OFF"
   payload_on: "ON"
-  value_template: "{{ value_json.state }}"
   command_topic: "zigbee2mqtt/LivingRoomOutlet/set"
+  value_template: >-
+    {{ value_json.state }}
 
-- platform: "mqtt"
+- platform: mqtt
   name: Lower Floor Outlet
   state_topic: "zigbee2mqtt/LowerFloorOutlet"
   availability_topic: "zigbee2mqtt/bridge/state"
   payload_off: "OFF"
   payload_on: "ON"
-  value_template: "{{ value_json.state }}"
   command_topic: "zigbee2mqtt/LowerFloorOutlet/set"
+  value_template: >-
+    {{ value_json.state }}
 
 - platform: template
   switches:

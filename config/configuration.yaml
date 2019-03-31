@@ -6,6 +6,7 @@ homeassistant:
   unit_system: metric
   time_zone: Europe/London
   customize: !include customize.yaml
+  customize_glob: !include customize_glob.yaml
 
 #default_config:
 
@@ -34,6 +35,16 @@ system_health:
 #  - platform: google
 
 #cloud:
+
+webhook:
+ 
+zigbee2mqtt_networkmap:
+ 
+panel_iframe:
+  networkmap:
+    title: Zigbee Map
+    url: "/local/zigbee2mqtt_networkmap/map.html"
+    icon: mdi:graphql
 
 mqtt:
   broker: !secret mqtt_broker
@@ -68,6 +79,7 @@ group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
 switch: !include switches.yaml
+notify: !include notify.yaml
 #lock: !include locks.yaml
 #input_select: !include input_select.yaml
 input_boolean: !include input_boolean.yaml

@@ -23,9 +23,7 @@ cards:
         tap_action:
           action: toggle
       - entity: binary_sensor.front_door_state
-        name: Front Door
       - entity: binary_sensor.back_door_state
-        name: Back Door
       - entity: media_player.lg_smart_tv
   
   - type: glance

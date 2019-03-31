@@ -1,30 +1,58 @@
-- alias: Back Door open, send notification
+- alias: Device offline, send notification
   initial_state: true
   trigger:
     - platform: state
-      entity_id: binary_sensor.back_door_state
-      to: "on"
+      entity_id: 
+        - binary_sensor.unifi_cloud_key_gen2_plus
+        - binary_sensor.philips_hue_bridge_2_1
+        - binary_sensor.synology_ds412_nas
+        - binary_sensor.raspberry_pi_2_model_b
+        - binary_sensor.amazon_fire_cube
+      from: "on"
+      to: "off"
+      for:
+        seconds: 60
   action:
-    - service: script.ifttt_notify
+    - service: script.send_notification
       data_template:
-        message: "ALERT: Back Door opened!"
+        message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is offline."
 
-- alias: Front Door open, send notification
+- alias: Door open, send notification
   initial_state: true
   trigger:
     - platform: state
-      entity_id: binary_sensor.front_door_state
+      entity_id: 
+        - binary_sensor.back_door_state
+        - binary_sensor.front_door_state
+      from: "off"
       to: "on"
   action:
-    - service: script.ifttt_notify
+    - service: script.send_notification
       data_template:
-        message: "ALERT: Front Door opened!"
+        message: "{{ trigger.to_state.attributes.friendly_name }} is open!"
+
+- alias: Door open for 5 minutes, send notification
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: 
+        - binary_sensor.back_door_state
+        - binary_sensor.front_door_state
+      from: "off"
+      to: "on"
+      for:
+        minutes: 5
+  action:
+    - service: script.send_notification
+      data_template:
+        message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is still open!"
 
 - alias: Back Door open, turn on Lamp 3
   initial_state: true
   trigger:
     - platform: state
       entity_id: binary_sensor.back_door_state
+      from: "off"
       to: "on"
   condition:
     - condition: or
@@ -64,6 +92,7 @@
   trigger:
     - platform: state
       entity_id: binary_sensor.front_door_state
+      from: "off"
       to: "on"
   condition:
     - condition: or
@@ -104,6 +133,6 @@
     - platform: state
       entity_id: updater.updater
   action:
-    service: script.ifttt_notify
+    service: script.send_notification
     data_template:
       message: "Home Assistant update available!"

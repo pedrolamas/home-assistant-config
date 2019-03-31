@@ -3,3 +3,21 @@ person.pedro:
 
 person.joana:
   entity_picture: /local/joana.jpg
+
+binary_sensor.back_door_state:
+  friendly_name: Back Door
+
+binary_sensor.front_door_state:
+  friendly_name: Front Door
+
+binary_sensor.philips_hue_bridge:
+  icon: mdi:server
+
+binary_sensor.synology_ds412_nas:
+  icon: mdi:nas
+
+binary_sensor.raspberry_pi_2_model_b:
+  icon: mdi:raspberrypi
+
+binary_sensor.amazon_fire_cube:
+  icon: mdi:amazon-alexa

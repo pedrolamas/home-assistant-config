@@ -5,8 +5,8 @@ cards:
   - type: map
     title: Map
     entities:
-      - device_tracker.pedro_oneplus6
-      - device_tracker.joana_oneplus6
+      - person.pedro
+      - person.joana
       - zone.home
       - zone.work
       - zone.school

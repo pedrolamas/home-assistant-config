@@ -20,6 +20,7 @@ cards:
         entities:
           - sensor.living_room_pressure
           - sensor.living_room_battery
+          - sensor.living_room_link_quality
 
   - type: custom:vertical-stack-in-card
     title: Master Bedroom
@@ -40,6 +41,7 @@ cards:
         entities:
           - sensor.master_bedroom_pressure
           - sensor.master_bedroom_battery
+          - sensor.master_bedroom_link_quality
 
   - type: custom:vertical-stack-in-card
     title: Kids Bedroom
@@ -60,3 +62,4 @@ cards:
         entities:
           - sensor.kids_bedroom_pressure
           - sensor.kids_bedroom_battery
+          - sensor.kids_bedroom_link_quality

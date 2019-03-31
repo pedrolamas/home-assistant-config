@@ -8,6 +8,7 @@
   username: !secret unifi_username
   password: !secret unifi_password
   verify_ssl: false
+  detection_time: 120
   ssid_filter: !secret unifi_ssid_filter
   new_device_defaults:
     track_new_devices: false

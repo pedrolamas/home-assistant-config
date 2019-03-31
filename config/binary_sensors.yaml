@@ -1,4 +1,4 @@
-- platform: "mqtt"
+- platform: mqtt
   name: Back Door State
   device_class: door
   state_topic: "zigbee2mqtt/BackDoor"
@@ -8,7 +8,7 @@
   value_template: >-
     {{ value_json.contact }}
 
-- platform: "mqtt"
+- platform: mqtt
   name: Front Door State
   device_class: door
   state_topic: "zigbee2mqtt/FrontDoor"
@@ -17,6 +17,26 @@
   payload_off: true
   value_template: >-
     {{ value_json.contact }}
+
+- platform: ping
+  host: !secret unifi_cloud_key_host
+  name: UniFi Cloud Key Gen2 Plus
+
+- platform: ping
+  host: !secret philips_hue_bridge_host
+  name: Philips Hue Bridge 2.1
+
+- platform: ping
+  host: !secret synology_ds412plus_nas_host
+  name: Synology DS412+ NAS
+
+- platform: ping
+  host: !secret raspberry_pi_2_model_b_host
+  name: Raspberry Pi 2 Model B
+
+- platform: ping
+  host: !secret amazon_fire_cube_host
+  name: Amazon Fire Cube
 
 - platform: template
   sensors:

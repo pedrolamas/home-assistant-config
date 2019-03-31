@@ -2,8 +2,10 @@
   name: Pedro
   device_trackers:
     - device_tracker.pedro_oneplus6
+    - device_tracker.pedro_oneplus6_wifi
 
 - id: joana
   name: Joana
   device_trackers:
     - device_tracker.joana_oneplus6
+    - device_tracker.joana_oneplus6_wifi

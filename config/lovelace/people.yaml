@@ -2,17 +2,29 @@ title: People
 icon: mdi:account-outline
 cards:
   - type: glance
-    title: Pedro
+    title: Pedro's Phone
     entities:
+      - entity: person.pedro
+        name: Location
       - entity: device_tracker.pedro_oneplus6
-        name: Status
-      - entity: sensor.pedro_phone_battery
-        name: Phone Battery
+        name: GPS
+        icon: mdi:crosshairs-gps
+      - entity: device_tracker.pedro_oneplus6_wifi
+        name: WiFi
+        icon: mdi:wifi
+      - entity: sensor.pedro_oneplus6_battery
+        name: Battery
 
   - type: glance
-    title: Joana
+    title: Joana's Phone
     entities:
+      - entity: person.joana
+        name: Location
       - entity: device_tracker.joana_oneplus6
-        name: Status
-      - entity: sensor.joana_phone_battery
-        name: Phone Battery
+        name: GPS
+        icon: mdi:crosshairs-gps
+      - entity: device_tracker.joana_oneplus6_wifi
+        name: WiFi
+        icon: mdi:wifi
+      - entity: sensor.joana_oneplus6_battery
+        name: Battery
