@@ -10,6 +10,7 @@ include:
     - light.lamp_2
     - light.lamp_3
     - light.lamp_4
+    - sensor.cpu_temperature
     - sensor.living_room_temperature
     - sensor.living_room_humidity
     - sensor.master_bedroom_temperature

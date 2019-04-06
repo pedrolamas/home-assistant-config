@@ -11,6 +11,7 @@ include:
     - binary_sensor.front_door_state
     - person.pedro
     - person.joana
+    - sensor.cpu_temperature
     - sensor.living_room_temperature
     - sensor.living_room_humidity
     - sensor.master_bedroom_temperature

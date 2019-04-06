@@ -1,3 +1,21 @@
+- alias: Sensor low battery, send notification
+  initial_state: true
+  trigger:
+    - platform: numeric_state
+      entity_id:
+        - sensor.back_door_battery
+        - sensor.front_door_battery
+        - sensor.living_room_battery
+        - sensor.kids_bedroom_battery
+        - sensor.master_bedroom_battery
+      below: 20
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "Device with low battery"
+        message: >-
+          "The {{ trigger.to_state.attributes.friendly_name }} sensor has low battery!"
+
 - alias: Device offline, send notification
   initial_state: true
   trigger:
@@ -16,6 +34,17 @@
     - service: script.send_notification
       data_template:
         message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is offline."
+
+- alias: CPU temperature above 42, send notification
+  initial_state: true
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.cpu_temperature
+      above: 42
+  action:
+    - service: script.send_notification
+      data_template:
+        message: "ALERT: CPU temperature is above 42°C!"
 
 - alias: Door open, send notification
   initial_state: true

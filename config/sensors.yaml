@@ -195,6 +195,14 @@
   value_template: >-
     {{ value_json.linkquality }}
 
+- platform: command_line
+  name: CPU Temperature
+  command: "cat /sys/class/thermal/thermal_zone0/temp"
+  scan_interval: 120
+  unit_of_measurement: "°C"
+  value_template: >-
+    {{ value | multiply(0.001) }}
+
 - platform: template
   sensors:
 
