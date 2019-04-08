@@ -41,6 +41,8 @@
     - platform: numeric_state
       entity_id: sensor.cpu_temperature
       above: 42
+      for:
+        minutes: 10
   action:
     - service: script.send_notification
       data_template:

@@ -84,3 +84,4 @@ notify: !include notify.yaml
 #input_select: !include input_select.yaml
 input_boolean: !include input_boolean.yaml
 #timer: !include timers.yaml
+camera: !include cameras.yaml

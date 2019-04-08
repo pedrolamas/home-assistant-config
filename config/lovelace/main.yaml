@@ -18,6 +18,8 @@ cards:
         name: Temperature
       - entity: sensor.living_room_humidity
         name: Humidity
+      - entity: camera.living_room_camera
+        name: Camera
       - entity: switch.living_room_outlet
         name: Outlet
         tap_action:
@@ -30,6 +32,8 @@ cards:
     title: Lower Floor
     columns: 4
     entities:
+      - entity: camera.lower_floor_camera
+        name: Camera
       - entity: switch.lower_floor_outlet
         name: Outlet
         tap_action:
