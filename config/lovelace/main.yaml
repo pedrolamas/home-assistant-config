@@ -27,7 +27,7 @@ cards:
       - entity: binary_sensor.front_door_state
       - entity: binary_sensor.back_door_state
       - entity: media_player.lg_smart_tv
-  
+
   - type: glance
     title: Lower Floor
     columns: 4
@@ -60,6 +60,15 @@ cards:
         name: Temperature
       - entity: sensor.kids_bedroom_humidity
         name: Humidity
+
+  - type: glance
+    title: Local
+    columns: 4
+    entities:
+    - entity: sensor.victoria
+    - entity: sensor.bakerloo
+    - entity: sensor.london_overground
+    - entity: sensor.islington
 
   - type: weather-forecast
     title: Weather

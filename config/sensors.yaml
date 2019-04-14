@@ -41,7 +41,7 @@
 #  destination: zone.home
 #  travel_mode: transit
 
-- platform: moon
+#- platform: moon
 
 - platform: mqtt
   name: Living Room Temperature
@@ -202,6 +202,16 @@
   unit_of_measurement: "°C"
   value_template: >-
     {{ value | multiply(0.001) }}
+
+- platform: london_underground
+  line:
+    - Bakerloo
+    - London Overground
+    - Victoria
+
+- platform: london_air
+  locations:
+    - Islington
 
 - platform: template
   sensors:

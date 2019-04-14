@@ -1,3 +1,6 @@
+#- platform: workday
+#  country: UK
+
 - platform: mqtt
   name: Back Door State
   device_class: door
@@ -47,35 +50,35 @@
       entity_id: media_player.lg_smart_tv
       value_template: >-
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') }}
-    
+
     lg_smart_tv_is_watching_fire_tv_cube:
       friendly_name: Fire TV Cube
       icon_template: mdi:amazon
       entity_id: media_player.lg_smart_tv
       value_template: >-
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Fire TV Cube') }}
-    
+
     lg_smart_tv_is_watching_xbox_one_x:
       friendly_name: Xbox One X
       icon_template: mdi:xbox
       entity_id: media_player.lg_smart_tv
       value_template: >-
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Xbox One X') }}
-    
+
     lg_smart_tv_is_watching_netflix:
       friendly_name: Netflix
       icon_template: mdi:netflix
       entity_id: media_player.lg_smart_tv
       value_template: >-
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Netflix') }}
-    
+
     lg_smart_tv_is_watching_plex:
       friendly_name: Plex
       icon_template: mdi:plex
       entity_id: media_player.lg_smart_tv
       value_template: >-
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Plex') }}
-    
+
     lg_smart_tv_is_watching_youtube:
       friendly_name: YouTube
       icon_template: mdi:youtube
