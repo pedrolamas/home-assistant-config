@@ -1,10 +1,33 @@
 send_notification:
   sequence:
-    - service: notify.pushbullet
+#    - service: notify.pushbullet
+#      data_template:
+#        title: "Home Assistant"
+#        message: "{{ message }}"
+    - service: notify.hangouts
       data_template:
-        title: "Home Assistant"
         message: "{{ message }}"
+        data:
+          image_file: "{{ filename }}"
+#    - service: hangouts.send_message
+#      data_template:
+#        target: !secret hangouts_default_conversations
+#        message:
+#          - text: "{{ message }}"
+#        data:
+#          image_file: "{{ filename }}"
 #    - service: ifttt.trigger
 #      data_template:
 #        event: "homeassistant-notification"
 #        value1: "{{ message }}"
+
+send_notification_with_living_room_camera_snapshot:
+  sequence:
+    - service: camera.snapshot
+      data:
+        entity_id: camera.living_room_camera
+        filename: "/config/www/snapshot.jpg"
+    - service: script.send_notification
+      data_template:
+        message: "{{ message }}"
+        filename: "/config/www/snapshot.jpg"

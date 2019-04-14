@@ -20,7 +20,7 @@
   initial_state: true
   trigger:
     - platform: state
-      entity_id: 
+      entity_id:
         - binary_sensor.unifi_cloud_key_gen2_plus
         - binary_sensor.philips_hue_bridge_2_1
         - binary_sensor.synology_ds412_nas
@@ -52,13 +52,13 @@
   initial_state: true
   trigger:
     - platform: state
-      entity_id: 
+      entity_id:
         - binary_sensor.back_door_state
         - binary_sensor.front_door_state
       from: "off"
       to: "on"
   action:
-    - service: script.send_notification
+    - service: script.send_notification_with_living_room_camera_snapshot
       data_template:
         message: "{{ trigger.to_state.attributes.friendly_name }} is open!"
 
@@ -66,7 +66,7 @@
   initial_state: true
   trigger:
     - platform: state
-      entity_id: 
+      entity_id:
         - binary_sensor.back_door_state
         - binary_sensor.front_door_state
       from: "off"
