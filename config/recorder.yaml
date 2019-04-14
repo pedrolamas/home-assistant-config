@@ -24,12 +24,16 @@ include:
 exclude:
   domains:
     - automation
+    - camera
     - group
+    - hangouts
     - input_boolean
     - input_select
+    - script
     - sun
     - timer
     - updater
     - weather
     - weblink
+    - zigbee2mqtt_networkmap
     - zone

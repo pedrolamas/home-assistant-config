@@ -1,27 +1,29 @@
 include:
   domains:
     - device_tracker
-    - media_player
   entities:
     - binary_sensor.back_door_state
     - binary_sensor.front_door_state
-    - light.living_room
-    - light.master_bedroom
     - person.pedro
     - person.joana
-    - switch.living_room_outlet
-    - switch.lower_floor_outlet
 
 exclude:
   domains:
     - automation
+    - camera
     - group
+    - hangouts
     - input_boolean
     - input_select
+    - light
+    - media_player
     - sensor
+    - script
     - sun
+    - switch
     - timer
     - updater
     - weather
     - weblink
+    - zigbee2mqtt_networkmap
     - zone
