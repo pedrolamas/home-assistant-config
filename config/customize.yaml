@@ -19,8 +19,8 @@ binary_sensor.synology_ds412_nas:
 binary_sensor.raspberry_pi_2_model_b:
   icon: mdi:raspberry-pi
 
-binary_sensor.amazon_fire_cube:
-  icon: mdi:amazon-alexa
+binary_sensor.amazon_fire_tv_cube:
+  icon: mdi:set-top-box
 
 sensor.bakerloo:
   friendly_name: Bakerloo Line

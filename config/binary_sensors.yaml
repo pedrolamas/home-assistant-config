@@ -39,7 +39,7 @@
 
 - platform: ping
   host: !secret amazon_fire_cube_host
-  name: Amazon Fire Cube
+  name: Amazon Fire TV Cube
 
 - platform: template
   sensors:
