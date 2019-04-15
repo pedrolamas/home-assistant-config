@@ -60,7 +60,7 @@
   device_class: pressure
   state_topic: "zigbee2mqtt/LivingRoomClimate"
   availability_topic: "zigbee2mqtt/bridge/state"
-  unit_of_measurement: "kPa"
+  unit_of_measurement: "hPa"
   value_template: >-
     {{ value_json.pressure }}
 - platform: mqtt
@@ -100,7 +100,7 @@
   device_class: pressure
   state_topic: "zigbee2mqtt/MasterBedroomClimate"
   availability_topic: "zigbee2mqtt/bridge/state"
-  unit_of_measurement: "kPa"
+  unit_of_measurement: "hPa"
   value_template: >-
     {{ value_json.pressure }}
 - platform: mqtt
@@ -140,7 +140,7 @@
   device_class: pressure
   state_topic: "zigbee2mqtt/KidsBedroomClimate"
   availability_topic: "zigbee2mqtt/bridge/state"
-  unit_of_measurement: "kPa"
+  unit_of_measurement: "hPa"
   value_template: >-
     {{ value_json.pressure }}
 - platform: mqtt
