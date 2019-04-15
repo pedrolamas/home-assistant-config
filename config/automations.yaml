@@ -1,3 +1,13 @@
+- alias: Home Assistant started, set default theme
+  initial_state: 'on'
+  trigger:
+    - platform: homeassistant
+      event: start
+  action:
+    service: frontend.set_theme
+    data:
+      name: slate
+
 - alias: Sensor low battery, send notification
   initial_state: true
   trigger:
