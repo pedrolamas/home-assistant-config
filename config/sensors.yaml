@@ -30,10 +30,6 @@
 - platform: pi_hole
   host: !secret pi_hole_host
 
-- platform: syncthru
-  name: Samsung M2070 Series
-  resource: !secret samsung_m2070_printer_resource
-
 #- platform: google_travel_time
 #  name: Pedro to Home
 #  api_key: !secret google_travel_time_api_key
