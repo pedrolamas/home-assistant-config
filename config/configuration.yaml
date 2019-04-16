@@ -37,9 +37,9 @@ system_health:
 #cloud:
 
 webhook:
- 
+
 zigbee2mqtt_networkmap:
- 
+
 panel_iframe:
   networkmap:
     title: Zigbee Map
@@ -81,7 +81,7 @@ script: !include scripts.yaml
 switch: !include switches.yaml
 notify: !include notify.yaml
 #lock: !include locks.yaml
-#input_select: !include input_select.yaml
+input_select: !include input_select.yaml
 input_boolean: !include input_boolean.yaml
 #timer: !include timers.yaml
 camera: !include cameras.yaml

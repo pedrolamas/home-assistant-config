@@ -22,24 +22,24 @@
     {{ value_json.contact }}
 
 - platform: ping
-  host: !secret unifi_cloud_key_host
   name: UniFi Cloud Key Gen2 Plus
+  host: !secret unifi_cloud_key_host
 
 - platform: ping
-  host: !secret philips_hue_bridge_host
   name: Philips Hue Bridge 2.1
+  host: !secret philips_hue_bridge_host
 
 - platform: ping
-  host: !secret synology_ds412plus_nas_host
   name: Synology DS412+ NAS
+  host: !secret synology_ds412plus_nas_host
 
 - platform: ping
-  host: !secret raspberry_pi_2_model_b_host
   name: Raspberry Pi 2 Model B
+  host: !secret raspberry_pi_2_model_b_host
 
 - platform: ping
-  host: !secret amazon_fire_cube_host
   name: Amazon Fire TV Cube
+  host: !secret amazon_fire_cube_host
 
 - platform: template
   sensors:

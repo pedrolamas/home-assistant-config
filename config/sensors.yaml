@@ -40,6 +40,11 @@
 #- platform: moon
 
 - platform: mqtt
+  name: Zigbee2mqtt Bridge state
+  state_topic: "zigbee2mqtt/bridge/state"
+  icon: mdi:server-network
+
+- platform: mqtt
   name: Living Room Temperature
   device_class: temperature
   state_topic: "zigbee2mqtt/LivingRoomClimate"
