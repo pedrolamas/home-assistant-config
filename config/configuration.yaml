@@ -36,6 +36,8 @@ system_health:
 
 #cloud:
 
+wake_on_lan:
+
 webhook:
 
 zigbee2mqtt_networkmap:
