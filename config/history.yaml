@@ -27,6 +27,7 @@ exclude:
     - group
     - hangouts
     - input_boolean
+    - input_number
     - input_select
     - person
     - script
