@@ -52,7 +52,6 @@
         message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is offline."
 
 - alias: CPU temperature above 42, send notification
-  initial_state: true
   trigger:
     - platform: numeric_state
       entity_id: sensor.cpu_temperature
