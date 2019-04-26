@@ -9,7 +9,22 @@ cards:
           - entity: media_player.lg_smart_tv
             state_not: "off"
         card: !include media_remote.yaml
-        
+
+      - type: conditional
+        conditions:
+          - entity: media_player.lg_smart_tv
+            state: "off"
+        card:
+          type: entity-button
+          entity: media_player.lg_smart_tv
+          name: " "
+          icon: mdi:power
+          tap_action:
+            action: call-service
+            service: media_player.turn_on
+            service_data:
+              entity_id: media_player.lg_smart_tv
+
       - type: entities
         show_header_toggle: false
         entities:

@@ -34,7 +34,6 @@
         - binary_sensor.philips_hue_bridge_2_1
         - binary_sensor.synology_ds412_nas
         - binary_sensor.raspberry_pi_2_model_b
-        - binary_sensor.amazon_fire_cube
       from: "on"
       to: "off"
       for:

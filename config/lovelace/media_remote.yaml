@@ -3,6 +3,154 @@ cards:
   - type: horizontal-stack
     cards:
       - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_live_tv
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "Live TV"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_netflix
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "Netflix"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_prime_video
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "Amazon Prime Video"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_plex
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "Plex"
+
+  - type: horizontal-stack
+    cards:
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_xbox_one_x
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "Xbox One X"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_youtube
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "YouTube"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_bbc_iplayer
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "BBC iPlayer"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_all_4
+        tap_action:
+          action: call-service
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            source: "All 4"
+
+  - type: horizontal-stack
+    cards:
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_bbc_one
+        tap_action:
+          action: call-service
+          service: media_player.play_media
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            media_content_id: "BBC ONE Lon"
+            media_content_type: "channel"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_bbc_news
+        tap_action:
+          action: call-service
+          service: media_player.play_media
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            media_content_id: "BBC NEWS"
+            media_content_type: "channel"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_channel_4
+        tap_action:
+          action: call-service
+          service: media_player.play_media
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            media_content_id: "Channel 4"
+            media_content_type: "channel"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_sky_news
+        tap_action:
+          action: call-service
+          service: media_player.play_media
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            media_content_id: "Sky News"
+            media_content_type: "channel"
+
+  - type: horizontal-stack
+    cards:
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_bbc_one_hd
+        tap_action:
+          action: call-service
+          service: media_player.play_media
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            media_content_id: "BBC ONE HD"
+            media_content_type: "channel"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_bbc_news_hd
+        tap_action:
+          action: call-service
+          service: media_player.play_media
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            media_content_id: "BBC NEWS HD"
+            media_content_type: "channel"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_channel_4_hd
+        tap_action:
+          action: call-service
+          service: media_player.play_media
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            media_content_id: "Channel 4 HD"
+            media_content_type: "channel"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_sky_news
+        tap_action:
+          action: call-service
+          service: media_player.play_media
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            media_content_id: "Sky News"
+            media_content_type: "channel"
+
+  - type: horizontal-stack
+    cards:
+      - type: entity-button
         entity: switch.lg_smart_tv_volume_mute
         name: " "
         icon: mdi:volume-mute
@@ -26,9 +174,18 @@ cards:
           service: media_player.volume_up
           service_data:
             entity_id: media_player.lg_smart_tv
-  
+
   - type: horizontal-stack
     cards:
+      - type: entity-button
+        entity: media_player.lg_smart_tv
+        name: " "
+        icon: mdi:power
+        tap_action:
+          action: call-service
+          service: media_player.turn_off
+          service_data:
+            entity_id: media_player.lg_smart_tv
       - type: entity-button
         entity: media_player.lg_smart_tv
         name: " "
@@ -55,57 +212,3 @@ cards:
           service: media_player.media_next_track
           service_data:
             entity_id: media_player.lg_smart_tv
-
-  - type: horizontal-stack
-    cards:
-      - type: entity-button
-        entity: binary_sensor.lg_smart_tv_is_watching_live_tv
-        tap_action:
-          action: call-service
-          service: media_player.select_source
-          service_data:
-            entity_id: media_player.lg_smart_tv
-            source: "Live TV"
-      - type: entity-button
-        entity: binary_sensor.lg_smart_tv_is_watching_fire_tv_cube
-        tap_action:
-          action: call-service
-          service: media_player.select_source
-          service_data:
-            entity_id: media_player.lg_smart_tv
-            source: "Fire TV Cube"
-      - type: entity-button
-        entity: binary_sensor.lg_smart_tv_is_watching_xbox_one_x
-        tap_action:
-          action: call-service
-          service: media_player.select_source
-          service_data:
-            entity_id: media_player.lg_smart_tv
-            source: "Xbox One X"
-
-  - type: horizontal-stack
-    cards:
-      - type: entity-button
-        entity: binary_sensor.lg_smart_tv_is_watching_netflix
-        tap_action:
-          action: call-service
-          service: media_player.select_source
-          service_data:
-            entity_id: media_player.lg_smart_tv
-            source: "Netflix"
-      - type: entity-button
-        entity: binary_sensor.lg_smart_tv_is_watching_plex
-        tap_action:
-          action: call-service
-          service: media_player.select_source
-          service_data:
-            entity_id: media_player.lg_smart_tv
-            source: "Plex"
-      - type: entity-button
-        entity: binary_sensor.lg_smart_tv_is_watching_youtube
-        tap_action:
-          action: call-service
-          service: media_player.select_source
-          service_data:
-            entity_id: media_player.lg_smart_tv
-            source: "YouTube"
