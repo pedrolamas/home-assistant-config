@@ -1,4 +1,5 @@
 title: Ambient
+path: ambient
 icon: mdi:thermometer
 cards:
   - type: custom:vertical-stack-in-card

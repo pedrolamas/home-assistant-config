@@ -1,4 +1,5 @@
 title: People
+path: people
 icon: mdi:account-outline
 cards:
   - type: glance

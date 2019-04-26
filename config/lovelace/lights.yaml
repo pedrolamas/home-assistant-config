@@ -1,4 +1,5 @@
 title: Lights
+path: lights
 icon: mdi:lightbulb-outline
 cards:
   - type: entities
