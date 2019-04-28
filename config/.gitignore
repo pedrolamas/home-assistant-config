@@ -3,6 +3,6 @@ home-assistant_v2.db
 *.log
 *.conf
 .*
-custom_components/__pycache__
 www/*.jpg
+**/__pycache__
 !.gitignore
