@@ -14,11 +14,18 @@ cards:
       - entity: light.living_room
         name: Lights
         tap_action:
-          action: toggle
+          action: navigate
+          navigation_path: /lovelace/lights
       - entity: sensor.living_room_temperature
         name: Temperature
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/ambient
       - entity: sensor.living_room_humidity
         name: Humidity
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/ambient
       - entity: camera.living_room_camera
         name: Camera
       - entity: switch.living_room_outlet
@@ -28,6 +35,9 @@ cards:
       - entity: binary_sensor.front_door_state
       - entity: binary_sensor.back_door_state
       - entity: media_player.lg_smart_tv
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/media
 
   - type: glance
     title: Lower Floor
@@ -47,11 +57,18 @@ cards:
       - entity: light.master_bedroom
         name: Lights
         tap_action:
-          action: toggle
+          action: navigate
+          navigation_path: /lovelace/lights
       - entity: sensor.master_bedroom_temperature
         name: Temperature
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/ambient
       - entity: sensor.master_bedroom_humidity
         name: Humidity
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/ambient
 
   - type: glance
     title: Kids Bedroom
@@ -59,8 +76,14 @@ cards:
     entities:
       - entity: sensor.kids_bedroom_temperature
         name: Temperature
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/ambient
       - entity: sensor.kids_bedroom_humidity
         name: Humidity
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/ambient
 
   - type: glance
     title: Local
