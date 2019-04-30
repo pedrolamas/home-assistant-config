@@ -1,0 +1,67 @@
+smart_home:
+  filter:
+    include_entities:
+      - binary_sensor.back_door_state
+      - binary_sensor.front_door_state
+      - media_player.lg_smart_tv
+      - sensor.kids_bedroom_temperature
+      - sensor.living_room_temperature
+      - sensor.master_bedroom_temperature
+      - script.watch_netflix_on_lg_smart_tv
+      - script.watch_plex_on_lg_smart_tv
+      - script.watch_bbc_one_on_lg_smart_tv
+      - script.watch_bbc_news_on_lg_smart_tv
+      - script.watch_channel_4_on_lg_smart_tv
+      - switch.living_room_outlet
+      - switch.lower_floor_outlet
+    exclude_domains:
+      - automation
+      - binary_sensor
+      - camera
+      - device_tracker
+      - group
+      - hangouts
+      - input_boolean
+      - input_number
+      - input_select
+      - light
+      - media_player
+      - person
+      - sensor
+      - sun
+      - switch
+      - timer
+      - updater
+      - weather
+      - weblink
+      - zigbee2mqtt_networkmap
+      - zone
+  entity_config:
+    binary_sensor.back_door_state:
+      name: Back Door
+    binary_sensor.front_door_state:
+      name: Front Door
+    media_player.lg_smart_tv:
+      name: TV
+    sensor.kids_bedroom_temperature:
+      name: Kids Bedroom Temperature
+    sensor.living_room_temperature:
+      name: Living Room Temperature
+    sensor.master_bedroom_temperature:
+      name: Master Bedroom Temperature
+    script.watch_netflix_on_lg_smart_tv:
+      name: Netflix
+    script.watch_plex_on_lg_smart_tv:
+      name: Plex
+    script.watch_bbc_one_on_lg_smart_tv:
+      name: BBC One
+    script.watch_bbc_news_on_lg_smart_tv:
+      name: BBC News
+    script.watch_channel_4_on_lg_smart_tv:
+      name: Channel 4
+    switch.living_room_outlet:
+      name: Living Room Outlet
+      display_categories: SMARTPLUG
+    switch.lower_floor_outlet:
+      name: Lower Floor Outlet
+      display_categories: SMARTPLUG
