@@ -79,11 +79,25 @@ cards:
           service: media_player.play_media
           service_data:
             entity_id: media_player.lg_smart_tv
+            media_content_id: "BBC ONE HD"
+            media_content_type: "channel"
+        hold_action:
+          action: call-service
+          service: media_player.play_media
+          service_data:
+            entity_id: media_player.lg_smart_tv
             media_content_id: "BBC ONE Lon"
             media_content_type: "channel"
       - type: entity-button
         entity: binary_sensor.lg_smart_tv_is_watching_bbc_news
         tap_action:
+          action: call-service
+          service: media_player.play_media
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            media_content_id: "BBC NEWS HD"
+            media_content_type: "channel"
+        hold_action:
           action: call-service
           service: media_player.play_media
           service_data:
@@ -97,55 +111,14 @@ cards:
           service: media_player.play_media
           service_data:
             entity_id: media_player.lg_smart_tv
-            media_content_id: "Channel 4"
-            media_content_type: "channel"
-      - type: entity-button
-        entity: binary_sensor.lg_smart_tv_is_watching_sky_news
-        tap_action:
-          action: call-service
-          service: media_player.play_media
-          service_data:
-            entity_id: media_player.lg_smart_tv
-            media_content_id: "Sky News"
-            media_content_type: "channel"
-
-  - type: horizontal-stack
-    cards:
-      - type: entity-button
-        entity: binary_sensor.lg_smart_tv_is_watching_bbc_one_hd
-        tap_action:
-          action: call-service
-          service: media_player.play_media
-          service_data:
-            entity_id: media_player.lg_smart_tv
-            media_content_id: "BBC ONE HD"
-            media_content_type: "channel"
-      - type: entity-button
-        entity: binary_sensor.lg_smart_tv_is_watching_bbc_news_hd
-        tap_action:
-          action: call-service
-          service: media_player.play_media
-          service_data:
-            entity_id: media_player.lg_smart_tv
-            media_content_id: "BBC NEWS HD"
-            media_content_type: "channel"
-      - type: entity-button
-        entity: binary_sensor.lg_smart_tv_is_watching_channel_4_hd
-        tap_action:
-          action: call-service
-          service: media_player.play_media
-          service_data:
-            entity_id: media_player.lg_smart_tv
             media_content_id: "Channel 4 HD"
             media_content_type: "channel"
-      - type: entity-button
-        entity: binary_sensor.lg_smart_tv_is_watching_sky_news
-        tap_action:
+        hold_action:
           action: call-service
           service: media_player.play_media
           service_data:
             entity_id: media_player.lg_smart_tv
-            media_content_id: "Sky News"
+            media_content_id: "Channel 4"
             media_content_type: "channel"
 
   - type: horizontal-stack

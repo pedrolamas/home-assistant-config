@@ -31,3 +31,80 @@ send_notification_with_living_room_camera_snapshot:
       data_template:
         message: "{{ message }}"
         filename: "/config/www/snapshot.jpg"
+
+turn_on_lg_smart_tv:
+  sequence:
+    - condition: state
+      entity_id: media_player.lg_smart_tv
+      state: "off"
+    - service: media_player.turn_on
+      data_template:
+        entity_id: media_player.lg_smart_tv
+
+watch_netflix_on_lg_smart_tv:
+  sequence:
+    - service: script.turn_on_lg_smart_tv
+    - wait_template: >-
+        {{ not is_state("media_player.lg_smart_tv", "off") }}
+      timeout:
+        seconds: 15
+      continue_on_timeout: "true"
+    - service: media_player.select_source
+      data_template:
+        entity_id: media_player.lg_smart_tv
+        source: "Netflix"
+
+watch_plex_on_lg_smart_tv:
+  sequence:
+    - service: script.turn_on_lg_smart_tv
+    - wait_template: >-
+        {{ not is_state("media_player.lg_smart_tv", "off") }}
+      timeout:
+        seconds: 15
+      continue_on_timeout: "true"
+    - service: media_player.select_source
+      data_template:
+        entity_id: media_player.lg_smart_tv
+        source: "Plex"
+
+watch_bbc_one_on_lg_smart_tv:
+  sequence:
+    - service: script.turn_on_lg_smart_tv
+    - wait_template: >-
+        {{ not is_state("media_player.lg_smart_tv", "off") }}
+      timeout:
+        seconds: 15
+      continue_on_timeout: "true"
+    - service: media_player.play_media
+      data_template:
+        entity_id: media_player.lg_smart_tv
+        media_content_id: "BBC ONE HD"
+        media_content_type: "channel"
+
+watch_bbc_news_on_lg_smart_tv:
+  sequence:
+    - service: script.turn_on_lg_smart_tv
+    - wait_template: >-
+        {{ not is_state("media_player.lg_smart_tv", "off") }}
+      timeout:
+        seconds: 15
+      continue_on_timeout: "true"
+    - service: media_player.play_media
+      data_template:
+        entity_id: media_player.lg_smart_tv
+        media_content_id: "BBC NEWS HD"
+        media_content_type: "channel"
+
+watch_channel_4_on_lg_smart_tv:
+  sequence:
+    - service: script.turn_on_lg_smart_tv
+    - wait_template: >-
+        {{ not is_state("media_player.lg_smart_tv", "off") }}
+      timeout:
+        seconds: 15
+      continue_on_timeout: "true"
+    - service: media_player.play_media
+      data_template:
+        entity_id: media_player.lg_smart_tv
+        media_content_id: "Channel 4 HD"
+        media_content_type: "channel"
