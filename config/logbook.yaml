@@ -18,8 +18,8 @@ exclude:
     - input_select
     - light
     - media_player
-    - sensor
     - script
+    - sensor
     - sun
     - switch
     - timer
