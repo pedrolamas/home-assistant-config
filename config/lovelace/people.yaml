@@ -7,13 +7,13 @@ cards:
     entities:
       - entity: person.pedro
         name: Location
-      - entity: device_tracker.pedro_oneplus6
+      - entity: device_tracker.pedro_oneplus7pro
         name: GPS
         icon: mdi:crosshairs-gps
-      - entity: device_tracker.pedro_oneplus6_wifi
+      - entity: device_tracker.pedro_oneplus7pro_wifi
         name: WiFi
         icon: mdi:wifi
-      - entity: sensor.pedro_oneplus6_battery
+      - entity: sensor.pedro_oneplus7pro_battery
         name: Battery
 
   - type: glance

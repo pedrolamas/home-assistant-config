@@ -229,6 +229,12 @@
       value_template: >-
         {{ state_attr('device_tracker.pedro_oneplus6', 'battery') }}
 
+    pedro_oneplus7pro_battery:
+      unit_of_measurement: "%"
+      device_class: battery
+      value_template: >-
+        {{ state_attr('device_tracker.pedro_oneplus7pro', 'battery') }}
+
     joana_oneplus6_battery:
       unit_of_measurement: "%"
       device_class: battery
