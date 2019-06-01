@@ -1,5 +1,11 @@
-turn_off_lamp_3_on_back_door_close:
+turn_off_lamp_on_back_door_close:
   initial: off
 
-turn_off_lamp_2_on_front_door_close:
+turn_off_lamp_on_front_door_close:
+  initial: off
+
+send_notification_on_back_door_close:
+  initial: off
+
+send_notification_on_front_door_close:
   initial: off

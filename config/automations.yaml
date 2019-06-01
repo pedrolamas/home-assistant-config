@@ -91,86 +91,72 @@
     - service: script.send_notification
       data_template:
         message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is still open!"
+    - service: input_boolean.turn_on
+      data_template:
+        entity_id: "{{ trigger.to_state.attributes.send_notification_entity_id }}"
 
-- alias: Back Door open, turn on Lamp 3
+- alias: Door open, turn on lamp
   initial_state: true
   trigger:
     - platform: state
-      entity_id: binary_sensor.back_door_state
+      entity_id:
+        - binary_sensor.back_door_state
+        - binary_sensor.front_door_state
       from: "off"
       to: "on"
   condition:
-    - condition: or
-      conditions:
-      - condition: state
-        entity_id: light.lamp_3
-        state: "off"
-      - condition: state
-        entity_id: input_boolean.turn_off_lamp_3_on_back_door_close
-        state: "on"
+    - condition: template
+      value_template: >-
+        {{ is_state(trigger.to_state.attributes.lamp_entity_id, 'off') or is_state(trigger.to_state.attributes.lamp_off_entity_id, 'on') }}
   action:
     - service: light.turn_on
-      entity_id: light.lamp_3
+      data_template:
+        entity_id: "{{ trigger.to_state.attributes.lamp_entity_id }}"
     - service: input_boolean.turn_on
-      entity_id: input_boolean.turn_off_lamp_3_on_back_door_close
+      data_template:
+        entity_id: "{{ trigger.to_state.attributes.lamp_off_entity_id }}"
 
-- alias: Back Door closed for 30s, turn off Lamp 3
+- alias: Door closed after 5 minutes, send notification
   initial_state: true
   trigger:
     - platform: state
-      entity_id: binary_sensor.back_door_state
+      entity_id:
+        - binary_sensor.back_door_state
+        - binary_sensor.front_door_state
+      to: "off"
+  condition:
+    - condition: template
+      value_template: >-
+        {{ is_state(trigger.to_state.attributes.send_notification_entity_id, 'on') }}
+  action:
+    - service: input_boolean.turn_off
+      data_template:
+        entity_id: "{{ trigger.to_state.attributes.send_notification_entity_id }}"
+    - service: script.send_notification
+      data_template:
+        message: "{{ trigger.to_state.attributes.friendly_name }} is closed!"
+
+- alias: Door closed for 30s, turn off lamp
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.back_door_state
+        - binary_sensor.front_door_state
       to: "off"
       for:
         seconds: 30
   condition:
-    - condition: state
-      entity_id: input_boolean.turn_off_lamp_3_on_back_door_close
-      state: "on"
+    - condition: template
+      value_template: >-
+        {{ is_state(trigger.to_state.attributes.lamp_off_entity_id, 'on') }}
   action:
     - service: input_boolean.turn_off
-      entity_id: input_boolean.turn_off_lamp_3_on_back_door_close
+      data_template:
+        entity_id: "{{ trigger.to_state.attributes.lamp_off_entity_id }}"
     - service: light.turn_off
-      entity_id: light.lamp_3
-
-- alias: Front Door open, turn on Lamp 2
-  initial_state: true
-  trigger:
-    - platform: state
-      entity_id: binary_sensor.front_door_state
-      from: "off"
-      to: "on"
-  condition:
-    - condition: or
-      conditions:
-      - condition: state
-        entity_id: light.lamp_2
-        state: "off"
-      - condition: state
-        entity_id: input_boolean.turn_off_lamp_2_on_front_door_close
-        state: "on"
-  action:
-    - service: light.turn_on
-      entity_id: light.lamp_2
-    - service: input_boolean.turn_on
-      entity_id: input_boolean.turn_off_lamp_2_on_front_door_close
-
-- alias: Front Door closed, turn off Lamp 3 after 30s
-  initial_state: true
-  trigger:
-    - platform: state
-      entity_id: binary_sensor.front_door_state
-      to: "off"
-      for:
-        seconds: 30
-  condition:
-    - condition: state
-      entity_id: input_boolean.turn_off_lamp_2_on_front_door_close
-      state: "on"
-  action:
-    - service: input_boolean.turn_off
-      entity_id: input_boolean.turn_off_lamp_2_on_front_door_close
-    - service: light.turn_off
-      entity_id: light.lamp_2
+      data_template:
+        entity_id: "{{ trigger.to_state.attributes.lamp_entity_id }}"
 
 - alias: Update available, send notification
   initial_state: true
