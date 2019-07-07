@@ -200,7 +200,7 @@
   name: Front Door Mailbox
   state_topic: "zigbee2mqtt/FrontDoorMailbox"
   availability_topic: "zigbee2mqtt/bridge/state"
-  icon: "mdi:gesture-double-tap"
+  icon: "mdi:mailbox-up"
   value_template: >-
     {{ value_json.action }}
 - platform: mqtt
