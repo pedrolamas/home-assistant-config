@@ -2,6 +2,10 @@
   platform: pushbullet
   api_key: !secret pushbullet_api_key
 
-- name: hangouts
+- name: hangouts_pedro
   platform: hangouts
-  default_conversations: !secret hangouts_default_conversations
+  default_conversations: !secret hangouts_conversations_pedro
+
+- name: hangouts_all
+  platform: hangouts
+  default_conversations: !secret hangouts_conversations_all

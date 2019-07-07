@@ -1,25 +1,18 @@
-send_notification:
+send_notification_pedro:
   sequence:
-#    - service: notify.pushbullet
-#      data_template:
-#        title: "Home Assistant"
-#        message: "{{ message }}"
-    - service: notify.hangouts
+    - service: notify.hangouts_pedro
       data_template:
         message: "{{ message }}"
         data:
           image_file: "{{ filename }}"
-#    - service: hangouts.send_message
-#      data_template:
-#        target: !secret hangouts_default_conversations
-#        message:
-#          - text: "{{ message }}"
-#        data:
-#          image_file: "{{ filename }}"
-#    - service: ifttt.trigger
-#      data_template:
-#        event: "homeassistant-notification"
-#        value1: "{{ message }}"
+
+send_notification_all:
+  sequence:
+    - service: notify.hangouts_all
+      data_template:
+        message: "{{ message }}"
+        data:
+          image_file: "{{ filename }}"
 
 send_notification_with_living_room_camera_snapshot:
   sequence:
@@ -27,7 +20,7 @@ send_notification_with_living_room_camera_snapshot:
       data:
         entity_id: camera.living_room_camera
         filename: "/config/www/snapshot.jpg"
-    - service: script.send_notification
+    - service: script.send_notification_pedro
       data_template:
         message: "{{ message }}"
         filename: "/config/www/snapshot.jpg"

@@ -196,6 +196,29 @@
   value_template: >-
     {{ value_json.linkquality }}
 
+- platform: mqtt
+  name: Front Door Mailbox
+  state_topic: "zigbee2mqtt/FrontDoorMailbox"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  icon: "mdi:gesture-double-tap"
+  value_template: >-
+    {{ value_json.action }}
+- platform: mqtt
+  name: Front Door Mailbox Battery
+  device_class: "battery"
+  state_topic: "zigbee2mqtt/FrontDoorMailbox"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value_json.battery }}
+- platform: mqtt
+  name: Front Door Mailbox Link Quality
+  state_topic: "zigbee2mqtt/FrontDoorMailbox"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "-"
+  value_template: >-
+    {{ value_json.linkquality }}
+
 - platform: command_line
   name: CPU Temperature
   command: "cat /sys/class/thermal/thermal_zone0/temp"

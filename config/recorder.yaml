@@ -12,6 +12,7 @@ include:
     - person.pedro
     - person.joana
     - sensor.cpu_temperature
+    - sensor.front_door_mailbox
     - sensor.living_room_temperature
     - sensor.living_room_humidity
     - sensor.master_bedroom_temperature

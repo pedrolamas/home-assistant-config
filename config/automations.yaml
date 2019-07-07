@@ -15,6 +15,7 @@
       entity_id:
         - sensor.back_door_battery
         - sensor.front_door_battery
+        - sensor.front_door_mailbox_battery
         - sensor.living_room_battery
         - sensor.kids_bedroom_battery
         - sensor.master_bedroom_battery
@@ -46,7 +47,7 @@
       for:
         seconds: 60
   action:
-    - service: script.send_notification
+    - service: script.send_notification_pedro
       data_template:
         message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is offline."
 
@@ -58,7 +59,7 @@
       for:
         minutes: 10
   action:
-    - service: script.send_notification
+    - service: script.send_notification_pedro
       data_template:
         message: "ALERT: CPU temperature is above 42°C!"
 
@@ -88,7 +89,7 @@
       for:
         minutes: 5
   action:
-    - service: script.send_notification
+    - service: script.send_notification_pedro
       data_template:
         message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is still open!"
     - service: input_boolean.turn_on
@@ -132,7 +133,7 @@
     - service: input_boolean.turn_off
       data_template:
         entity_id: "{{ trigger.to_state.attributes.send_notification_entity_id }}"
-    - service: script.send_notification
+    - service: script.send_notification_pedro
       data_template:
         message: "{{ trigger.to_state.attributes.friendly_name }} is closed!"
 
@@ -158,15 +159,26 @@
       data_template:
         entity_id: "{{ trigger.to_state.attributes.lamp_entity_id }}"
 
+- alias: Front Door Mailbox movement, send notification
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: sensor.front_door_mailbox
+      from: ""
+  action:
+    - service: script.send_notification_all
+      data_template:
+        message: "Movement detected on Front Door Mailbox"
+
 - alias: Update available, send notification
   initial_state: true
   trigger:
     - platform: state
       entity_id: updater.updater
   action:
-    service: script.send_notification
-    data_template:
-      message: "Home Assistant update available!"
+    - service: script.send_notification_pedro
+      data_template:
+        message: "Home Assistant update available!"
 
 - alias: Zigbee2mqtt Log Level
   initial_state: 'on'
