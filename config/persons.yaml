@@ -7,5 +7,5 @@
 - id: joana
   name: Joana
   device_trackers:
-    - device_tracker.joana_oneplus6
-    - device_tracker.joana_oneplus6_wifi
+    - device_tracker.joana_oneplus7
+    - device_tracker.joana_oneplus7_wifi

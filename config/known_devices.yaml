@@ -1,15 +1,3 @@
-pedro_oneplus7pro:
-  name: Pedro OnePlus 7 Pro GPS
-  hide_if_away: false
-  icon: mdi:cellphone-android
-  track: true
-
-joana_oneplus6:
-  name: Joana OnePlus 6 GPS
-  hide_if_away: false
-  icon: mdi:cellphone-android
-  track: true
-
 pedro_oneplus7pro_wifi:
   name: Pedro OnePlus 7 Pro WiFi
   hide_if_away: false
@@ -17,11 +5,11 @@ pedro_oneplus7pro_wifi:
   mac: !secret pedro_oneplus7pro_mac
   track: true
 
-joana_oneplus6_wifi:
-  name: Joana OnePlus 6 WiFi
+joana_oneplus7_wifi:
+  name: Joana OnePlus 7 WiFi
   hide_if_away: false
   icon: mdi:cellphone-android
-  mac: !secret joana_oneplus6_mac
+  mac: !secret joana_oneplus7_mac
   track: true
 
 pedro_dell_xps_15_9550:

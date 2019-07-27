@@ -5,7 +5,7 @@ include:
     - binary_sensor.back_door_state
     - binary_sensor.front_door_state
     - device_tracker.pedro_oneplus7pro
-    - device_tracker.joana_oneplus6
+    - device_tracker.joana_oneplus7
     - light.lamp_1
     - light.lamp_2
     - light.lamp_3

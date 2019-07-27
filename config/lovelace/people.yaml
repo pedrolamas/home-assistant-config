@@ -21,11 +21,11 @@ cards:
     entities:
       - entity: person.joana
         name: Location
-      - entity: device_tracker.joana_oneplus6
+      - entity: device_tracker.joana_oneplus7
         name: GPS
         icon: mdi:crosshairs-gps
-      - entity: device_tracker.joana_oneplus6_wifi
+      - entity: device_tracker.joana_oneplus7_wifi
         name: WiFi
         icon: mdi:wifi
-      - entity: sensor.joana_oneplus6_battery
+      - entity: sensor.joana_oneplus7_battery
         name: Battery
