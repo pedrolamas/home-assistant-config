@@ -36,6 +36,10 @@ system_health:
 
 #cloud:
 
+api:
+
+#ffmpeg:
+
 wake_on_lan:
 
 webhook:

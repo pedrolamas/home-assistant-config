@@ -7,6 +7,7 @@ include:
     - person.pedro
     - person.joana
     - sensor.front_door_mailbox
+    - sensor.smart_vibration_sensor
 
 exclude:
   domains:

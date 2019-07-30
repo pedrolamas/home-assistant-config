@@ -16,6 +16,7 @@ include:
     - sensor.master_bedroom_humidity
     - sensor.kids_bedroom_temperature
     - sensor.kids_bedroom_humidity
+    - sensor.smart_vibration_sensor
     - switch.living_room_outlet
     - switch.lower_floor_outlet
 
