@@ -25,6 +25,16 @@ send_notification_with_living_room_camera_snapshot:
         message: "{{ message }}"
         filename: "/config/www/snapshot.jpg"
 
+update_dynamic_dns:
+  sequence:
+    - service: rest_command.cloudflare_update
+      data_template:
+        api_token: !secret cloudflare_api_token
+        zone_id: !secret cloudflare_zone_id
+        dns_record_id: !secret cloudflare_dns_record_id
+        dns_record_name: !secret cloudflare_dns_record_name
+        ip_address: "{{ ip_address }}"
+
 turn_on_lg_smart_tv:
   sequence:
     - condition: state

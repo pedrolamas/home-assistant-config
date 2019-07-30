@@ -6,6 +6,7 @@ include:
     - binary_sensor.front_door_state
     - person.pedro
     - person.joana
+    - sensor.external_ip
     - sensor.front_door_mailbox
     - sensor.smart_vibration_sensor
 

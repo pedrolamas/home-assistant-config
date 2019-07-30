@@ -15,6 +15,10 @@
   name: Pacific Time Zone
   time_zone: PST8PDT
 
+- platform: dnsip
+  name: External IP
+  scan_interval: 90
+
 #- platform: metoffice
 #  api_key: !secret metoffice_api_key
 #  monitored_conditions:
