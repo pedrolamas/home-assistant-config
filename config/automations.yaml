@@ -89,7 +89,7 @@
       for:
         minutes: 5
   action:
-    - service: script.send_notification_pedro
+    - service: script.send_notification_all
       data_template:
         message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is still open!"
     - service: input_boolean.turn_on
