@@ -12,6 +12,14 @@ device_tracker.joana_oneplus7:
   friendly_name: Joana OnePlus 7 GPS
   icon: mdi:cellphone-android
 
+device_tracker.oneplus_7_pro_pedro:
+  friendly_name: Pedro OnePlus 7 Pro WiFi
+  icon: mdi:cellphone-android
+
+device_tracker.oneplus_7_joana:
+  friendly_name: Joana OnePlus 7 WiFi
+  icon: mdi:cellphone-android
+
 binary_sensor.back_door_state:
   friendly_name: Back Door
   lamp_entity_id: light.lamp_3

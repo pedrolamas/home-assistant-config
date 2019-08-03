@@ -82,7 +82,6 @@ person: !include persons.yaml
 zone: !include zones.yaml
 sensor: !include sensors.yaml
 binary_sensor: !include binary_sensors.yaml
-device_tracker: !include device_trackers.yaml
 media_player: !include media_players.yaml
 group: !include groups.yaml
 automation: !include automations.yaml
