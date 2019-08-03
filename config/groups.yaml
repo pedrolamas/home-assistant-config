@@ -8,21 +8,27 @@ living_room:
     - light.lamp_1
     - light.lamp_2
     - light.lamp_3
-    - switch.living_room_outlet
+    - media_player.lg_smart_tv
     - sensor.back_door_battery
     - sensor.back_door_link_quality
     - sensor.front_door_battery
     - sensor.front_door_link_quality
+    - sensor.front_door_mailbox
+    - sensor.front_door_mailbox_battery
+    - sensor.front_door_mailbox_link_quality
     - sensor.living_room_temperature
     - sensor.living_room_humidity
     - sensor.living_room_pressure
     - sensor.living_room_battery
-    - media_player.lg_smart_tv
+    - sensor.living_room_link_quality
+    - sensor.living_room_outlet_link_quality
+    - switch.living_room_outlet
 
 lower_floor:
   name: Lower Floor
   control: hidden
   entities:
+    - sensor.lower_floor_outlet_link_quality
     - switch.lower_floor_outlet
 
 master_bedroom:
@@ -34,6 +40,7 @@ master_bedroom:
     - sensor.master_bedroom_humidity
     - sensor.master_bedroom_pressure
     - sensor.master_bedroom_battery
+    - sensor.master_bedroom_link_quality
 
 kids_bedroom:
   name: Kids Bedroom
@@ -43,3 +50,4 @@ kids_bedroom:
     - sensor.kids_bedroom_humidity
     - sensor.kids_bedroom_pressure
     - sensor.kids_bedroom_battery
+    - sensor.kids_bedroom_link_quality

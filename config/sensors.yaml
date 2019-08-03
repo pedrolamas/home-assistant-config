@@ -204,7 +204,7 @@
   name: Front Door Mailbox
   state_topic: "zigbee2mqtt/FrontDoorMailbox"
   availability_topic: "zigbee2mqtt/bridge/state"
-  icon: "mdi:mailbox-up"
+  icon: mdi:mailbox-up
   value_template: >-
     {{ value_json.action }}
 - platform: mqtt
@@ -227,7 +227,6 @@
   name: Smart Vibration Sensor
   state_topic: "zigbee2mqtt/SmartVibrationSensor"
   availability_topic: "zigbee2mqtt/bridge/state"
-  icon: "mdi:mailbox-up"
   value_template: >-
     {{ value_json.action }}
 - platform: mqtt
@@ -250,7 +249,7 @@
   name: Smart Switch
   state_topic: "zigbee2mqtt/SmartSwitch"
   availability_topic: "zigbee2mqtt/bridge/state"
-  icon: "mdi:toggle-switch"
+  icon: mdi:toggle-switch
   value_template: >-
     {{ value_json.click }}
 - platform: "mqtt"
@@ -269,13 +268,29 @@
   value_template: >-
     {{ value_json.linkquality }}
 
+- platform: "mqtt"
+  name: Living Room Outlet Link Quality
+  state_topic: "zigbee2mqtt/LivingRoomOutlet"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "-"
+  value_template: >-
+    {{ value_json.linkquality }}
+
+- platform: "mqtt"
+  name: Lower Floor Outlet Link Quality
+  state_topic: "zigbee2mqtt/LowerFloorOutlet"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "-"
+  value_template: >-
+    {{ value_json.linkquality }}
+
 - platform: command_line
   name: CPU Temperature
   command: "cat /sys/class/thermal/thermal_zone0/temp"
   scan_interval: 150
   unit_of_measurement: "°C"
   value_template: >-
-    {{ value | multiply(0.001) }}
+    {{ value | multiply(0.001) | round(2) }}
 
 - platform: london_underground
   line:

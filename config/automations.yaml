@@ -191,7 +191,7 @@
       entity_id: sensor.smart_vibration_sensor
       from: ""
   action:
-    - service: script.send_notification_pedro
+    - service: script.send_notification_with_lower_floor_camera_snapshot
       data_template:
         message: "Movement detected on Smart Vibration Sensor"
 

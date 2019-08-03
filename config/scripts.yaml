@@ -25,6 +25,17 @@ send_notification_with_living_room_camera_snapshot:
         message: "{{ message }}"
         filename: "/config/www/snapshot.jpg"
 
+send_notification_with_lower_floor_camera_snapshot:
+  sequence:
+    - service: camera.snapshot
+      data:
+        entity_id: camera.lower_floor_camera
+        filename: "/config/www/snapshot2.jpg"
+    - service: script.send_notification_pedro
+      data_template:
+        message: "{{ message }}"
+        filename: "/config/www/snapshot2.jpg"
+
 update_dynamic_dns:
   sequence:
     - service: rest_command.cloudflare_update
