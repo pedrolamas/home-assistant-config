@@ -54,7 +54,7 @@ sensor.victoria:
   icon: mdi:subway-variant
 
 sensor.islington:
-  friendly_name: Islington polution
+  friendly_name: Air Polution
 
 sensor.external_ip:
   icon: mdi:wan

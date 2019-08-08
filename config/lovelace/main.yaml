@@ -98,6 +98,14 @@ cards:
     title: Weather
     entity: weather.dark_sky
 
+  - type: glance
+    title: Network
+    columns: 4
+    entities:
+      - entity: sensor.external_ip
+      - entity: sensor.zigbee2mqtt_bridge_state
+        name: Ziggee2mqtt
+
 #  - type: glance
 #    title: Others
 #    columns: 4
