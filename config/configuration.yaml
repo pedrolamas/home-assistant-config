@@ -95,3 +95,4 @@ input_boolean: !include input_boolean.yaml
 camera: !include cameras.yaml
 alexa: !include alexa.yaml
 rest_command: !include rest_command.yaml
+unifi: !include unifi.yaml

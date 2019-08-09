@@ -1,0 +1,4 @@
+controllers:
+  - host: !secret unifi_host
+    site: !secret unifi_site
+    ssid_filter: !secret unifi_ssid_filter
