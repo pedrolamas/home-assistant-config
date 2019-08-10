@@ -9,6 +9,8 @@ include:
     - sensor.external_ip
     - sensor.front_door_mailbox
     - sensor.smart_vibration_sensor
+    - switch.living_room_smart_plug
+    - switch.lower_floor_smart_plug
 
 exclude:
   domains:
@@ -23,7 +25,6 @@ exclude:
     - media_player
     - script
     - sun
-    - switch
     - timer
     - updater
     - weather

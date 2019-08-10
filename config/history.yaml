@@ -17,8 +17,8 @@ include:
     - sensor.kids_bedroom_temperature
     - sensor.kids_bedroom_humidity
     - sensor.smart_vibration_sensor
-    - switch.living_room_outlet
-    - switch.lower_floor_outlet
+    - switch.living_room_smart_plug
+    - switch.lower_floor_smart_plug
 
 exclude:
   domains:

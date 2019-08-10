@@ -28,8 +28,8 @@ cards:
           navigation_path: /lovelace/ambient
       - entity: camera.living_room_camera
         name: Camera
-      - entity: switch.living_room_outlet
-        name: Outlet
+      - entity: switch.living_room_smart_plug
+        name: Smart Plug
         tap_action:
           action: toggle
       - entity: binary_sensor.front_door_state
@@ -45,8 +45,8 @@ cards:
     entities:
       - entity: camera.lower_floor_camera
         name: Camera
-      - entity: switch.lower_floor_outlet
-        name: Outlet
+      - entity: switch.lower_floor_smart_plug
+        name: Smart Plug
         tap_action:
           action: toggle
 

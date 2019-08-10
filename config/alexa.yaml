@@ -12,8 +12,8 @@ smart_home:
       - script.watch_bbc_one_on_lg_smart_tv
       - script.watch_bbc_news_on_lg_smart_tv
       - script.watch_channel_4_on_lg_smart_tv
-      - switch.living_room_outlet
-      - switch.lower_floor_outlet
+      - switch.living_room_smart_plug
+      - switch.lower_floor_smart_plug
     exclude_domains:
       - automation
       - binary_sensor
@@ -59,9 +59,9 @@ smart_home:
       name: BBC News
     script.watch_channel_4_on_lg_smart_tv:
       name: Channel 4
-    switch.living_room_outlet:
-      name: Living Room Outlet
+    switch.living_room_smart_plug:
+      name: Smart Plug 1
       display_categories: SMARTPLUG
-    switch.lower_floor_outlet:
-      name: Lower Floor Outlet
+    switch.lower_floor_smart_plug:
+      name: Smart Plug 2
       display_categories: SMARTPLUG

@@ -21,15 +21,15 @@ living_room:
     - sensor.living_room_pressure
     - sensor.living_room_battery
     - sensor.living_room_link_quality
-    - sensor.living_room_outlet_link_quality
-    - switch.living_room_outlet
+    - sensor.living_room_smart_plug_link_quality
+    - switch.living_room_smart_plug
 
 lower_floor:
   name: Lower Floor
   control: hidden
   entities:
-    - sensor.lower_floor_outlet_link_quality
-    - switch.lower_floor_outlet
+    - sensor.lower_floor_smart_plug_link_quality
+    - switch.lower_floor_smart_plug
 
 master_bedroom:
   name: Master Bedroom

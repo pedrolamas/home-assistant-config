@@ -269,16 +269,16 @@
     {{ value_json.linkquality }}
 
 - platform: "mqtt"
-  name: Living Room Outlet Link Quality
-  state_topic: "zigbee2mqtt/LivingRoomOutlet"
+  name: Living Room Smart Plug Link Quality
+  state_topic: "zigbee2mqtt/LivingRoomSmartPlug"
   availability_topic: "zigbee2mqtt/bridge/state"
   unit_of_measurement: "-"
   value_template: >-
     {{ value_json.linkquality }}
 
 - platform: "mqtt"
-  name: Lower Floor Outlet Link Quality
-  state_topic: "zigbee2mqtt/LowerFloorOutlet"
+  name: Lower Floor Smart Plug Link Quality
+  state_topic: "zigbee2mqtt/LowerFloorSmartPlug"
   availability_topic: "zigbee2mqtt/bridge/state"
   unit_of_measurement: "-"
   value_template: >-
