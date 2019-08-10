@@ -52,7 +52,7 @@
       data_template:
         message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is offline."
 
-- alias: External IP changed, send notification
+- alias: External IP changed, update DNS and send notification
   trigger:
     - platform: state
       entity_id: sensor.external_ip
@@ -61,13 +61,14 @@
       value_template: >-
         {{ trigger.to_state.state != 'unknown' }}
   action:
-    - service: hangouts.reconnect
-    - service: script.send_notification_pedro
-      data_template:
-        message: "External IP address changed to {{ trigger.to_state.state }}"
     - service: script.update_dynamic_dns
       data_template:
         ip_address: "{{ trigger.to_state.state }}"
+    - service: hangouts.reconnect
+    - delay: 2
+    - service: script.send_notification_pedro
+      data_template:
+        message: "External IP address changed to {{ trigger.to_state.state }}"
 
 - alias: CPU temperature above 42, send notification
   trigger:
