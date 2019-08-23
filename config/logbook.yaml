@@ -3,6 +3,7 @@ include:
     - device_tracker
   entities:
     - binary_sensor.back_door_state
+    - binary_sensor.external_ip_detected
     - binary_sensor.front_door_state
     - person.pedro
     - person.joana

@@ -7,6 +7,7 @@ include:
     - media_player
   entities:
     - binary_sensor.back_door_state
+    - binary_sensor.external_ip_detected
     - binary_sensor.front_door_state
     - device_tracker.oneplus_7_pro_pedro
     - device_tracker.oneplus_7_joana
