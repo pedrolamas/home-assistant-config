@@ -103,6 +103,7 @@ cards:
     columns: 4
     entities:
       - entity: sensor.external_ip
+      - entity: sensor.reported_ip
       - entity: sensor.zigbee2mqtt_bridge_state
         name: Ziggee2mqtt
 

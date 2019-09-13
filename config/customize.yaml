@@ -58,3 +58,6 @@ sensor.islington:
 
 sensor.external_ip:
   icon: mdi:wan
+
+sensor.reported_ip:
+  icon: mdi:wan

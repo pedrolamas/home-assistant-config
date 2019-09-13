@@ -15,6 +15,7 @@ include:
     - person.joana
     - sensor.cpu_temperature
     - sensor.external_ip
+    - sensor.reported_ip
     - sensor.front_door_mailbox
     - sensor.living_room_temperature
     - sensor.living_room_humidity

@@ -17,7 +17,13 @@
 
 - platform: dnsip
   name: External IP
-  scan_interval: 90
+  scan_interval: 30
+
+- platform: dnsip
+  name: Reported IP
+  hostname: !secret cloudflare_dns_record_name
+  resolver: 1.1.1.1
+  scan_interval: 30
 
 #- platform: metoffice
 #  api_key: !secret metoffice_api_key

@@ -8,6 +8,7 @@ include:
     - person.pedro
     - person.joana
     - sensor.external_ip
+    - sensor.reported_ip
     - sensor.front_door_mailbox
     - sensor.smart_vibration_sensor
     - switch.living_room_smart_plug

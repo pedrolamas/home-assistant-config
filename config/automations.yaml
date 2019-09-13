@@ -53,6 +53,7 @@
         message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is offline."
 
 - alias: External IP changed, update DNS and send notification
+  initial_state: true
   trigger:
     - platform: state
       entity_id: sensor.external_ip
