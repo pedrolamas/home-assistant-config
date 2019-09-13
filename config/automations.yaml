@@ -60,7 +60,7 @@
   condition:
     - condition: template
       value_template: >-
-        {{ trigger.to_state.state != 'unknown' }}
+        {{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' }}
   action:
     - service: script.update_dynamic_dns
       data_template:
@@ -185,6 +185,10 @@
     - platform: state
       entity_id: sensor.front_door_mailbox
       from: ""
+  condition:
+    - condition: template
+      value_template: >-
+        {{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' }}
   action:
     - service: script.send_notification_all
       data_template:
@@ -196,6 +200,10 @@
     - platform: state
       entity_id: sensor.smart_vibration_sensor
       from: ""
+  condition:
+    - condition: template
+      value_template: >-
+        {{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' }}
   action:
     - service: script.send_notification_with_lower_floor_camera_snapshot
       data_template:
