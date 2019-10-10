@@ -117,12 +117,12 @@
       value_template: >-
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') and state_attr('media_player.lg_smart_tv', 'media_title') in ['BBC NEWS', 'BBC NEWS HD'] }}
 
-    lg_smart_tv_is_watching_sky_news:
-      friendly_name: Sky News
+    lg_smart_tv_is_watching_cbeebies:
+      friendly_name: CBeebies
       icon_template: mdi:television-classic
       entity_id: media_player.lg_smart_tv
       value_template: >-
-        {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') and state_attr('media_player.lg_smart_tv', 'media_title') in ['Sky News', 'Sky News HD'] }}
+        {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') and state_attr('media_player.lg_smart_tv', 'media_title') in ['CBeebies', 'CBeebies HD'] }}
 
     external_ip_detected:
       friendly_name: External IP detected

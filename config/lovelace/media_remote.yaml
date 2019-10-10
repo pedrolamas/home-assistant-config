@@ -120,6 +120,22 @@ cards:
             entity_id: media_player.lg_smart_tv
             media_content_id: "Channel 4"
             media_content_type: "channel"
+      - type: entity-button
+        entity: binary_sensor.lg_smart_tv_is_watching_cbeebies
+        tap_action:
+          action: call-service
+          service: media_player.play_media
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            media_content_id: "CBeebies HD"
+            media_content_type: "channel"
+        hold_action:
+          action: call-service
+          service: media_player.play_media
+          service_data:
+            entity_id: media_player.lg_smart_tv
+            media_content_id: "CBeebies"
+            media_content_type: "channel"
 
   - type: horizontal-stack
     cards:
