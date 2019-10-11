@@ -37,9 +37,6 @@
 #    - visibility
 #    - visibility_distance
 
-- platform: pi_hole
-  host: !secret pi_hole_host
-
 #- platform: google_travel_time
 #  name: Pedro to Home
 #  api_key: !secret google_travel_time_api_key
@@ -47,7 +44,7 @@
 #  destination: zone.home
 #  travel_mode: transit
 
-#- platform: moon
+- platform: moon
 
 - platform: mqtt
   name: Zigbee2mqtt Bridge state
