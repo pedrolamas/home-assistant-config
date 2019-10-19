@@ -1,4 +1,7 @@
 smart_home:
+  endpoint: https://api.eu.amazonalexa.com/v3/events
+  client_id: !secret alexa_client_id
+  client_secret: !secret alexa_client_secret
   filter:
     include_entities:
       - binary_sensor.back_door_state
