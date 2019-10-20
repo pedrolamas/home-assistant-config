@@ -109,6 +109,20 @@ watch_bbc_news_on_lg_smart_tv:
         media_content_id: "BBC NEWS HD"
         media_content_type: "channel"
 
+watch_cbeebies_on_lg_smart_tv:
+  sequence:
+    - service: script.turn_on_lg_smart_tv
+    - wait_template: >-
+        {{ not is_state("media_player.lg_smart_tv", "off") }}
+      timeout:
+        seconds: 15
+      continue_on_timeout: "true"
+    - service: media_player.play_media
+      data_template:
+        entity_id: media_player.lg_smart_tv
+        media_content_id: "CBeebies HD"
+        media_content_type: "channel"
+
 watch_channel_4_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
