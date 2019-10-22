@@ -36,15 +36,18 @@ send_notification_with_lower_floor_camera_snapshot:
         message: "{{ message }}"
         filename: "/config/www/snapshot2.jpg"
 
-update_dynamic_dns:
+update_reported_ip:
   sequence:
     - service: rest_command.cloudflare_update
       data_template:
-        api_token: !secret cloudflare_api_token
         zone_id: !secret cloudflare_zone_id
         dns_record_id: !secret cloudflare_dns_record_id
         dns_record_name: !secret cloudflare_dns_record_name
-        ip_address: "{{ ip_address }}"
+        ip_address: "{{ states('sensor.external_ip') }}"
+    - service: hangouts.reconnect
+    - service: script.send_notification_pedro
+      data_template:
+        message: "External IP address changed to {{ states('sensor.external_ip') }}"
 
 turn_on_lg_smart_tv:
   sequence:

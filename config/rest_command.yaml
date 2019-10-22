@@ -2,7 +2,7 @@ cloudflare_update:
   url: "https://api.cloudflare.com/client/v4/zones/{{ zone_id }}/dns_records/{{ dns_record_id }}"
   method: PUT
   headers:
-    authorization: "Bearer {{ api_token }}"
+    authorization: !secret cloudflare_authorization_header
   content_type: "application/json"
   payload: '{"type": "A", "name": "{{ dns_record_name }}", "content": "{{ ip_address }}"}'
   verify_ssl: true
