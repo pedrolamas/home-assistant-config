@@ -1,4 +1,4 @@
-# Home Assistant Configuration
+# Home Assistant Configuration ![CI build status](https://github.com/PedroLamas/home-assistant-config/workflows/CI/badge.svg)
 
 **My personal Home Assistant configuration!**
 
