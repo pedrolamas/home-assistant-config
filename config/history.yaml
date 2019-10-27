@@ -4,12 +4,16 @@ include:
   entities:
     - binary_sensor.back_door_state
     - binary_sensor.front_door_state
-    - device_tracker.oneplus_7_pro_pedro
-    - device_tracker.oneplus_7_joana
+    - binary_sensor.living_room_camera_motion
+    - binary_sensor.living_room_camera_pir_alarm
+    - binary_sensor.lower_floor_camera_motion
+    - binary_sensor.lower_floor_camera_pir_alarm
     - light.lamp_1
     - light.lamp_2
     - light.lamp_3
     - light.lamp_4
+    - person.pedro
+    - person.joana
     - sensor.living_room_temperature
     - sensor.living_room_humidity
     - sensor.master_bedroom_temperature
@@ -19,22 +23,3 @@ include:
     - sensor.smart_vibration_sensor
     - switch.living_room_smart_plug
     - switch.lower_floor_smart_plug
-
-exclude:
-  domains:
-    - automation
-    - camera
-    - group
-    - hangouts
-    - input_boolean
-    - input_number
-    - input_select
-    - person
-    - script
-    - sun
-    - timer
-    - updater
-    - weather
-    - weblink
-    - zigbee2mqtt_networkmap
-    - zone

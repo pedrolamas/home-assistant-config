@@ -1,6 +1,4 @@
 include:
-  domains:
-    - device_tracker
   entities:
     - binary_sensor.back_door_state
     - binary_sensor.external_ip_detected
@@ -10,26 +8,5 @@ include:
     - sensor.external_ip
     - sensor.reported_ip
     - sensor.front_door_mailbox
-    - sensor.smart_vibration_sensor
     - switch.living_room_smart_plug
     - switch.lower_floor_smart_plug
-
-exclude:
-  domains:
-    - automation
-    - camera
-    - group
-    - hangouts
-    - input_boolean
-    - input_number
-    - input_select
-    - light
-    - media_player
-    - script
-    - sun
-    - timer
-    - updater
-    - weather
-    - weblink
-    - zigbee2mqtt_networkmap
-    - zone
