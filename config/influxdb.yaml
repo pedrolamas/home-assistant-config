@@ -1,0 +1,1 @@
+host: !secret influxdb_host

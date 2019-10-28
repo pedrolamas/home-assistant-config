@@ -97,3 +97,4 @@ alexa: !include alexa.yaml
 rest_command: !include rest_command.yaml
 unifi: !include unifi.yaml
 pi_hole: !include pi_hole.yaml
+influxdb: !include influxdb.yaml
