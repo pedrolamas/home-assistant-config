@@ -6,7 +6,6 @@ cards:
     title: Living Room
     cards:
       - type: horizontal-stack
-        title: Living Room
         cards:
           - type: sensor
             name: Temperature
@@ -27,7 +26,6 @@ cards:
     title: Master Bedroom
     cards:
       - type: horizontal-stack
-        title: Master Bedroom
         cards:
           - type: sensor
             name: Temperature
@@ -48,7 +46,6 @@ cards:
     title: Kids Bedroom
     cards:
       - type: horizontal-stack
-        title: Kids Bedroom
         cards:
           - type: sensor
             name: Temperature
