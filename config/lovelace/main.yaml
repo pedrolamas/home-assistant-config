@@ -106,6 +106,10 @@ cards:
       - entity: sensor.reported_ip
       - entity: sensor.zigbee2mqtt_bridge_state
         name: Ziggee2mqtt
+      - entity: binary_sensor.pi_hole_paused
+        tap_action:
+          action: call-service
+          service: script.pause_pi_hole
 
 #  - type: glance
 #    title: Others

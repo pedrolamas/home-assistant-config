@@ -148,3 +148,9 @@
         {% endif %}
       value_template: >-
         {{ not(is_state('sensor.external_ip', 'unknown')) }}
+
+    pi_hole_paused:
+      friendly_name: Pause Pi-hole
+      icon_template: mdi:pi-hole
+      value_template: >-
+        {{ is_state('script.pause_pi_hole', 'on') }}
