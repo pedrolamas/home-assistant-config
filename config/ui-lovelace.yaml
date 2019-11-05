@@ -9,5 +9,6 @@ views:
   - !include lovelace/lights.yaml
   - !include lovelace/ambient.yaml
   - !include lovelace/media.yaml
+  - !include lovelace/plugs.yaml
   - !include lovelace/people.yaml
   - !include lovelace/map.yaml

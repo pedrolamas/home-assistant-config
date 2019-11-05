@@ -1,20 +1,30 @@
 - platform: mqtt
   name: Living Room Smart Plug
-  state_topic: "zigbee2mqtt/LivingRoomSmartPlug"
+  state_topic: "zigbee2mqtt/SmartPlug1"
   availability_topic: "zigbee2mqtt/bridge/state"
   payload_off: "OFF"
   payload_on: "ON"
-  command_topic: "zigbee2mqtt/LivingRoomSmartPlug/set"
+  command_topic: "zigbee2mqtt/SmartPlug1/set"
   value_template: >-
     {{ value_json.state }}
 
 - platform: mqtt
   name: Lower Floor Smart Plug
-  state_topic: "zigbee2mqtt/LowerFloorSmartPlug"
+  state_topic: "zigbee2mqtt/SmartPlug2"
   availability_topic: "zigbee2mqtt/bridge/state"
   payload_off: "OFF"
   payload_on: "ON"
-  command_topic: "zigbee2mqtt/LowerFloorSmartPlug/set"
+  command_topic: "zigbee2mqtt/SmartPlug2/set"
+  value_template: >-
+    {{ value_json.state }}
+
+- platform: mqtt
+  name: Smart Plug 3
+  state_topic: "zigbee2mqtt/SmartPlug3"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  payload_off: "OFF"
+  payload_on: "ON"
+  command_topic: "zigbee2mqtt/SmartPlug3/set"
   value_template: >-
     {{ value_json.state }}
 

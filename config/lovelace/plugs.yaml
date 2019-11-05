@@ -1,0 +1,11 @@
+title: Plugs
+path: plugs
+icon: mdi:flash
+cards:
+  - type: entities
+    title: Smart Plugs
+    show_header_toggle: false
+    entities:
+      - entity: switch.living_room_smart_plug
+      - entity: switch.lower_floor_smart_plug
+      - entity: switch.smart_plug_3

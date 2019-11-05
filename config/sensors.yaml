@@ -273,7 +273,7 @@
 
 - platform: "mqtt"
   name: Living Room Smart Plug Link Quality
-  state_topic: "zigbee2mqtt/LivingRoomSmartPlug"
+  state_topic: "zigbee2mqtt/SmartPlug1"
   availability_topic: "zigbee2mqtt/bridge/state"
   unit_of_measurement: "-"
   value_template: >-
@@ -281,11 +281,28 @@
 
 - platform: "mqtt"
   name: Lower Floor Smart Plug Link Quality
-  state_topic: "zigbee2mqtt/LowerFloorSmartPlug"
+  state_topic: "zigbee2mqtt/SmartPlug2"
   availability_topic: "zigbee2mqtt/bridge/state"
   unit_of_measurement: "-"
   value_template: >-
     {{ value_json.linkquality }}
+
+- platform: "mqtt"
+  name: Smart Plug 3 Link Quality
+  state_topic: "zigbee2mqtt/SmartPlug3"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "-"
+  value_template: >-
+    {{ value_json.linkquality }}
+
+- platform: "mqtt"
+  name: Smart Plug 3 Power
+  device_class: "power"
+  state_topic: "zigbee2mqtt/SmartPlug3"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "W"
+  value_template: >-
+    {{ value_json.power }}
 
 - platform: command_line
   name: CPU Temperature
