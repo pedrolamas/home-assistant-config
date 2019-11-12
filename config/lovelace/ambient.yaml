@@ -23,6 +23,26 @@ cards:
           - sensor.living_room_link_quality
 
   - type: custom:vertical-stack-in-card
+    title: Lower Floor
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            name: Temperature
+            entity: sensor.lower_floor_temperature
+            graph: line
+          - type: sensor
+            name: Humidity
+            entity: sensor.lower_floor_humidity
+            graph: line
+      - type: glance
+        show_name: false
+        entities:
+          - sensor.lower_floor_pressure
+          - sensor.lower_floor_battery
+          - sensor.lower_floor_link_quality
+
+  - type: custom:vertical-stack-in-card
     title: Master Bedroom
     cards:
       - type: horizontal-stack

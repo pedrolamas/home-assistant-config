@@ -43,6 +43,16 @@ cards:
     title: Lower Floor
     columns: 4
     entities:
+      - entity: sensor.lower_floor_temperature
+        name: Temperature
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/ambient
+      - entity: sensor.lower_floor_humidity
+        name: Humidity
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/ambient
       - entity: camera.lower_floor_camera
         name: Camera
       - entity: switch.lower_floor_smart_plug

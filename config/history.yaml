@@ -12,6 +12,8 @@ include:
     - person.joana
     - sensor.living_room_temperature
     - sensor.living_room_humidity
+    - sensor.lower_floor_temperature
+    - sensor.lower_floor_humidity
     - sensor.master_bedroom_temperature
     - sensor.master_bedroom_humidity
     - sensor.kids_bedroom_temperature
@@ -19,3 +21,4 @@ include:
     - sensor.smart_vibration_sensor
     - switch.living_room_smart_plug
     - switch.lower_floor_smart_plug
+    - switch.smart_plug_3

@@ -92,6 +92,46 @@
     {{ value_json.linkquality }}
 
 - platform: mqtt
+  name: Lower Floor Temperature
+  device_class: temperature
+  state_topic: "zigbee2mqtt/LowerFloorClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "°C"
+  value_template: >-
+    {{ value_json.temperature }}
+- platform: mqtt
+  name: Lower Floor Humidity
+  device_class: humidity
+  state_topic: "zigbee2mqtt/LowerFloorClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value_json.humidity }}
+- platform: mqtt
+  name: Lower Floor Pressure
+  device_class: pressure
+  state_topic: "zigbee2mqtt/LowerFloorClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "hPa"
+  value_template: >-
+    {{ value_json.pressure }}
+- platform: mqtt
+  name: Lower Floor Battery
+  device_class: battery
+  state_topic: "zigbee2mqtt/LowerFloorClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value_json.battery }}
+- platform: mqtt
+  name: Lower Floor Link Quality
+  state_topic: "zigbee2mqtt/LowerFloorClimate"
+  availability_topic: "zigbee2mqtt/bridge/state"
+  unit_of_measurement: "-"
+  value_template: >-
+    {{ value_json.linkquality }}
+
+- platform: mqtt
   name: Master Bedroom Temperature
   device_class: temperature
   state_topic: "zigbee2mqtt/MasterBedroomClimate"

@@ -10,3 +10,4 @@ include:
     - sensor.front_door_mailbox
     - switch.living_room_smart_plug
     - switch.lower_floor_smart_plug
+    - switch.smart_plug_3
