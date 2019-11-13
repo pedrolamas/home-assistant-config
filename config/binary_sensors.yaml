@@ -1,26 +1,6 @@
 #- platform: workday
 #  country: UK
 
-- platform: mqtt
-  name: BackDoor Contact
-  device_class: door
-  state_topic: "zigbee2mqtt/BackDoor"
-  availability_topic: "zigbee2mqtt/bridge/state"
-  payload_on: false
-  payload_off: true
-  value_template: >-
-    {{ value_json.contact }}
-
-- platform: mqtt
-  name: FrontDoor Contact
-  device_class: door
-  state_topic: "zigbee2mqtt/FrontDoor"
-  availability_topic: "zigbee2mqtt/bridge/state"
-  payload_on: false
-  payload_off: true
-  value_template: >-
-    {{ value_json.contact }}
-
 - platform: ping
   name: UniFi Cloud Key Gen2 Plus
   host: !secret unifi_cloud_key_host

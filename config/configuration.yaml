@@ -54,6 +54,7 @@ panel_iframe:
 
 mqtt:
   broker: !secret mqtt_broker
+  discovery: true
 #  username: !secret mqtt_username
 #  password: !secret mqtt_password
   birth_message:

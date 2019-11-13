@@ -61,3 +61,12 @@ sensor.external_ip:
 
 sensor.reported_ip:
   icon: mdi:wan
+
+switch.smartplug1_switch:
+  friendly_name: Living Room Smart Plug
+
+switch.smartplug2_switch:
+  friendly_name: Lower Floor Smart Plug
+
+switch.smartplug3_switch:
+  friendly_name: Smart Plug 3
