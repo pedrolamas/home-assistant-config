@@ -2,7 +2,7 @@
 #  country: UK
 
 - platform: mqtt
-  name: Back Door State
+  name: BackDoor Contact
   device_class: door
   state_topic: "zigbee2mqtt/BackDoor"
   availability_topic: "zigbee2mqtt/bridge/state"
@@ -12,7 +12,7 @@
     {{ value_json.contact }}
 
 - platform: mqtt
-  name: Front Door State
+  name: FrontDoor Contact
   device_class: door
   state_topic: "zigbee2mqtt/FrontDoor"
   availability_topic: "zigbee2mqtt/bridge/state"

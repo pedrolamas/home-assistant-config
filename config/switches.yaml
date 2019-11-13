@@ -1,5 +1,5 @@
 - platform: mqtt
-  name: Living Room Smart Plug
+  name: SmartPlug1 Switch
   state_topic: "zigbee2mqtt/SmartPlug1"
   availability_topic: "zigbee2mqtt/bridge/state"
   payload_off: "OFF"
@@ -9,7 +9,7 @@
     {{ value_json.state }}
 
 - platform: mqtt
-  name: Lower Floor Smart Plug
+  name: SmartPlug2 Switch
   state_topic: "zigbee2mqtt/SmartPlug2"
   availability_topic: "zigbee2mqtt/bridge/state"
   payload_off: "OFF"
@@ -19,7 +19,7 @@
     {{ value_json.state }}
 
 - platform: mqtt
-  name: Smart Plug 3
+  name: SmartPlug3 Switch
   state_topic: "zigbee2mqtt/SmartPlug3"
   availability_topic: "zigbee2mqtt/bridge/state"
   payload_off: "OFF"

@@ -6,9 +6,9 @@ include:
     - light
     - media_player
   entities:
-    - binary_sensor.back_door_state
+    - binary_sensor.backdoor_contact
     - binary_sensor.external_ip_detected
-    - binary_sensor.front_door_state
+    - binary_sensor.frontdoor_contact
     - device_tracker.oneplus_7_pro_pedro
     - device_tracker.oneplus_7_joana
     - person.pedro
@@ -16,15 +16,15 @@ include:
     - sensor.cpu_temperature
     - sensor.external_ip
     - sensor.reported_ip
-    - sensor.front_door_mailbox
-    - sensor.living_room_temperature
-    - sensor.living_room_humidity
-    - sensor.lower_floor_temperature
-    - sensor.lower_floor_humidity
-    - sensor.master_bedroom_temperature
-    - sensor.master_bedroom_humidity
-    - sensor.kids_bedroom_temperature
-    - sensor.kids_bedroom_humidity
-    - switch.living_room_smart_plug
-    - switch.lower_floor_smart_plug
-    - switch.smart_plug_3
+    - sensor.frontdoormailbox_action
+    - sensor.livingroomclimate_temperature
+    - sensor.livingroomclimate_humidity
+    - sensor.lowerfloorclimate_temperature
+    - sensor.lowerfloorclimate_humidity
+    - sensor.masterbedroomclimate_temperature
+    - sensor.masterbedroomclimate_humidity
+    - sensor.kidsbedroomclimate_temperature
+    - sensor.kidsbedroomclimate_humidity
+    - switch.smartplug1_switch
+    - switch.smartplug2_switch
+    - switch.smartplug3_switch

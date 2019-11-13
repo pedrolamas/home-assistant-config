@@ -13,13 +13,13 @@
   trigger:
     - platform: numeric_state
       entity_id:
-        - sensor.back_door_battery
-        - sensor.front_door_battery
-        - sensor.front_door_mailbox_battery
-        - sensor.living_room_battery
-        - sensor.kids_bedroom_battery
-        - sensor.master_bedroom_battery
-        - sensor.smart_vibration_sensor_battery
+        - sensor.backdoor_battery
+        - sensor.frontdoor_battery
+        - sensor.frontdoormailbox_battery
+        - sensor.livingroomclimate_battery
+        - sensor.kidsbedroomclimate_battery
+        - sensor.masterbedroomclimate_battery
+        - sensor.smartvibrationsensor_battery
       below: 20
   action:
     - service: persistent_notification.create
@@ -83,8 +83,8 @@
   trigger:
     - platform: state
       entity_id:
-        - binary_sensor.back_door_state
-        - binary_sensor.front_door_state
+        - binary_sensor.backdoor_contact
+        - binary_sensor.frontdoor_contact
       from: "off"
       to: "on"
   action:
@@ -97,8 +97,8 @@
   trigger:
     - platform: state
       entity_id:
-        - binary_sensor.back_door_state
-        - binary_sensor.front_door_state
+        - binary_sensor.backdoor_contact
+        - binary_sensor.frontdoor_contact
       from: "off"
       to: "on"
       for:
@@ -116,8 +116,8 @@
   trigger:
     - platform: state
       entity_id:
-        - binary_sensor.back_door_state
-        - binary_sensor.front_door_state
+        - binary_sensor.backdoor_contact
+        - binary_sensor.frontdoor_contact
       from: "off"
       to: "on"
   condition:
@@ -137,8 +137,8 @@
   trigger:
     - platform: state
       entity_id:
-        - binary_sensor.back_door_state
-        - binary_sensor.front_door_state
+        - binary_sensor.backdoor_contact
+        - binary_sensor.frontdoor_contact
       to: "off"
   condition:
     - condition: template
@@ -157,8 +157,8 @@
   trigger:
     - platform: state
       entity_id:
-        - binary_sensor.back_door_state
-        - binary_sensor.front_door_state
+        - binary_sensor.backdoor_contact
+        - binary_sensor.frontdoor_contact
       to: "off"
       for:
         seconds: 30
@@ -178,7 +178,7 @@
   initial_state: true
   trigger:
     - platform: state
-      entity_id: sensor.front_door_mailbox
+      entity_id: sensor.frontdoormailbox_action
       from: ""
   condition:
     - condition: template

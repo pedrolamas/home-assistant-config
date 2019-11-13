@@ -9,18 +9,18 @@ cards:
         cards:
           - type: sensor
             name: Temperature
-            entity: sensor.living_room_temperature
+            entity: sensor.livingroomclimate_temperature
             graph: line
           - type: sensor
             name: Humidity
-            entity: sensor.living_room_humidity
+            entity: sensor.livingroomclimate_humidity
             graph: line
       - type: glance
         show_name: false
         entities:
-          - sensor.living_room_pressure
-          - sensor.living_room_battery
-          - sensor.living_room_link_quality
+          - sensor.livingroomclimate_pressure
+          - sensor.livingroomclimate_battery
+          - sensor.livingroomclimate_linkquality
 
   - type: custom:vertical-stack-in-card
     title: Lower Floor
@@ -29,18 +29,18 @@ cards:
         cards:
           - type: sensor
             name: Temperature
-            entity: sensor.lower_floor_temperature
+            entity: sensor.lowerfloorclimate_temperature
             graph: line
           - type: sensor
             name: Humidity
-            entity: sensor.lower_floor_humidity
+            entity: sensor.lowerfloorclimate_humidity
             graph: line
       - type: glance
         show_name: false
         entities:
-          - sensor.lower_floor_pressure
-          - sensor.lower_floor_battery
-          - sensor.lower_floor_link_quality
+          - sensor.lowerfloorclimate_pressure
+          - sensor.lowerfloorclimate_battery
+          - sensor.lowerfloorclimate_linkquality
 
   - type: custom:vertical-stack-in-card
     title: Master Bedroom
@@ -49,18 +49,18 @@ cards:
         cards:
           - type: sensor
             name: Temperature
-            entity: sensor.master_bedroom_temperature
+            entity: sensor.masterbedroomclimate_temperature
             graph: line
           - type: sensor
             name: Humidity
-            entity: sensor.master_bedroom_humidity
+            entity: sensor.masterbedroomclimate_humidity
             graph: line
       - type: glance
         show_name: false
         entities:
-          - sensor.master_bedroom_pressure
-          - sensor.master_bedroom_battery
-          - sensor.master_bedroom_link_quality
+          - sensor.masterbedroomclimate_pressure
+          - sensor.masterbedroomclimate_battery
+          - sensor.masterbedroomclimate_linkquality
 
   - type: custom:vertical-stack-in-card
     title: Kids Bedroom
@@ -69,15 +69,15 @@ cards:
         cards:
           - type: sensor
             name: Temperature
-            entity: sensor.kids_bedroom_temperature
+            entity: sensor.kidsbedroomclimate_temperature
             graph: line
           - type: sensor
             name: Humidity
-            entity: sensor.kids_bedroom_humidity
+            entity: sensor.kidsbedroomclimate_humidity
             graph: line
       - type: glance
         show_name: false
         entities:
-          - sensor.kids_bedroom_pressure
-          - sensor.kids_bedroom_battery
-          - sensor.kids_bedroom_link_quality
+          - sensor.kidsbedroomclimate_pressure
+          - sensor.kidsbedroomclimate_battery
+          - sensor.kidsbedroomclimate_linkquality

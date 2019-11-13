@@ -2,52 +2,52 @@ living_room:
   name: Living Room
   control: hidden
   entities:
-    - binary_sensor.back_door_state
-    - binary_sensor.front_door_state
+    - binary_sensor.backdoor_contact
+    - binary_sensor.frontdoor_contact
     - light.living_room
     - light.lamp_1
     - light.lamp_2
     - light.lamp_3
     - media_player.lg_smart_tv
-    - sensor.back_door_battery
-    - sensor.back_door_link_quality
-    - sensor.front_door_battery
-    - sensor.front_door_link_quality
-    - sensor.front_door_mailbox
-    - sensor.front_door_mailbox_battery
-    - sensor.front_door_mailbox_link_quality
-    - sensor.living_room_temperature
-    - sensor.living_room_humidity
-    - sensor.living_room_pressure
-    - sensor.living_room_battery
-    - sensor.living_room_link_quality
-    - sensor.living_room_smart_plug_link_quality
-    - switch.living_room_smart_plug
+    - sensor.backdoor_battery
+    - sensor.backdoor_linkquality
+    - sensor.frontdoor_battery
+    - sensor.frontdoor_linkquality
+    - sensor.frontdoormailbox_action
+    - sensor.frontdoormailbox_battery
+    - sensor.frontdoormailbox_linkquality
+    - sensor.livingroomclimate_temperature
+    - sensor.livingroomclimate_humidity
+    - sensor.livingroomclimate_pressure
+    - sensor.livingroomclimate_battery
+    - sensor.livingroomclimate_linkquality
+    - switch.smartplug1
+    - sensor.smartplug1_linkquality
 
 lower_floor:
   name: Lower Floor
   control: hidden
   entities:
-    - sensor.lower_floor_smart_plug_link_quality
-    - switch.lower_floor_smart_plug
+    - switch.smartplug2
+    - sensor.smartplug2_linkquality
 
 master_bedroom:
   name: Master Bedroom
   control: hidden
   entities:
     - light.master_bedroom
-    - sensor.master_bedroom_temperature
-    - sensor.master_bedroom_humidity
-    - sensor.master_bedroom_pressure
-    - sensor.master_bedroom_battery
-    - sensor.master_bedroom_link_quality
+    - sensor.masterbedroomclimate_temperature
+    - sensor.masterbedroomclimate_humidity
+    - sensor.masterbedroomclimate_pressure
+    - sensor.masterbedroomclimate_battery
+    - sensor.masterbedroomclimate_linkquality
 
 kids_bedroom:
   name: Kids Bedroom
   control: hidden
   entities:
-    - sensor.kids_bedroom_temperature
-    - sensor.kids_bedroom_humidity
-    - sensor.kids_bedroom_pressure
-    - sensor.kids_bedroom_battery
-    - sensor.kids_bedroom_link_quality
+    - sensor.kidsbedroomclimate_temperature
+    - sensor.kidsbedroomclimate_humidity
+    - sensor.kidsbedroomclimate_pressure
+    - sensor.kidsbedroomclimate_battery
+    - sensor.kidsbedroomclimate_linkquality

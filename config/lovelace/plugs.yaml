@@ -6,6 +6,6 @@ cards:
     title: Smart Plugs
     show_header_toggle: false
     entities:
-      - entity: switch.living_room_smart_plug
-      - entity: switch.lower_floor_smart_plug
-      - entity: switch.smart_plug_3
+      - entity: switch.smartplug1_switch
+      - entity: switch.smartplug2_switch
+      - entity: switch.smartplug3_switch

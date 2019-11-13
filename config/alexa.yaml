@@ -4,12 +4,13 @@ smart_home:
   client_secret: !secret alexa_client_secret
   filter:
     include_entities:
-      - binary_sensor.back_door_state
-      - binary_sensor.front_door_state
+      - binary_sensor.backdoor_contact
+      - binary_sensor.frontdoor_contact
       - media_player.lg_smart_tv
-      - sensor.kids_bedroom_temperature
-      - sensor.living_room_temperature
-      - sensor.master_bedroom_temperature
+      - sensor.kidsbedroomclimate_temperature
+      - sensor.livingroomclimate_temperature
+      - sensor.lowerfloorclimate_temperature
+      - sensor.masterbedroomclimate_temperature
       - script.pause_pi_hole
       - script.watch_netflix_on_lg_smart_tv
       - script.watch_plex_on_lg_smart_tv
@@ -17,8 +18,8 @@ smart_home:
       - script.watch_bbc_news_on_lg_smart_tv
       - script.watch_cbeebies_on_lg_smart_tv
       - script.watch_channel_4_on_lg_smart_tv
-      - switch.living_room_smart_plug
-      - switch.lower_floor_smart_plug
+      - switch.smartplug1_switch
+      - switch.smartplug2_switch
     exclude_domains:
       - automation
       - binary_sensor
@@ -43,17 +44,19 @@ smart_home:
       - zigbee2mqtt_networkmap
       - zone
   entity_config:
-    binary_sensor.back_door_state:
+    binary_sensor.backdoor_contact:
       name: Back Door
-    binary_sensor.front_door_state:
+    binary_sensor.frontdoor_contact:
       name: Front Door
     media_player.lg_smart_tv:
       name: TV
-    sensor.kids_bedroom_temperature:
+    sensor.kidsbedroomclimate_temperature:
       name: Kids Bedroom Temperature
-    sensor.living_room_temperature:
+    sensor.livingroomclimate_temperature:
       name: Living Room Temperature
-    sensor.master_bedroom_temperature:
+    sensor.lowerfloorclimate_temperature:
+      name: Lower Floor Temperature
+    sensor.masterbedroomclimate_temperature:
       name: Master Bedroom Temperature
     script.pause_pi_hole:
       name: Pause Pi-hole
@@ -69,9 +72,9 @@ smart_home:
       name: CBeebies
     script.watch_channel_4_on_lg_smart_tv:
       name: Channel 4
-    switch.living_room_smart_plug:
+    switch.smartplug1_switch:
       name: Smart Plug 1
       display_categories: SMARTPLUG
-    switch.lower_floor_smart_plug:
+    switch.smartplug2_switch:
       name: Smart Plug 2
       display_categories: SMARTPLUG

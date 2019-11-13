@@ -16,24 +16,24 @@ cards:
         tap_action:
           action: navigate
           navigation_path: /lovelace/lights
-      - entity: sensor.living_room_temperature
+      - entity: sensor.livingroomclimate_temperature
         name: Temperature
         tap_action:
           action: navigate
           navigation_path: /lovelace/ambient
-      - entity: sensor.living_room_humidity
+      - entity: sensor.livingroomclimate_humidity
         name: Humidity
         tap_action:
           action: navigate
           navigation_path: /lovelace/ambient
       - entity: camera.living_room_camera
         name: Camera
-      - entity: switch.living_room_smart_plug
+      - entity: switch.smartplug1_switch
         name: Smart Plug
         tap_action:
           action: toggle
-      - entity: binary_sensor.front_door_state
-      - entity: binary_sensor.back_door_state
+      - entity: binary_sensor.frontdoor_contact
+      - entity: binary_sensor.backdoor_contact
       - entity: media_player.lg_smart_tv
         tap_action:
           action: navigate
@@ -43,19 +43,19 @@ cards:
     title: Lower Floor
     columns: 4
     entities:
-      - entity: sensor.lower_floor_temperature
+      - entity: sensor.lowerfloorclimate_temperature
         name: Temperature
         tap_action:
           action: navigate
           navigation_path: /lovelace/ambient
-      - entity: sensor.lower_floor_humidity
+      - entity: sensor.lowerfloorclimate_humidity
         name: Humidity
         tap_action:
           action: navigate
           navigation_path: /lovelace/ambient
       - entity: camera.lower_floor_camera
         name: Camera
-      - entity: switch.lower_floor_smart_plug
+      - entity: switch.smartplug2_switch
         name: Smart Plug
         tap_action:
           action: toggle
@@ -69,12 +69,12 @@ cards:
         tap_action:
           action: navigate
           navigation_path: /lovelace/lights
-      - entity: sensor.master_bedroom_temperature
+      - entity: sensor.masterbedroomclimate_temperature
         name: Temperature
         tap_action:
           action: navigate
           navigation_path: /lovelace/ambient
-      - entity: sensor.master_bedroom_humidity
+      - entity: sensor.masterbedroomclimate_humidity
         name: Humidity
         tap_action:
           action: navigate
@@ -84,12 +84,12 @@ cards:
     title: Kids Bedroom
     columns: 4
     entities:
-      - entity: sensor.kids_bedroom_temperature
+      - entity: sensor.kidsbedroomclimate_temperature
         name: Temperature
         tap_action:
           action: navigate
           navigation_path: /lovelace/ambient
-      - entity: sensor.kids_bedroom_humidity
+      - entity: sensor.kidsbedroomclimate_humidity
         name: Humidity
         tap_action:
           action: navigate

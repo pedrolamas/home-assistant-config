@@ -1,13 +1,13 @@
 include:
   entities:
-    - binary_sensor.back_door_state
+    - binary_sensor.backdoor_contact
     - binary_sensor.external_ip_detected
-    - binary_sensor.front_door_state
+    - binary_sensor.frontdoor_contact
     - person.pedro
     - person.joana
     - sensor.external_ip
     - sensor.reported_ip
-    - sensor.front_door_mailbox
-    - switch.living_room_smart_plug
-    - switch.lower_floor_smart_plug
-    - switch.smart_plug_3
+    - sensor.frontdoormailbox_action
+    - switch.smartplug1_switch
+    - switch.smartplug2_switch
+    - switch.smartplug3_switch
