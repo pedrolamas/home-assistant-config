@@ -42,6 +42,8 @@ api:
 
 wake_on_lan:
 
+mobile_app:
+
 webhook:
 
 zigbee2mqtt_networkmap:
