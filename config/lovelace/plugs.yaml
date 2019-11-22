@@ -9,3 +9,5 @@ cards:
       - entity: switch.smartplug1_switch
       - entity: switch.smartplug2_switch
       - entity: switch.smartplug3_switch
+      - entity: switch.smartplug4_switch
+      - entity: switch.smartplug5_switch

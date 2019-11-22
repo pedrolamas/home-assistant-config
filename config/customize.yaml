@@ -70,3 +70,9 @@ switch.smartplug2_switch:
 
 switch.smartplug3_switch:
   friendly_name: Smart Plug 3
+
+switch.smartplug4_switch:
+  friendly_name: Smart Plug 4
+
+switch.smartplug5_switch:
+  friendly_name: Smart Plug 5

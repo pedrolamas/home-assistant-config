@@ -21,4 +21,6 @@ include:
     - sensor.smart_vibration_sensor
     - switch.smartplug1_switch
     - switch.smartplug2_switch
-    - switch.smart_plug_3
+    - switch.smartplug3_switch
+    - switch.smartplug4_switch
+    - switch.smartplug5_switch
