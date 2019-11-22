@@ -183,7 +183,7 @@
   condition:
     - condition: template
       value_template: >-
-        {{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' }}
+        {{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' and is_state('binary_sensor.frontdoor_contact', 'off') }}
   action:
     - service: script.send_notification_all
       data_template:
