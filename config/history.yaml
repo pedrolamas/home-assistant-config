@@ -18,7 +18,7 @@ include:
     - sensor.masterbedroomclimate_humidity
     - sensor.kidsbedroomclimate_temperature
     - sensor.kidsbedroomclimate_humidity
-    - sensor.smart_vibration_sensor
+    - sensor.smartvibrationsensor_action
     - switch.smartplug1_switch
     - switch.smartplug2_switch
     - switch.smartplug3_switch
