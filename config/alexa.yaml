@@ -20,6 +20,9 @@ smart_home:
       - script.watch_channel_4_on_lg_smart_tv
       - switch.smartplug1_switch
       - switch.smartplug2_switch
+      - switch.smartplug3_switch
+      - switch.smartplug4_switch
+      - switch.smartplug5_switch
     exclude_domains:
       - automation
       - binary_sensor
@@ -77,4 +80,13 @@ smart_home:
       display_categories: SMARTPLUG
     switch.smartplug2_switch:
       name: Smart Plug 2
+      display_categories: SMARTPLUG
+    switch.smartplug3_switch:
+      name: Smart Plug 3
+      display_categories: SMARTPLUG
+    switch.smartplug4_switch:
+      name: Smart Plug 4
+      display_categories: SMARTPLUG
+    switch.smartplug5_switch:
+      name: Smart Plug 5
       display_categories: SMARTPLUG

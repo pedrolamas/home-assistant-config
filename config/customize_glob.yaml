@@ -1,2 +1,5 @@
 "*_linkquality":
   icon: mdi:signal-variant
+
+"*_power":
+  icon: mdi:speedometer

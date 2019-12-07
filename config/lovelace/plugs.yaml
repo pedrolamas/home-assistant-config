@@ -7,7 +7,17 @@ cards:
     show_header_toggle: false
     entities:
       - entity: switch.smartplug1_switch
+      - type: divider
       - entity: switch.smartplug2_switch
+      - type: divider
       - entity: switch.smartplug3_switch
+      - entity: sensor.smartplug3_power
+        name: Power
+      - type: divider
       - entity: switch.smartplug4_switch
+      - entity: sensor.smartplug4_power
+        name: Power
+      - type: divider
       - entity: switch.smartplug5_switch
+      - entity: sensor.smartplug5_power
+        name: Power

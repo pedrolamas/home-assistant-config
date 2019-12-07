@@ -129,6 +129,16 @@
       value_template: >-
         {{ not(is_state('sensor.external_ip', 'unknown')) }}
 
+    washing_machine_program_running:
+      friendly_name: Washing Machine
+      icon_template: mdi:washing-machine
+      value_template: >-
+        {{ states('sensor.smartplug5_power') | float > 0.3 }}
+      delay_off:
+        minutes: 2
+      delay_on:
+        seconds: 30
+
     pi_hole_paused:
       friendly_name: Pause Pi-hole
       icon_template: mdi:pi-hole

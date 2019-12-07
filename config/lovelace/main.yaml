@@ -31,7 +31,8 @@ cards:
       - entity: switch.smartplug1_switch
         name: Smart Plug
         tap_action:
-          action: toggle
+          action: navigate
+          navigation_path: /lovelace/plugs
       - entity: binary_sensor.frontdoor_contact
       - entity: binary_sensor.backdoor_contact
       - entity: media_player.lg_smart_tv
@@ -43,6 +44,8 @@ cards:
     title: Lower Floor
     columns: 4
     entities:
+      - entity: binary_sensor.washing_machine_program_running
+        name: Washer
       - entity: sensor.lowerfloorclimate_temperature
         name: Temperature
         tap_action:
@@ -58,7 +61,8 @@ cards:
       - entity: switch.smartplug2_switch
         name: Smart Plug
         tap_action:
-          action: toggle
+          action: navigate
+          navigation_path: /lovelace/plugs
 
   - type: glance
     title: Master Bedroom
@@ -94,6 +98,11 @@ cards:
         tap_action:
           action: navigate
           navigation_path: /lovelace/ambient
+      - entity: switch.smartplug4_switch
+        name: Smart Plug
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/plugs
 
   - type: glance
     title: Local

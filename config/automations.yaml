@@ -16,8 +16,9 @@
         - sensor.backdoor_battery
         - sensor.frontdoor_battery
         - sensor.frontdoormailbox_battery
-        - sensor.livingroomclimate_battery
         - sensor.kidsbedroomclimate_battery
+        - sensor.livingroomclimate_battery
+        - sensor.lowerfloorclimate_battery
         - sensor.masterbedroomclimate_battery
         - sensor.smartvibrationsensor_battery
       below: 20
@@ -77,6 +78,17 @@
     - service: script.send_notification_pedro
       data_template:
         message: "ALERT: CPU temperature is above 42°C!"
+
+- alias: Washing Machine program finished, send notification
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.washing_machine_program_running
+      from: "on"
+      to: "off"
+  action:
+    - service: script.send_notification_all
+      data_template:
+        message: "Washing Machine program finished!"
 
 - alias: Door open, send notification
   initial_state: true
