@@ -40,6 +40,8 @@ api:
 
 #ffmpeg:
 
+stream:
+
 wake_on_lan:
 
 mobile_app:
