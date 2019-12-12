@@ -8,16 +8,16 @@ include:
     - light.lamp_2
     - light.lamp_3
     - light.lamp_4
-    - person.pedro
     - person.joana
-    - sensor.livingroomclimate_temperature
-    - sensor.livingroomclimate_humidity
-    - sensor.lowerfloorclimate_temperature
-    - sensor.lowerfloorclimate_humidity
-    - sensor.masterbedroomclimate_temperature
-    - sensor.masterbedroomclimate_humidity
-    - sensor.kidsbedroomclimate_temperature
+    - person.pedro
     - sensor.kidsbedroomclimate_humidity
+    - sensor.kidsbedroomclimate_temperature
+    - sensor.livingroomclimate_humidity
+    - sensor.livingroomclimate_temperature
+    - sensor.lowerfloorclimate_humidity
+    - sensor.lowerfloorclimate_temperature
+    - sensor.masterbedroomclimate_humidity
+    - sensor.masterbedroomclimate_temperature
     - sensor.smartvibrationsensor_action
     - switch.smartplug1_switch
     - switch.smartplug2_switch

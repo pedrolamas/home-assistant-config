@@ -3,11 +3,10 @@ include:
     - binary_sensor.backdoor_contact
     - binary_sensor.external_ip_detected
     - binary_sensor.frontdoor_contact
-    - person.pedro
     - person.joana
+    - person.pedro
     - sensor.external_ip
     - sensor.reported_ip
-    - sensor.frontdoormailbox_action
     - switch.smartplug1_switch
     - switch.smartplug2_switch
     - switch.smartplug3_switch
