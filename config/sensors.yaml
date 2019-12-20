@@ -40,7 +40,7 @@
 #- platform: google_travel_time
 #  name: Pedro to Home
 #  api_key: !secret google_travel_time_api_key
-#  origin: device_tracker.pedro_oneplus7pro
+#  origin: device_tracker.gm1913
 #  destination: zone.home
 #  travel_mode: transit
 
@@ -82,10 +82,10 @@
       unit_of_measurement: "%"
       device_class: battery
       value_template: >-
-        {{ state_attr('device_tracker.pedro_oneplus7pro', 'battery_level') }}
+        {{ state_attr('device_tracker.gm1913', 'battery_level') }}
 
     joana_oneplus7_battery:
       unit_of_measurement: "%"
       device_class: battery
       value_template: >-
-        {{ state_attr('device_tracker.joana_oneplus7', 'battery_level') }}
+        {{ state_attr('device_tracker.gm1903', 'battery_level') }}

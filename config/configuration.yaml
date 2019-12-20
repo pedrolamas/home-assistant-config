@@ -68,9 +68,6 @@ mqtt:
     topic: 'hass/status'
     payload: 'offline'
 
-owntracks:
-  max_gps_accuracy: 100
-
 ifttt:
   key: !secret ifttt_key
 
