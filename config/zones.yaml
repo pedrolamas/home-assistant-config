@@ -4,11 +4,11 @@
   radius: 100
   icon: mdi:home-variant
 
-- name: School
-  latitude: !secret school_latitude
-  longitude: !secret school_longitude
-  radius: 100
-  icon: mdi:school
+# - name: School
+#   latitude: !secret school_latitude
+#   longitude: !secret school_longitude
+#   radius: 100
+#   icon: mdi:school
 
 - name: Work
   latitude: !secret work_latitude
