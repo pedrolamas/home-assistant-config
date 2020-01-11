@@ -10,8 +10,8 @@ cards:
       - type: divider
       - entity: switch.smartplug2_switch
       - type: divider
-      - entity: switch.smartplug3_switch
-      - entity: sensor.smartplug3_power
+      - entity: switch.smartplug6_switch
+      - entity: sensor.smartplug6_power
         name: Power
       - type: divider
       - entity: switch.smartplug4_switch
