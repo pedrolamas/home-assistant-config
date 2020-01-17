@@ -84,8 +84,8 @@ person: !include persons.yaml
 zone: !include zones.yaml
 sensor: !include sensors.yaml
 binary_sensor: !include binary_sensors.yaml
-media_player: !include media_players.yaml
-group: !include groups.yaml
+#media_player: !include media_players.yaml
+#group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
 switch: !include switches.yaml
@@ -100,3 +100,4 @@ rest_command: !include rest_command.yaml
 unifi: !include unifi.yaml
 pi_hole: !include pi_hole.yaml
 influxdb: !include influxdb.yaml
+webostv: !include webostv.yaml

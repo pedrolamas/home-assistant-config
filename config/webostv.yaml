@@ -1,0 +1,7 @@
+name: LG Smart TV
+host: !secret lg_smart_tv_host
+turn_on_action:
+  service: wake_on_lan.send_magic_packet
+  data:
+    mac: !secret lg_smart_tv_mac
+    broadcast_address: !secret lg_smart_tv_broadcast_address
