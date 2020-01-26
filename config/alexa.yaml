@@ -24,6 +24,7 @@ smart_home:
       - switch.smartplug4_switch
       - switch.smartplug5_switch
       - switch.smartplug6_switch
+      - switch.smartplug7_switch
     exclude_domains:
       - automation
       - binary_sensor
@@ -93,4 +94,7 @@ smart_home:
       display_categories: SMARTPLUG
     switch.smartplug6_switch:
       name: Smart Plug 6
+      display_categories: SMARTPLUG
+    switch.smartplug7_switch:
+      name: Smart Plug 7
       display_categories: SMARTPLUG

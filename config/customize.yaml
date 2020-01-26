@@ -78,4 +78,7 @@ switch.smartplug5_switch:
   friendly_name: Washing Machine Smart Plug
 
 switch.smartplug6_switch:
+  friendly_name: Smart Plug 6
+
+switch.smartplug7_switch:
   friendly_name: Master Bedroom Smart Plug

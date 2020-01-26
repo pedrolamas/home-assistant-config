@@ -13,3 +13,4 @@ include:
     - switch.smartplug4_switch
     - switch.smartplug5_switch
     - switch.smartplug6_switch
+    - switch.smartplug7_switch

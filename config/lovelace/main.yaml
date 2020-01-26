@@ -83,7 +83,7 @@ cards:
         tap_action:
           action: navigate
           navigation_path: /lovelace/ambient
-      - entity: switch.smartplug6_switch
+      - entity: switch.smartplug7_switch
         name: Smart Plug
         tap_action:
           action: navigate
