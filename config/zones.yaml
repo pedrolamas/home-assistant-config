@@ -27,3 +27,33 @@
   longitude: -122.242807
   radius: 15000
   icon: mdi:flag
+
+- name: Paddington Station
+  latitude: 51.51728
+  longitude: -0.17775
+  radius: 200
+  icon: mdi:train
+
+- name: Victoria Station
+  latitude: 51.49486
+  longitude: -0.14363
+  radius: 150
+  icon: mdi:train
+
+- name: Gatwick Airport
+  latitude: 51.15232
+  longitude: -0.18917
+  radius: 2000
+  icon: mdi:airplane
+
+- name: Heathrow Airport
+  latitude: 51.47077
+  longitude: -0.45465
+  radius: 2500
+  icon: mdi:airplane
+
+- name: Stansted Airport
+  latitude: 51.88550
+  longitude: 0.24719
+  radius: 2000
+  icon: mdi:airplane
