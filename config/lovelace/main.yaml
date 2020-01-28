@@ -20,12 +20,12 @@ cards:
         name: Temperature
         tap_action:
           action: navigate
-          navigation_path: /lovelace/ambient
+          navigation_path: /lovelace/climate
       - entity: sensor.livingroomclimate_humidity
         name: Humidity
         tap_action:
           action: navigate
-          navigation_path: /lovelace/ambient
+          navigation_path: /lovelace/climate
       - entity: camera.living_room_camera
         name: Camera
       - entity: switch.smartplug1_switch
@@ -50,12 +50,12 @@ cards:
         name: Temperature
         tap_action:
           action: navigate
-          navigation_path: /lovelace/ambient
+          navigation_path: /lovelace/climate
       - entity: sensor.lowerfloorclimate_humidity
         name: Humidity
         tap_action:
           action: navigate
-          navigation_path: /lovelace/ambient
+          navigation_path: /lovelace/climate
       - entity: camera.lower_floor_camera
         name: Camera
       - entity: switch.smartplug2_switch
@@ -77,12 +77,12 @@ cards:
         name: Temperature
         tap_action:
           action: navigate
-          navigation_path: /lovelace/ambient
+          navigation_path: /lovelace/climate
       - entity: sensor.masterbedroomclimate_humidity
         name: Humidity
         tap_action:
           action: navigate
-          navigation_path: /lovelace/ambient
+          navigation_path: /lovelace/climate
       - entity: switch.smartplug7_switch
         name: Smart Plug
         tap_action:
@@ -97,12 +97,12 @@ cards:
         name: Temperature
         tap_action:
           action: navigate
-          navigation_path: /lovelace/ambient
+          navigation_path: /lovelace/climate
       - entity: sensor.kidsbedroomclimate_humidity
         name: Humidity
         tap_action:
           action: navigate
-          navigation_path: /lovelace/ambient
+          navigation_path: /lovelace/climate
       - entity: switch.smartplug4_switch
         name: Smart Plug
         tap_action:

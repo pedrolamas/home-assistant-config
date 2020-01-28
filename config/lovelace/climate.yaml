@@ -1,5 +1,5 @@
-title: Ambient
-path: ambient
+title: Climate
+path: climate
 icon: mdi:thermometer
 cards:
   - type: custom:vertical-stack-in-card
@@ -41,6 +41,26 @@ cards:
           - sensor.lowerfloorclimate_pressure
           - sensor.lowerfloorclimate_battery
           - sensor.lowerfloorclimate_linkquality
+
+  - type: custom:vertical-stack-in-card
+    title: Laundry Room
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            name: Temperature
+            entity: sensor.laundryroomclimate_temperature
+            graph: line
+          - type: sensor
+            name: Humidity
+            entity: sensor.laundryroomclimate_humidity
+            graph: line
+      - type: glance
+        show_name: false
+        entities:
+          - sensor.laundryroomclimate_pressure
+          - sensor.laundryroomclimate_battery
+          - sensor.laundryroomclimate_linkquality
 
   - type: custom:vertical-stack-in-card
     title: Master Bedroom

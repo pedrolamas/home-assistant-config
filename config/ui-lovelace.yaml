@@ -7,7 +7,7 @@ resources:
 views:
   - !include lovelace/main.yaml
   - !include lovelace/lights.yaml
-  - !include lovelace/ambient.yaml
+  - !include lovelace/climate.yaml
   - !include lovelace/media.yaml
   - !include lovelace/plugs.yaml
   - !include lovelace/people.yaml
