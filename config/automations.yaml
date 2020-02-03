@@ -1,5 +1,4 @@
 - alias: Home Assistant started, set default theme
-  initial_state: 'on'
   trigger:
     - platform: homeassistant
       event: start
@@ -9,7 +8,6 @@
       name: slate
 
 - alias: Sensor low battery, send notification
-  initial_state: true
   trigger:
     - platform: numeric_state
       entity_id:
@@ -17,44 +15,59 @@
         - sensor.frontdoor_battery
         - sensor.frontdoormailbox_battery
         - sensor.kidsbedroomclimate_battery
+        - sensor.laundryroomclimate_battery
         - sensor.livingroomclimate_battery
         - sensor.lowerfloorclimate_battery
         - sensor.masterbedroomclimate_battery
+        - sensor.smartswitch_battery
         - sensor.smartvibrationsensor_battery
       below: 20
   action:
     - service: persistent_notification.create
-      data:
+      data_template:
         title: "Device with low battery"
         message: "The {{ trigger.to_state.attributes.friendly_name }} sensor has low battery!"
 
+- alias: Smart Plug on with low power for 2 minutes, turn off
+  trigger:
+    - platform: template
+      value_template: >-
+        {{ is_state('switch.smartplug4_switch', 'on') and states('sensor.smartplug4_power') | float < 0.3 }}
+      for:
+        minutes: 2
+    - platform: template
+      value_template: >-
+        {{ is_state('switch.smartplug7_switch', 'on') and states('sensor.smartplug7_power') | float < 0.3 }}
+      for:
+        minutes: 2
+  action:
+    - service: switch.turn_off
+      data_template:
+        entity_id: "{{ trigger.entity_id }}"
+
 - alias: Device offline, send notification
-  initial_state: true
   trigger:
     - platform: state
       entity_id:
-        - binary_sensor.unifi_cloud_key_gen2_plus
         - binary_sensor.philips_hue_bridge_2_1
-        - binary_sensor.synology_ds412_nas
         - binary_sensor.raspberry_pi_2_model_b
-      from: "on"
+        - binary_sensor.synology_ds412_nas
+        - binary_sensor.unifi_cloud_key_gen2_plus
       to: "off"
       for:
-        seconds: 60
+        minutes: 1
     - platform: state
       entity_id:
         - sensor.zigbee2mqtt_bridge_state
-      from: "online"
       to: "offline"
       for:
-        seconds: 60
+        minutes: 1
   action:
     - service: script.send_notification_pedro
       data_template:
         message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is offline."
 
 - alias: External IP doesn't match reported IP, update reported IP
-  initial_state: true
   trigger:
     - platform: state
       entity_id:
@@ -83,7 +96,6 @@
   trigger:
     - platform: state
       entity_id: binary_sensor.washing_machine_program_running
-      from: "on"
       to: "off"
   action:
     - service: script.send_notification_all
@@ -91,51 +103,28 @@
         message: "Washing Machine program finished!"
 
 - alias: Door open, send notification
-  initial_state: true
   trigger:
     - platform: state
       entity_id:
         - binary_sensor.backdoor_contact
         - binary_sensor.frontdoor_contact
-      from: "off"
       to: "on"
   action:
     - service: script.send_notification_with_living_room_camera_snapshot
       data_template:
         message: "{{ trigger.to_state.attributes.friendly_name }} is open!"
 
-- alias: Door open for 5 minutes, send notification
-  initial_state: true
+- alias: Door open and lamp off, turn on lamp
   trigger:
     - platform: state
       entity_id:
         - binary_sensor.backdoor_contact
         - binary_sensor.frontdoor_contact
-      from: "off"
-      to: "on"
-      for:
-        minutes: 5
-  action:
-    - service: script.send_notification_all
-      data_template:
-        message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is still open!"
-    - service: input_boolean.turn_on
-      data_template:
-        entity_id: "{{ trigger.to_state.attributes.send_notification_entity_id }}"
-
-- alias: Door open, turn on lamp
-  initial_state: true
-  trigger:
-    - platform: state
-      entity_id:
-        - binary_sensor.backdoor_contact
-        - binary_sensor.frontdoor_contact
-      from: "off"
       to: "on"
   condition:
     - condition: template
       value_template: >-
-        {{ is_state(trigger.to_state.attributes.lamp_entity_id, 'off') or is_state(trigger.to_state.attributes.lamp_off_entity_id, 'on') }}
+        {{ is_state(trigger.to_state.attributes.lamp_entity_id, 'off') }}
   action:
     - service: light.turn_on
       data_template:
@@ -144,28 +133,7 @@
       data_template:
         entity_id: "{{ trigger.to_state.attributes.lamp_off_entity_id }}"
 
-- alias: Door closed after 5 minutes, send notification
-  initial_state: true
-  trigger:
-    - platform: state
-      entity_id:
-        - binary_sensor.backdoor_contact
-        - binary_sensor.frontdoor_contact
-      to: "off"
-  condition:
-    - condition: template
-      value_template: >-
-        {{ is_state(trigger.to_state.attributes.send_notification_entity_id, 'on') }}
-  action:
-    - service: input_boolean.turn_off
-      data_template:
-        entity_id: "{{ trigger.to_state.attributes.send_notification_entity_id }}"
-    - service: script.send_notification_all
-      data_template:
-        message: "{{ trigger.to_state.attributes.friendly_name }} is closed!"
-
 - alias: Door closed for 30s, turn off lamp
-  initial_state: true
   trigger:
     - platform: state
       entity_id:
@@ -186,8 +154,31 @@
       data_template:
         entity_id: "{{ trigger.to_state.attributes.lamp_entity_id }}"
 
+- alias: Door open for 5 minutes, send notification
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.back_door_open_for_5_minutes
+        - binary_sensor.front_door_open_for_5_minutes
+      to: "on"
+  action:
+    - service: script.send_notification_all
+      data_template:
+        message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is still open!"
+
+- alias: Door closed after 5 minutes, send notification
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.back_door_open_for_5_minutes
+        - binary_sensor.front_door_open_for_5_minutes
+      to: "off"
+  action:
+    - service: script.send_notification_all
+      data_template:
+        message: "{{ trigger.to_state.attributes.friendly_name }} is closed!"
+
 - alias: Front Door Mailbox movement, send notification
-  initial_state: true
   trigger:
     - platform: state
       entity_id: sensor.frontdoormailbox_action
@@ -216,7 +207,6 @@
         message: "Movement detected on Smart Vibration Sensor"
 
 - alias: Update available, send notification
-  initial_state: true
   trigger:
     - platform: state
       entity_id: updater.updater
@@ -226,20 +216,9 @@
         message: "Home Assistant update available!"
 
 - alias: Zigbee2mqtt Log Level
-  initial_state: 'on'
   trigger:
     - platform: state
       entity_id: input_select.zigbee2mqtt_log_level
-      to: debug
-    - platform: state
-      entity_id: input_select.zigbee2mqtt_log_level
-      to: warn
-    - platform: state
-      entity_id: input_select.zigbee2mqtt_log_level
-      to: error
-    - platform: state
-      entity_id: input_select.zigbee2mqtt_log_level
-      to: info
   action:
     - service: mqtt.publish
       data:

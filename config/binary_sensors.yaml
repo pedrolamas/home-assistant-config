@@ -118,6 +118,20 @@
       value_template: >-
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') and state_attr('media_player.lg_smart_tv', 'media_title') in ['CBeebies', 'CBeebies HD'] }}
 
+    back_door_open_for_5_minutes:
+      friendly_name: Back Door open for 5 minutes
+      value_template: >-
+        {{ is_state('binary_sensor.backdoor_contact', 'on') }}
+      delay_on:
+        minutes: 5
+
+    front_door_open_for_5_minutes:
+      friendly_name: Front Door open for 5 minutes
+      value_template: >-
+        {{ is_state('binary_sensor.frontdoor_contact', 'on') }}
+      delay_on:
+        minutes: 5
+
     external_ip_detected:
       friendly_name: External IP detected
       icon_template: >-
