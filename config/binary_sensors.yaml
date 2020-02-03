@@ -135,7 +135,7 @@
       value_template: >-
         {{ states('sensor.smartplug5_power') | float > 0.3 }}
       delay_off:
-        minutes: 2
+        minutes: 1
       delay_on:
         seconds: 30
 

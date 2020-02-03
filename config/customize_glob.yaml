@@ -1,5 +1,8 @@
 "*_linkquality":
-  icon: mdi:signal-variant
+  icon: mdi:signal
 
 "*_power":
   icon: mdi:speedometer
+
+"*_mold":
+  icon: mdi:water-percent

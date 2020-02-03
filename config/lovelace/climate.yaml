@@ -20,7 +20,6 @@ cards:
         entities:
           - sensor.livingroomclimate_pressure
           - sensor.livingroomclimate_battery
-          - sensor.livingroomclimate_linkquality
 
   - type: custom:vertical-stack-in-card
     title: Lower Floor
@@ -40,7 +39,6 @@ cards:
         entities:
           - sensor.lowerfloorclimate_pressure
           - sensor.lowerfloorclimate_battery
-          - sensor.lowerfloorclimate_linkquality
 
   - type: custom:vertical-stack-in-card
     title: Laundry Room
@@ -60,7 +58,6 @@ cards:
         entities:
           - sensor.laundryroomclimate_pressure
           - sensor.laundryroomclimate_battery
-          - sensor.laundryroomclimate_linkquality
 
   - type: custom:vertical-stack-in-card
     title: Master Bedroom
@@ -80,7 +77,6 @@ cards:
         entities:
           - sensor.masterbedroomclimate_pressure
           - sensor.masterbedroomclimate_battery
-          - sensor.masterbedroomclimate_linkquality
 
   - type: custom:vertical-stack-in-card
     title: Kids Bedroom
@@ -100,4 +96,14 @@ cards:
         entities:
           - sensor.kidsbedroomclimate_pressure
           - sensor.kidsbedroomclimate_battery
-          - sensor.kidsbedroomclimate_linkquality
+
+  - type: entities
+    title: Mold Indicators
+    show_header_toggle: false
+    entities:
+      - entity: sensor.living_room_mold
+        name: Living Room
+      - entity: sensor.master_bedroom_mold
+        name: Master Bedroom
+      - entity: sensor.kids_bedroom_mold
+        name: Kids Bedroom

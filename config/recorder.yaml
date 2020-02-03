@@ -16,12 +16,17 @@ include:
     - person.pedro
     - sensor.cpu_temperature
     - sensor.external_ip
+    - sensor.kids_bedroom_mold
     - sensor.kidsbedroomclimate_humidity
     - sensor.kidsbedroomclimate_temperature
+    - sensor.laundryroomclimate_humidity
+    - sensor.laundryroomclimate_temperature
+    - sensor.living_room_mold
     - sensor.livingroomclimate_humidity
     - sensor.livingroomclimate_temperature
     - sensor.lowerfloorclimate_humidity
     - sensor.lowerfloorclimate_temperature
+    - sensor.master_bedroom_mold
     - sensor.masterbedroomclimate_humidity
     - sensor.masterbedroomclimate_temperature
     - sensor.reported_ip

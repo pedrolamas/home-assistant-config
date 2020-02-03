@@ -69,6 +69,27 @@
   locations:
     - Islington
 
+- platform: mold_indicator
+  name: Living Room Mold
+  indoor_temp_sensor: sensor.livingroomclimate_temperature
+  indoor_humidity_sensor: sensor.livingroomclimate_humidity
+  outdoor_temp_sensor: sensor.outside_temperature
+  calibration_factor: 2
+
+- platform: mold_indicator
+  name: Master Bedroom Mold
+  indoor_temp_sensor: sensor.masterbedroomclimate_temperature
+  indoor_humidity_sensor: sensor.masterbedroomclimate_humidity
+  outdoor_temp_sensor: sensor.outside_temperature
+  calibration_factor: 2
+
+- platform: mold_indicator
+  name: Kids Bedroom Mold
+  indoor_temp_sensor: sensor.kidsbedroomclimate_temperature
+  indoor_humidity_sensor: sensor.kidsbedroomclimate_humidity
+  outdoor_temp_sensor: sensor.outside_temperature
+  calibration_factor: 2
+
 - platform: template
   sensors:
 
@@ -89,3 +110,9 @@
       device_class: battery
       value_template: >-
         {{ state_attr('device_tracker.gm1903', 'battery_level') }}
+
+    outside_temperature:
+      unit_of_measurement: "°C"
+      device_class: temperature
+      value_template: >-
+        {{ state_attr('weather.dark_sky', 'temperature') }}
