@@ -7,7 +7,7 @@ cards:
     entities:
       - entity: person.pedro
         name: Location
-      - entity: device_tracker.gm1913
+      - entity: device_tracker.pedro_oneplus7pro
         name: GPS
         icon: mdi:crosshairs-gps
       - entity: device_tracker.oneplus_7_pro_pedro
@@ -21,7 +21,7 @@ cards:
     entities:
       - entity: person.joana
         name: Location
-      - entity: device_tracker.gm1903
+      - entity: device_tracker.joana_oneplus7
         name: GPS
         icon: mdi:crosshairs-gps
       - entity: device_tracker.oneplus_7_joana

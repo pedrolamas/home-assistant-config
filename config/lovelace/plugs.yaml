@@ -5,6 +5,7 @@ cards:
   - type: entities
     title: Smart Plugs
     show_header_toggle: false
+    state_color: true
     entities:
       - entity: switch.smartplug1_switch
       - type: divider

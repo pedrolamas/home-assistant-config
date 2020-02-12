@@ -4,11 +4,11 @@ person.pedro:
 person.joana:
   entity_picture: /local/joana.jpg
 
-device_tracker.gm1913:
+device_tracker.pedro_oneplus7pro:
   friendly_name: Pedro OnePlus 7 Pro GPS
   icon: mdi:cellphone-android
 
-device_tracker.gm1903:
+device_tracker.joana_oneplus7:
   friendly_name: Joana OnePlus 7 GPS
   icon: mdi:cellphone-android
 

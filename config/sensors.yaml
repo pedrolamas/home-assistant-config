@@ -99,18 +99,6 @@
       icon_template: >-
         {% if is_state('media_player.lg_smart_tv', 'playing') %}mdi:pause{% else %}mdi:play{% endif %}
 
-    pedro_oneplus7pro_battery:
-      unit_of_measurement: "%"
-      device_class: battery
-      value_template: >-
-        {{ state_attr('device_tracker.gm1913', 'battery_level') }}
-
-    joana_oneplus7_battery:
-      unit_of_measurement: "%"
-      device_class: battery
-      value_template: >-
-        {{ state_attr('device_tracker.gm1903', 'battery_level') }}
-
     outside_temperature:
       unit_of_measurement: "°C"
       device_class: temperature

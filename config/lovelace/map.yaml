@@ -10,3 +10,6 @@ cards:
       - person.pedro
       - person.joana
       - zone.home
+      - zone.work
+      - zone.paddington_station
+      - zone.victoria_station
