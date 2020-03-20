@@ -2,7 +2,7 @@ type: vertical-stack
 cards:
   - type: horizontal-stack
     cards:
-      - type: entity-button
+      - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_live_tv
         tap_action:
           action: call-service
@@ -10,7 +10,7 @@ cards:
           service_data:
             entity_id: media_player.lg_smart_tv
             source: "Live TV"
-      - type: entity-button
+      - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_netflix
         tap_action:
           action: call-service
@@ -18,7 +18,7 @@ cards:
           service_data:
             entity_id: media_player.lg_smart_tv
             source: "Netflix"
-      - type: entity-button
+      - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_prime_video
         tap_action:
           action: call-service
@@ -26,7 +26,7 @@ cards:
           service_data:
             entity_id: media_player.lg_smart_tv
             source: "Amazon Prime Video"
-      - type: entity-button
+      - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_plex
         tap_action:
           action: call-service
@@ -37,7 +37,7 @@ cards:
 
   - type: horizontal-stack
     cards:
-      - type: entity-button
+      - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_xbox_one_x
         tap_action:
           action: call-service
@@ -45,7 +45,7 @@ cards:
           service_data:
             entity_id: media_player.lg_smart_tv
             source: "Xbox One X"
-      - type: entity-button
+      - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_youtube
         tap_action:
           action: call-service
@@ -53,7 +53,7 @@ cards:
           service_data:
             entity_id: media_player.lg_smart_tv
             source: "YouTube"
-      - type: entity-button
+      - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_bbc_iplayer
         tap_action:
           action: call-service
@@ -61,7 +61,7 @@ cards:
           service_data:
             entity_id: media_player.lg_smart_tv
             source: "BBC iPlayer"
-      - type: entity-button
+      - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_all_4
         tap_action:
           action: call-service
@@ -72,7 +72,7 @@ cards:
 
   - type: horizontal-stack
     cards:
-      - type: entity-button
+      - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_bbc_one
         tap_action:
           action: call-service
@@ -88,7 +88,7 @@ cards:
             entity_id: media_player.lg_smart_tv
             media_content_id: "BBC ONE Lon"
             media_content_type: "channel"
-      - type: entity-button
+      - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_bbc_news
         tap_action:
           action: call-service
@@ -104,7 +104,7 @@ cards:
             entity_id: media_player.lg_smart_tv
             media_content_id: "BBC NEWS"
             media_content_type: "channel"
-      - type: entity-button
+      - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_channel_4
         tap_action:
           action: call-service
@@ -120,7 +120,7 @@ cards:
             entity_id: media_player.lg_smart_tv
             media_content_id: "Channel 4"
             media_content_type: "channel"
-      - type: entity-button
+      - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_cbeebies
         tap_action:
           action: call-service
@@ -139,24 +139,20 @@ cards:
 
   - type: horizontal-stack
     cards:
-      - type: entity-button
+      - type: button
         entity: switch.lg_smart_tv_volume_mute
         name: " "
         icon: mdi:volume-mute
         tap_action:
           action: toggle
-      - type: entity-button
-        entity: media_player.lg_smart_tv
-        name: " "
+      - type: button
         icon: mdi:volume-low
         tap_action:
           action: call-service
           service: media_player.volume_down
           service_data:
             entity_id: media_player.lg_smart_tv
-      - type: entity-button
-        entity: media_player.lg_smart_tv
-        name: " "
+      - type: button
         icon: mdi:volume-high
         tap_action:
           action: call-service
@@ -166,35 +162,30 @@ cards:
 
   - type: horizontal-stack
     cards:
-      - type: entity-button
-        entity: media_player.lg_smart_tv
-        name: " "
+      - type: button
         icon: mdi:power
         tap_action:
           action: call-service
           service: media_player.turn_off
           service_data:
             entity_id: media_player.lg_smart_tv
-      - type: entity-button
-        entity: media_player.lg_smart_tv
-        name: " "
+      - type: button
         icon: mdi:skip-previous
         tap_action:
           action: call-service
           service: media_player.media_previous_track
           service_data:
             entity_id: media_player.lg_smart_tv
-      - type: entity-button
+      - type: button
         entity: sensor.lg_smart_tv_is_playing
         name: " "
+        state_color: false
         tap_action:
           action: call-service
           service: media_player.media_play_pause
           service_data:
             entity_id: media_player.lg_smart_tv
-      - type: entity-button
-        entity: media_player.lg_smart_tv
-        name: " "
+      - type: button
         icon: mdi:skip-next
         tap_action:
           action: call-service

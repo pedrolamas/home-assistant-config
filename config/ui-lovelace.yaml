@@ -1,9 +1,4 @@
 title: Home
-resources:
-  - url: /local/vertical-stack-in-card.js?v=0.1.3&track=true
-    type: js
-  - url: /local/button-entity-row.js?v=0.2.0&track=true
-    type: js
 views:
   - !include lovelace/main.yaml
   - !include lovelace/lights.yaml
