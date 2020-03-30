@@ -5,7 +5,7 @@
   action:
     service: frontend.set_theme
     data:
-      name: slate
+      name: "Google Dark Theme"
 
 - alias: Sensor low battery, send notification
   trigger:

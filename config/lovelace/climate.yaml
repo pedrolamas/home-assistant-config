@@ -2,7 +2,7 @@ title: Climate
 path: climate
 icon: mdi:thermometer
 cards:
-  - type: custom:vertical-stack-in-card
+  - type: vertical-stack
     title: Living Room
     cards:
       - type: horizontal-stack
@@ -21,7 +21,7 @@ cards:
           - sensor.livingroomclimate_pressure
           - sensor.livingroomclimate_battery
 
-  - type: custom:vertical-stack-in-card
+  - type: vertical-stack
     title: Lower Floor
     cards:
       - type: horizontal-stack
@@ -40,7 +40,7 @@ cards:
           - sensor.lowerfloorclimate_pressure
           - sensor.lowerfloorclimate_battery
 
-  - type: custom:vertical-stack-in-card
+  - type: vertical-stack
     title: Laundry Room
     cards:
       - type: horizontal-stack
@@ -59,7 +59,7 @@ cards:
           - sensor.laundryroomclimate_pressure
           - sensor.laundryroomclimate_battery
 
-  - type: custom:vertical-stack-in-card
+  - type: vertical-stack
     title: Master Bedroom
     cards:
       - type: horizontal-stack
@@ -78,7 +78,7 @@ cards:
           - sensor.masterbedroomclimate_pressure
           - sensor.masterbedroomclimate_battery
 
-  - type: custom:vertical-stack-in-card
+  - type: vertical-stack
     title: Kids Bedroom
     cards:
       - type: horizontal-stack
@@ -97,13 +97,15 @@ cards:
           - sensor.kidsbedroomclimate_pressure
           - sensor.kidsbedroomclimate_battery
 
-  - type: entities
+  - type: vertical-stack
     title: Mold Indicators
-    show_header_toggle: false
-    entities:
-      - entity: sensor.living_room_mold
-        name: Living Room
-      - entity: sensor.master_bedroom_mold
-        name: Master Bedroom
-      - entity: sensor.kids_bedroom_mold
-        name: Kids Bedroom
+    cards:
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: sensor.living_room_mold
+            name: Living Room
+          - entity: sensor.master_bedroom_mold
+            name: Master Bedroom
+          - entity: sensor.kids_bedroom_mold
+            name: Kids Bedroom
