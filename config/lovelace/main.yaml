@@ -130,10 +130,13 @@ cards:
       - entity: sensor.reported_ip
       - entity: sensor.zigbee2mqtt_bridge_state
         name: Ziggee2mqtt
-      - entity: binary_sensor.pi_hole_paused
+      - entity: input_boolean.pi_hole_paused
+        name: Pause Pi-hole
         tap_action:
           action: call-service
-          service: script.pause_pi_hole
+          service: input_boolean.turn_on
+          service_data:
+            entity_id: input_boolean.pi_hole_paused
 
 #  - type: glance
 #    title: Others

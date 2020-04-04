@@ -139,16 +139,3 @@ watch_channel_4_on_lg_smart_tv:
         entity_id: media_player.lg_smart_tv
         media_content_id: "Channel 4 HD"
         media_content_type: "channel"
-
-pause_pi_hole:
-  sequence:
-    - service: script.turn_off
-      data:
-        entity_id: script.pause_pi_hole
-    - service: pi_hole.disable
-      data:
-        duration: 00:05:00
-    - delay: 0:00:10
-    - service: script.turn_on
-      data:
-        entity_id: script.pause_pi_hole
