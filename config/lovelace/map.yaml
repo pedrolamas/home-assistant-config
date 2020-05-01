@@ -4,7 +4,6 @@ icon: mdi:map-outline
 panel: true
 cards:
   - type: map
-    title: Map
     dark_mode: true
     entities:
       - person.pedro

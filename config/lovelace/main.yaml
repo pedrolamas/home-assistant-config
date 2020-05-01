@@ -129,7 +129,7 @@ cards:
       - entity: sensor.external_ip
       - entity: sensor.reported_ip
       - entity: sensor.zigbee2mqtt_bridge_state
-        name: Ziggee2mqtt
+        name: Zigbee2mqtt
       - entity: input_boolean.pi_hole_paused
         name: Pause Pi-hole
         tap_action:

@@ -7,6 +7,11 @@ cards:
     entities:
       - entity: person.pedro
         name: Location
+        hold_action:
+          action: call-service
+          service: notify.mobile_app_pedro_oneplus7pro
+          service_data:
+            message: "request_location_update"
       - entity: device_tracker.pedro_oneplus7pro
         name: GPS
         icon: mdi:crosshairs-gps
@@ -21,6 +26,11 @@ cards:
     entities:
       - entity: person.joana
         name: Location
+        hold_action:
+          action: call-service
+          service: notify.mobile_app_joana_oneplus7
+          service_data:
+            message: "request_location_update"
       - entity: device_tracker.joana_oneplus7
         name: GPS
         icon: mdi:crosshairs-gps
