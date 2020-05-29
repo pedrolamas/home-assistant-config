@@ -21,7 +21,11 @@ updater:
 
 config:
 
-#discovery:
+ssdp:
+
+zeroconf:
+
+discovery:
 
 #conversation:
 
