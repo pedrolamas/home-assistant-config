@@ -1,6 +1,5 @@
 include:
   domains:
-    - media_player
   entities:
     - binary_sensor.backdoor_contact
     - binary_sensor.frontdoor_contact
@@ -8,6 +7,7 @@ include:
     - light.lamp_2
     - light.lamp_3
     - light.lamp_4
+    - media_player.lg_smart_tv
     - person.joana
     - person.pedro
     - sensor.kidsbedroomclimate_humidity

@@ -4,7 +4,6 @@ db_url: !secret record_db_url
 include:
   domains:
     - light
-    - media_player
   entities:
     - binary_sensor.backdoor_contact
     - binary_sensor.external_ip_detected
@@ -13,6 +12,7 @@ include:
     - device_tracker.oneplus_7_pro_pedro
     - person.joana
     - person.pedro
+    - media_player.lg_smart_tv
     - sensor.cpu_temperature
     - sensor.external_ip
     - sensor.kids_bedroom_mold
