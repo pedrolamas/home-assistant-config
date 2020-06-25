@@ -39,3 +39,6 @@ cards:
         icon: mdi:wifi
       - entity: sensor.joana_oneplus7_battery
         name: Battery
+
+  - type: alarm-panel
+    entity: alarm_control_panel.home_alarm

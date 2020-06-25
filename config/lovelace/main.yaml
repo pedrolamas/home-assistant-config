@@ -6,6 +6,7 @@ badges:
   - person.joana
   - sensor.eastern_time_zone
   - sensor.pacific_time_zone
+  - alarm_control_panel.home_alarm
 cards:
   - type: glance
     title: Living Room

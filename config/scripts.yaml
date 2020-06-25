@@ -1,18 +1,46 @@
 send_notification_pedro:
   sequence:
-    - service: notify.hangouts_pedro
+    - service: notify.mobile_app_pedro_oneplus7pro
       data_template:
-        message: "{{ message }}"
+        message: >-
+          {% if allow_clear == "true" and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}"{{ message }}"{% endif %}
         data:
           image_file: "{{ filename }}"
+          channel: "{{ channel }}"
+          tag: "{{ tag }}"
+          priority: "high"
+
+clear_notification_pedro:
+  sequence:
+    - service: notify.mobile_app_pedro_oneplus7pro
+      data_template:
+        message: clear_notification
+        data:
+          channel: "{{ channel }}"
+          tag: "{{ tag }}"
+          priority: "high"
 
 send_notification_all:
   sequence:
-    - service: notify.hangouts_all
+    - service: notify.mobile_app_all
       data_template:
-        message: "{{ message }}"
+        message: >-
+          {% if allow_clear == "true" and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}"{{ message }}"{% endif %}
         data:
           image_file: "{{ filename }}"
+          channel: "{{ channel }}"
+          tag: "{{ tag }}"
+          priority: "high"
+
+clear_notification_all:
+  sequence:
+    - service: notify.mobile_app_all
+      data_template:
+        message: clear_notification
+        data:
+          channel: "{{ channel }}"
+          tag: "{{ tag }}"
+          priority: "high"
 
 send_notification_with_living_room_camera_snapshot:
   sequence:
@@ -20,7 +48,7 @@ send_notification_with_living_room_camera_snapshot:
       data:
         entity_id: camera.living_room_camera
         filename: "/config/www/snapshot.jpg"
-    - service: script.send_notification_pedro
+    - service: notify.hangouts_pedro
       data_template:
         message: "{{ message }}"
         filename: "/config/www/snapshot.jpg"
@@ -31,7 +59,7 @@ send_notification_with_lower_floor_camera_snapshot:
       data:
         entity_id: camera.lower_floor_camera
         filename: "/config/www/snapshot2.jpg"
-    - service: script.send_notification_pedro
+    - service: notify.hangouts_pedro
       data_template:
         message: "{{ message }}"
         filename: "/config/www/snapshot2.jpg"

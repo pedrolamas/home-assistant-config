@@ -63,12 +63,11 @@
       for:
         minutes: 1
   action:
-    - service: notify.mobile_app_pedro_oneplus7pro
+    - service: script.send_notification_pedro
       data_template:
         message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is offline."
-        data:
-          channel: "System"
-          tag: "{{ trigger.entity_id }}-deviceoffline"
+        channel: "System"
+        tag: "{{ trigger.entity_id }}-deviceoffline"
 
 - alias: Device online, clear notification
   trigger:
@@ -86,12 +85,10 @@
       from: "offline"
       to: "online"
   action:
-    - service: notify.mobile_app_pedro_oneplus7pro
+    - service: script.clear_notification_pedro
       data_template:
-        message: "clear_notification"
-        data:
-          channel: "System"
-          tag: "{{ trigger.entity_id }}-deviceoffline"
+        channel: "System"
+        tag: "{{ trigger.entity_id }}-deviceoffline"
 
 - alias: External IP doesn't match reported IP, update reported IP
   trigger:
@@ -112,12 +109,11 @@
       entity_id: binary_sensor.washing_machine_program_running
       to: "off"
   action:
-    - service: notify.mobile_app_all
+    - service: script.send_notification_all
       data:
         message: "Washing Machine program finished!"
-        data:
-          channel: "Automation"
-          tag: "washingmachine"
+        channel: "Automation"
+        tag: "washingmachine"
 
 - alias: Door open, send notification
   trigger:
@@ -127,12 +123,11 @@
         - binary_sensor.frontdoor_contact
       to: "on"
   action:
-    - service: notify.mobile_app_all
+    - service: script.send_notification_all
       data_template:
         message: "{{ trigger.to_state.attributes.friendly_name }} is open!"
-        data:
-          channel: "Alarm"
-          tag: "{{ trigger.entity_id }}"
+        channel: "Alarm"
+        tag: "{{ trigger.entity_id }}"
 
 - alias: Door open and lamp off, turn on lamp
   trigger:
@@ -184,14 +179,13 @@
       for:
         minutes: 5
   action:
-    - service: notify.mobile_app_all
+    - service: script.send_notification_all
       data_template:
         message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is still open!"
-        data:
-          channel: "Alarm"
-          tag: "{{ trigger.entity_id }}"
+        channel: "Alarm"
+        tag: "{{ trigger.entity_id }}"
 
-- alias: Door closed, clear notification
+- alias: Door closed, send notification
   trigger:
     - platform: state
       entity_id:
@@ -199,12 +193,12 @@
         - binary_sensor.frontdoor_contact
       to: "off"
   action:
-    - service: notify.mobile_app_all
+    - service: script.send_notification_all
       data_template:
-        message: "clear_notification"
-        data:
-          channel: "Alarm"
-          tag: "{{ trigger.entity_id }}"
+        message: "{{ trigger.to_state.attributes.friendly_name }} is closed!"
+        channel: "Alarm"
+        tag: "{{ trigger.entity_id }}"
+        allow_clear: "true"
 
 - alias: Front Door Mailbox movement, send notification
   trigger:
@@ -216,12 +210,49 @@
       value_template: >-
         {{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' and is_state('binary_sensor.frontdoor_contact', 'off') }}
   action:
-    - service: notify.mobile_app_all
+    - service: script.send_notification_all
       data_template:
         message: "Movement detected on Front Door Mailbox"
-        data:
-          channel: "Automation"
-          tag: "frontdoormailbox"
+        channel: "Automation"
+        tag: "frontdoormailbox"
+
+- alias: Arm the alarm for night mode at 01:00
+  trigger:
+    - platform: time
+      at: "01:00:00"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: "disabled"
+  action:
+    - service: alarm_control_panel.alarm_arm_night
+      entity_id: alarm_control_panel.home_alarm
+
+- alias: Disarm the alarm from night mode at 07:00
+  trigger:
+    - platform: time
+      at: "07:00:00"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: "armed_night"
+  action:
+    - service: alarm_control_panel.alarm_disarm
+      entity_id: alarm_control_panel.home_alarm
+
+- alias: Everyone away, arm alarm for away mode
+  trigger:
+    - platform: state
+      entity_id:
+        - person.pedro
+        - person.joana
+  condition:
+    - condition: template
+      value_template: >-
+        {{ is_state('person.pedro', 'away') and is_state('person.joana', 'away') }}
+  action:
+    - service: alarm_control_panel.alarm_arm_away
+      entity_id: alarm_control_panel.home_alarm
 
 - alias: Smart Vibration Sensor movement, send notification
   trigger:
@@ -242,12 +273,11 @@
     - platform: state
       entity_id: updater.updater
   action:
-    - service: notify.mobile_app_pedro_oneplus7pro
+    - service: script.send_notification_pedro
       data_template:
         message: "Home Assistant update available!"
-        data:
-          channel: "System"
-          tag: "homeassistantupdate"
+        channel: "System"
+        tag: "homeassistantupdate"
 
 - alias: Zigbee2mqtt Log Level
   trigger:
@@ -258,4 +288,3 @@
       data:
         payload_template: "{{ states('input_select.zigbee2mqtt_log_level') }}"
         topic: "zigbee2mqtt/bridge/config/log_level"
-
