@@ -101,6 +101,5 @@ input_boolean: !include input_boolean.yaml
 camera: !include cameras.yaml
 alexa: !include alexa.yaml
 rest_command: !include rest_command.yaml
-pi_hole: !include pi_hole.yaml
 influxdb: !include influxdb.yaml
 webostv: !include webostv.yaml

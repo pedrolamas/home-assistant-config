@@ -130,13 +130,10 @@ cards:
       - entity: sensor.reported_ip
       - entity: sensor.zigbee2mqtt_bridge_state
         name: Zigbee2mqtt
-      - entity: input_boolean.pi_hole_paused
-        name: Pause Pi-hole
+      - entity: switch.adguard_protection
+        name: AdGuard Home
         tap_action:
-          action: call-service
-          service: input_boolean.turn_on
-          service_data:
-            entity_id: input_boolean.pi_hole_paused
+          action: toggle
 
 #  - type: glance
 #    title: Others

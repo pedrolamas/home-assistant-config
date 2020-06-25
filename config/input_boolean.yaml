@@ -3,7 +3,3 @@ turn_off_lamp_on_back_door_close:
 
 turn_off_lamp_on_front_door_close:
   initial: off
-
-pi_hole_paused:
-  initial: off
-  icon: mdi:pi-hole

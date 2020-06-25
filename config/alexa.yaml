@@ -11,7 +11,6 @@ smart_home:
       - sensor.livingroomclimate_temperature
       - sensor.lowerfloorclimate_temperature
       - sensor.masterbedroomclimate_temperature
-      - script.pause_pi_hole
       - script.watch_netflix_on_lg_smart_tv
       - script.watch_plex_on_lg_smart_tv
       - script.watch_bbc_one_on_lg_smart_tv
@@ -63,8 +62,6 @@ smart_home:
       name: Lower Floor Temperature
     sensor.masterbedroomclimate_temperature:
       name: Master Bedroom Temperature
-    script.pause_pi_hole:
-      name: Pause Pi-hole
     script.watch_netflix_on_lg_smart_tv:
       name: Netflix
     script.watch_plex_on_lg_smart_tv:

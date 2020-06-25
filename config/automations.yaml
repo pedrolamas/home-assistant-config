@@ -259,16 +259,3 @@
         payload_template: "{{ states('input_select.zigbee2mqtt_log_level') }}"
         topic: "zigbee2mqtt/bridge/config/log_level"
 
-- alias: Pause Pi-hole
-  trigger:
-    - platform: state
-      entity_id: input_boolean.pi_hole_paused
-      to: "on"
-  action:
-    - service: pi_hole.disable
-      data:
-        duration: 00:05:00
-    - delay: 0:00:10
-    - service: input_boolean.turn_off
-      data:
-        entity_id: input_boolean.pi_hole_paused
