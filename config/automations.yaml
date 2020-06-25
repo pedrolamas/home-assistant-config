@@ -240,18 +240,34 @@
     - service: alarm_control_panel.alarm_disarm
       entity_id: alarm_control_panel.home_alarm
 
-- alias: Everyone away, arm alarm for away mode
+- alias: Everyone not home, arm alarm for away mode
   trigger:
     - platform: state
       entity_id:
         - person.pedro
         - person.joana
+      from: "home"
   condition:
     - condition: template
       value_template: >-
-        {{ is_state('person.pedro', 'away') and is_state('person.joana', 'away') }}
+        {{ not(is_state('person.pedro', 'home') or is_state('person.joana', 'home')) }}
   action:
     - service: alarm_control_panel.alarm_arm_away
+      entity_id: alarm_control_panel.home_alarm
+
+- alias: Someone home, disarm alarm from away mode
+  trigger:
+    - platform: state
+      entity_id:
+        - person.pedro
+        - person.joana
+      to: "home"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: "armed_away"
+  action:
+    - service: alarm_control_panel.alarm_disarm
       entity_id: alarm_control_panel.home_alarm
 
 - alias: Smart Vibration Sensor movement, send notification
