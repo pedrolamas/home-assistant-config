@@ -223,7 +223,7 @@
   condition:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
-      state: "disabled"
+      state: "disarmed"
   action:
     - service: alarm_control_panel.alarm_arm_night
       entity_id: alarm_control_panel.home_alarm

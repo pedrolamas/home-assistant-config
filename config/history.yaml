@@ -1,6 +1,7 @@
 include:
   domains:
   entities:
+    - alarm_control_panel.home_alarm
     - binary_sensor.backdoor_contact
     - binary_sensor.frontdoor_contact
     - light.lamp_1
