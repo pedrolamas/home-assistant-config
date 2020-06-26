@@ -3,7 +3,7 @@ send_notification_pedro:
     - service: notify.mobile_app_pedro_oneplus7pro
       data_template:
         message: >-
-          {% if allow_clear == "true" and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}"{{ message }}"{% endif %}
+          {% if allow_clear == "true" and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}{{ message }}{% endif %}
         data:
           image_file: "{{ filename }}"
           channel: "{{ channel }}"
@@ -25,7 +25,7 @@ send_notification_all:
     - service: notify.mobile_app_all
       data_template:
         message: >-
-          {% if allow_clear == "true" and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}"{{ message }}"{% endif %}
+          {% if allow_clear == "true" and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}{{ message }}{% endif %}
         data:
           image_file: "{{ filename }}"
           channel: "{{ channel }}"
