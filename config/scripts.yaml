@@ -1,6 +1,13 @@
-send_notification_pedro:
+send_notification:
   sequence:
-    - service: notify.mobile_app_pedro_oneplus7pro
+    - service_template: >-
+        {% if recipient == 'pedro' %}
+          notify.mobile_app_pedro_oneplus7pro
+        {% elif recipient == 'joana' %}
+          notify.mobile_app_joana_oneplus7
+        {% else %}
+          notify.mobile_app_all
+        {% endif %}
       data_template:
         message: >-
           {% if allow_clear == "true" and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}{{ message }}{% endif %}
@@ -10,31 +17,16 @@ send_notification_pedro:
           tag: "{{ tag }}"
           priority: "high"
 
-clear_notification_pedro:
+clear_notification:
   sequence:
-    - service: notify.mobile_app_pedro_oneplus7pro
-      data_template:
-        message: clear_notification
-        data:
-          channel: "{{ channel }}"
-          tag: "{{ tag }}"
-          priority: "high"
-
-send_notification_all:
-  sequence:
-    - service: notify.mobile_app_all
-      data_template:
-        message: >-
-          {% if allow_clear == "true" and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}{{ message }}{% endif %}
-        data:
-          image_file: "{{ filename }}"
-          channel: "{{ channel }}"
-          tag: "{{ tag }}"
-          priority: "high"
-
-clear_notification_all:
-  sequence:
-    - service: notify.mobile_app_all
+    - service_template: >-
+        {% if recipient == 'pedro' %}
+          notify.mobile_app_pedro_oneplus7pro
+        {% elif recipient == 'joana' %}
+          notify.mobile_app_joana_oneplus7
+        {% else %}
+          notify.mobile_app_all
+        {% endif %}
       data_template:
         message: clear_notification
         data:

@@ -57,6 +57,18 @@ sensor.islington:
 sensor.external_ip:
   icon: mdi:wan
 
+sensor.pedro_oneplus7pro_battery:
+  recipient: pedro
+
+sensor.pedro_oneplus7pro_battery_state:
+  recipient: pedro
+
+sensor.joana_oneplus7_battery:
+  recipient: joana
+
+sensor.joana_oneplus7_battery_state:
+  recipient: joana
+
 sensor.reported_ip:
   icon: mdi:wan
 

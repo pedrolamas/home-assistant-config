@@ -63,8 +63,9 @@
       for:
         minutes: 1
   action:
-    - service: script.send_notification_pedro
+    - service: script.send_notification
       data_template:
+        recipient: "pedro"
         message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is offline."
         channel: "System"
         tag: "{{ trigger.entity_id }}-deviceoffline"
@@ -85,8 +86,9 @@
       from: "offline"
       to: "online"
   action:
-    - service: script.clear_notification_pedro
+    - service: script.clear_notification
       data_template:
+        recipient: "pedro"
         channel: "System"
         tag: "{{ trigger.entity_id }}-deviceoffline"
 
@@ -109,7 +111,7 @@
       entity_id: binary_sensor.washing_machine_program_running
       to: "off"
   action:
-    - service: script.send_notification_all
+    - service: script.send_notification
       data:
         message: "Washing Machine program finished!"
         channel: "Automation"
@@ -123,7 +125,7 @@
         - binary_sensor.frontdoor_contact
       to: "on"
   action:
-    - service: script.send_notification_all
+    - service: script.send_notification
       data_template:
         message: "{{ trigger.to_state.attributes.friendly_name }} is open!"
         channel: "Alarm"
@@ -179,7 +181,7 @@
       for:
         minutes: 5
   action:
-    - service: script.send_notification_all
+    - service: script.send_notification
       data_template:
         message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is still open!"
         channel: "Alarm"
@@ -193,7 +195,7 @@
         - binary_sensor.frontdoor_contact
       to: "off"
   action:
-    - service: script.send_notification_all
+    - service: script.send_notification
       data_template:
         message: "{{ trigger.to_state.attributes.friendly_name }} is closed!"
         channel: "Alarm"
@@ -210,7 +212,7 @@
       value_template: >-
         {{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' and is_state('binary_sensor.frontdoor_contact', 'off') }}
   action:
-    - service: script.send_notification_all
+    - service: script.send_notification
       data_template:
         message: "Movement detected on Front Door Mailbox"
         channel: "Automation"
@@ -284,13 +286,63 @@
       data_template:
         message: "Movement detected on Smart Vibration Sensor"
 
+- alias: Phone battery at 90% and charging, send notification
+  trigger:
+    - platform: numeric_state
+      entity_id:
+        - sensor.joana_oneplus7_battery
+        - sensor.pedro_oneplus7pro_battery
+      above: 89
+      below: 100
+  condition:
+    - condition: template
+      value_template: >-
+        {{ is_state(trigger.entity_id ~ '_state', 'charging') }}
+  action:
+    - service: script.send_notification
+      data_template:
+        recipient: "{{ trigger.to_state.attributes.recipient }}"
+        message: "Phone battery charged to 90%!"
+        channel: "Phone"
+        tag: "Battery"
+
+- alias: Phone battery fully charged, send notification
+  trigger:
+    - platform: numeric_state
+      entity_id:
+        - sensor.joana_oneplus7_battery
+        - sensor.pedro_oneplus7pro_battery
+      above: 99
+  action:
+    - service: script.send_notification
+      data_template:
+        recipient: "{{ trigger.to_state.attributes.recipient }}"
+        message: "Phone battery fully charged!"
+        channel: "Phone"
+        tag: "Battery"
+
+- alias: Phone not charging, clear notification
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.joana_oneplus7_battery_state
+        - sensor.pedro_oneplus7pro_battery_state
+      to: "discharging"
+  action:
+    - service: script.clear_notification
+      data_template:
+        recipient: "{{ trigger.to_state.attributes.recipient }}"
+        channel: "Phone"
+        tag: "Battery"
+
 - alias: Update available, send notification
   trigger:
     - platform: state
       entity_id: updater.updater
   action:
-    - service: script.send_notification_pedro
+    - service: script.send_notification
       data_template:
+        recipient: "pedro"
         message: "Home Assistant update available!"
         channel: "System"
         tag: "homeassistantupdate"
