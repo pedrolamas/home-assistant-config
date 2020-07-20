@@ -12,7 +12,7 @@ cards:
     title: Living Room
     columns: 4
     entities:
-      - entity: light.living_room
+      - entity: light.living_room_lights
         name: Lights
         tap_action:
           action: navigate
@@ -69,7 +69,7 @@ cards:
     title: Master Bedroom
     columns: 4
     entities:
-      - entity: light.master_bedroom
+      - entity: light.master_bedroom_lights
         name: Lights
         tap_action:
           action: navigate
@@ -94,6 +94,11 @@ cards:
     title: Kids Bedroom
     columns: 4
     entities:
+      - entity: light.kids_bedroom_lights
+        name: Lights
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/lights
       - entity: sensor.kidsbedroomclimate_temperature
         name: Temperature
         tap_action:

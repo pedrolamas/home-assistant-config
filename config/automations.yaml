@@ -30,20 +30,21 @@
 
 - alias: Smart Plug on with low power for 2 minutes, turn off
   trigger:
-    - platform: template
-      value_template: >-
-        {{ is_state('switch.smartplug4_switch', 'on') and states('sensor.smartplug4_power') | float < 0.3 }}
+    - platform: numeric_state
+      entity_id:
+        - sensor.smartplug4_power
+        - sensor.smartplug7_power
+      below: 0.5
       for:
         minutes: 2
-    - platform: template
+  condition:
+    - condition: template
       value_template: >-
-        {{ is_state('switch.smartplug7_switch', 'on') and states('sensor.smartplug7_power') | float < 0.3 }}
-      for:
-        minutes: 2
+        {{ is_state(trigger.to_state.attributes.switch, 'on') }}
   action:
     - service: switch.turn_off
       data_template:
-        entity_id: "{{ trigger.entity_id }}"
+        entity_id: "{{ trigger.to_state.attributes.switch }}"
 
 - alias: Device offline, send notification
   trigger:
@@ -302,7 +303,7 @@
     - service: script.send_notification
       data_template:
         recipient: "{{ trigger.to_state.attributes.recipient }}"
-        message: "Phone battery charged to 90%!"
+        message: "Phone battery charged to {{ trigger.to_state.state }}%!"
         channel: "Phone"
         tag: "Battery"
 

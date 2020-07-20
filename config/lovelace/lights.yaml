@@ -6,9 +6,6 @@ cards:
     title: Living Room
     show_header_toggle: false
     entities:
-      - entity: light.living_room
-        name: All Lamps
-      - type: divider
       - entity: light.lamp_1
       - entity: light.lamp_2
       - entity: light.lamp_3
@@ -17,5 +14,13 @@ cards:
     title: Master Bedroom
     show_header_toggle: false
     entities:
-      - entity: light.master_bedroom
-        name: All Lamps
+      - entity: light.masterbedroomdimmer_light
+        name: Ceiling dimmer
+      - entity: light.lamp_4
+
+  - type: entities
+    title: Kids Bedroom
+    show_header_toggle: false
+    entities:
+      - entity: light.kidsbedroomdimmer_light
+        name: Ceiling dimmer

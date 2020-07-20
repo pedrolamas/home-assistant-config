@@ -1,0 +1,17 @@
+- platform: group
+  name: Living Room Lights
+  entities:
+    - light.lamp_1
+    - light.lamp_2
+    - light.lamp_3
+
+- platform: group
+  name: Master Bedroom Lights
+  entities:
+    - light.lamp_4
+    - light.masterbedroomdimmer_light
+
+- platform: group
+  name: Kids Bedroom Lights
+  entities:
+    - light.kidsbedroomdimmer_light

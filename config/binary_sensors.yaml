@@ -133,7 +133,7 @@
       friendly_name: Washing Machine
       icon_template: mdi:washing-machine
       value_template: >-
-        {{ states('sensor.smartplug5_power') | float > 0.3 }}
+        {{ states('sensor.smartplug5_power') | float > 0.5 }}
       delay_off:
         minutes: 1
       delay_on:

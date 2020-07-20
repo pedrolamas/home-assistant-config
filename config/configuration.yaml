@@ -106,3 +106,4 @@ rest_command: !include rest_command.yaml
 influxdb: !include influxdb.yaml
 webostv: !include webostv.yaml
 alarm_control_panel: !include alarm_control_panel.yaml
+light: !include light.yaml

@@ -39,6 +39,12 @@ binary_sensor.synology_ds412_nas:
 binary_sensor.raspberry_pi_2_model_b:
   icon: mdi:raspberry-pi
 
+light.kidsbedroomdimmer_light:
+  friendly_name: Kids Bedroom Dimmer
+
+light.masterbedroomdimmer_light:
+  friendly_name: Master Bedroom Dimmer
+
 sensor.bakerloo:
   friendly_name: Bakerloo Line
   icon: mdi:subway-variant
@@ -71,6 +77,12 @@ sensor.joana_oneplus7_battery_state:
 
 sensor.reported_ip:
   icon: mdi:wan
+
+sensor.smartplug4_power:
+  switch: switch.smartplug4_switch
+
+sensor.smartplug7_power:
+  switch: switch.smartplug7_switch
 
 switch.smartplug1_switch:
   friendly_name: Living Room Smart Plug
