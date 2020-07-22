@@ -12,7 +12,6 @@ homeassistant:
 
 frontend:
   themes: !include_dir_merge_named themes/
-  javascript_version: latest
 
 lovelace:
   mode: yaml

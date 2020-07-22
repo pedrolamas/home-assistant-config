@@ -65,3 +65,9 @@ Google Dark Theme:
   table-row-background-color: var(--primary-background-color)
   table-row-alternative-background-color: var(--secondary-background-color)
   data-table-background-color: var(--primary-background-color)
+  # fix for device configuration screen
+  card-background-color: "var(--paper-card-background-color)"
+  # fix for choosers
+  material-background-color: "var(--paper-listbox-background-color)"
+  material-secondary-background-color: "var(--secondary-background-color)"
+  material-body-text-color: "var(--text-primary-color)"
