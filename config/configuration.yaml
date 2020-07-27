@@ -55,23 +55,11 @@ webhook:
 
 zigbee2mqtt_networkmap:
 
-panel_iframe:
-  networkmap:
-    title: Zigbee Map
-    url: '/local/community/zigbee2mqtt_networkmap/map.html'
-    icon: mdi:graphql
-
 mqtt:
   broker: !secret mqtt_broker
   discovery: true
 #  username: !secret mqtt_username
 #  password: !secret mqtt_password
-  birth_message:
-    topic: 'hass/status'
-    payload: 'online'
-  will_message:
-    topic: 'hass/status'
-    payload: 'offline'
 
 ifttt:
   key: !secret ifttt_key
@@ -106,3 +94,4 @@ influxdb: !include influxdb.yaml
 webostv: !include webostv.yaml
 alarm_control_panel: !include alarm_control_panel.yaml
 light: !include light.yaml
+panel_iframe: !include panel_iframe.yaml

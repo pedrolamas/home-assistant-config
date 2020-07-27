@@ -1,0 +1,24 @@
+portainer:
+  title: Portainer
+  url: !secret panel_iframe_portainer_url
+  icon: mdi:docker
+grafana:
+  title: Grafana
+  url: !secret panel_iframe_grafana_url
+  icon: mdi:chart-timeline
+vscode:
+  title: VSCode
+  url: !secret panel_iframe_vscode_url
+  icon: mdi:microsoft-visual-studio-code
+adguardhome:
+  title: Adguard Home
+  url: !secret panel_iframe_adguardhome_url
+  icon: mdi:shield-check
+esphome:
+  title: ESPHome
+  url: !secret panel_iframe_esphome_url
+  icon: mdi:chip
+networkmap:
+  title: Zigbee Map
+  url: '/local/community/zigbee2mqtt_networkmap/map.html'
+  icon: mdi:graphql
