@@ -67,7 +67,8 @@
     - service: script.send_notification
       data_template:
         recipient: "pedro"
-        message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is offline."
+        message: "{{ trigger.to_state.attributes.friendly_name }} is offline."
+        color: "red"
         channel: "System"
         tag: "{{ trigger.entity_id }}-deviceoffline"
 
@@ -184,7 +185,8 @@
   action:
     - service: script.send_notification
       data_template:
-        message: "ALERT: {{ trigger.to_state.attributes.friendly_name }} is still open!"
+        message: "{{ trigger.to_state.attributes.friendly_name }} is still open!"
+        color: "red"
         channel: "Alarm"
         tag: "{{ trigger.entity_id }}"
 
@@ -339,7 +341,9 @@
 - alias: Update available, send notification
   trigger:
     - platform: state
-      entity_id: updater.updater
+      entity_id: binary_sensor.updater
+      from: "off"
+      to: "on"
   action:
     - service: script.send_notification
       data_template:
@@ -355,5 +359,5 @@
   action:
     - service: mqtt.publish
       data:
-        payload_template: "{{ states('input_select.zigbee2mqtt_log_level') }}"
+        payload_template: "{{ trigger.to_state.state }}"
         topic: "zigbee2mqtt/bridge/config/log_level"

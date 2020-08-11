@@ -5,8 +5,13 @@ homeassistant:
   elevation: !secret home_elevation
   unit_system: metric
   time_zone: Europe/London
+  internal_url: !secret internal_url
   customize: !include customize.yaml
   customize_glob: !include customize_glob.yaml
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies: !secret http_trusted_proxies
 
 #default_config:
 
@@ -17,41 +22,29 @@ lovelace:
   mode: yaml
 
 updater:
+  reporting: false
 
 config:
 
 ssdp:
 
-upnp:
-
 zeroconf:
+  default_interface: true
+  ipv6: false
 
 discovery:
-
-#conversation:
-
-#map:
 
 sun:
 
 system_health:
 
-#tts:
-#  - platform: google
-
-#cloud:
-
 api:
-
-#ffmpeg:
 
 stream:
 
 wake_on_lan:
 
 mobile_app:
-
-webhook:
 
 zigbee2mqtt_networkmap:
 

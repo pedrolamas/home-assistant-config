@@ -11,7 +11,9 @@ send_notification:
       data_template:
         message: >-
           {% if allow_clear == "true" and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}{{ message }}{% endif %}
+        title: "{{ title }}"
         data:
+          color: "{{ color }}"
           image_file: "{{ filename }}"
           channel: "{{ channel }}"
           tag: "{{ tag }}"
@@ -43,7 +45,8 @@ send_notification_with_living_room_camera_snapshot:
     - service: notify.hangouts_pedro
       data_template:
         message: "{{ message }}"
-        filename: "/config/www/snapshot.jpg"
+        data:
+          image_file: "/config/www/snapshot.jpg"
 
 send_notification_with_lower_floor_camera_snapshot:
   sequence:
@@ -54,7 +57,8 @@ send_notification_with_lower_floor_camera_snapshot:
     - service: notify.hangouts_pedro
       data_template:
         message: "{{ message }}"
-        filename: "/config/www/snapshot2.jpg"
+        data:
+          image_file: "/config/www/snapshot2.jpg"
 
 update_reported_ip:
   sequence:
