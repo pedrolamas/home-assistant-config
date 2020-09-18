@@ -119,14 +119,14 @@ cards:
     title: Local
     columns: 4
     entities:
-    - entity: sensor.victoria
-    - entity: sensor.bakerloo
-    - entity: sensor.london_overground
-    - entity: sensor.islington
+      - entity: sensor.victoria
+      - entity: sensor.bakerloo
+      - entity: sensor.london_overground
+      - entity: sensor.islington
 
   - type: weather-forecast
     title: Weather
-    entity: weather.dark_sky
+    entity: weather.home
 
   - type: glance
     title: Network
@@ -140,14 +140,3 @@ cards:
         name: AdGuard Home
         tap_action:
           action: toggle
-
-#  - type: glance
-#    title: Others
-#    columns: 4
-#    entities:
-#      - entity: sensor.eastern_time_zone
-#        name: Eastern Time
-#      - entity: sensor.pacific_time_zone
-#        name: Pacific Time
-#      - entity: sensor.moon
-#      - entity: sun.sun

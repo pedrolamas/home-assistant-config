@@ -18,7 +18,7 @@ cards:
       - entity: device_tracker.oneplus_7_pro_pedro
         name: WiFi
         icon: mdi:wifi
-      - entity: sensor.pedro_oneplus7pro_battery
+      - entity: sensor.pedro_oneplus7pro_battery_level
         name: Battery
 
   - type: glance
@@ -37,7 +37,7 @@ cards:
       - entity: device_tracker.oneplus_7_joana
         name: WiFi
         icon: mdi:wifi
-      - entity: sensor.joana_oneplus7_battery
+      - entity: sensor.joana_oneplus7_battery_level
         name: Battery
 
   - type: alarm-panel

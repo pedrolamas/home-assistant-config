@@ -9,82 +9,106 @@ homeassistant:
   customize: !include customize.yaml
   customize_glob: !include customize_glob.yaml
 
-http:
-  use_x_forwarded_for: true
-  trusted_proxies: !secret http_trusted_proxies
-
 #default_config:
+
+alarm_control_panel: !include alarm_control_panel.yaml
+
+alexa: !include alexa.yaml
+
+api:
+
+automation: !include automations.yaml
+
+binary_sensor: !include binary_sensors.yaml
+
+camera: !include cameras.yaml
+
+config:
+
+discovery:
 
 frontend:
   themes: !include_dir_merge_named themes/
 
+#group: !include groups.yaml
+
+history: !include history.yaml
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies: !secret http_trusted_proxies
+
+ifttt:
+  key: !secret ifttt_key
+
+influxdb: !include influxdb.yaml
+
+input_boolean: !include input_boolean.yaml
+
+input_datetime:
+
+input_number:
+
+input_select: !include input_select.yaml
+
+input_text:
+
+light: !include light.yaml
+
+#lock: !include locks.yaml
+
+logbook: !include logbook.yaml
+
 lovelace:
   mode: yaml
+
+#media_player: !include media_players.yaml
+
+mobile_app:
+
+mqtt:
+  broker: !secret mqtt_broker
+  discovery: true
+  # username: !secret mqtt_username
+  # password: !secret mqtt_password
+
+notify: !include notify.yaml
+
+panel_iframe: !include panel_iframe.yaml
+
+person: !include persons.yaml
+
+recorder: !include recorder.yaml
+
+rest_command: !include rest_command.yaml
+
+script: !include scripts.yaml
+
+sensor: !include sensors.yaml
+
+ssdp:
+
+stream:
+
+sun:
+
+switch: !include switches.yaml
+
+system_health:
+
+#timer: !include timers.yaml
 
 updater:
   reporting: false
 
-config:
+wake_on_lan:
 
-ssdp:
+webostv: !include webostv.yaml
 
 zeroconf:
   default_interface: true
   ipv6: false
 
-discovery:
-
-sun:
-
-system_health:
-
-api:
-
-stream:
-
-wake_on_lan:
-
-mobile_app:
-
 zigbee2mqtt_networkmap:
 
-mqtt:
-  broker: !secret mqtt_broker
-  discovery: true
-#  username: !secret mqtt_username
-#  password: !secret mqtt_password
-
-ifttt:
-  key: !secret ifttt_key
-
-weather:
-#  - platform: metoffice
-#    api_key: !secret metoffice_api_key
-  - platform: darksky
-    api_key: !secret darksky_api_key
-
-recorder: !include recorder.yaml
-history: !include history.yaml
-logbook: !include logbook.yaml
-person: !include persons.yaml
 zone: !include zones.yaml
-sensor: !include sensors.yaml
-binary_sensor: !include binary_sensors.yaml
-#media_player: !include media_players.yaml
-#group: !include groups.yaml
-automation: !include automations.yaml
-script: !include scripts.yaml
-switch: !include switches.yaml
-notify: !include notify.yaml
-#lock: !include locks.yaml
-input_select: !include input_select.yaml
-input_boolean: !include input_boolean.yaml
-#timer: !include timers.yaml
-camera: !include cameras.yaml
-alexa: !include alexa.yaml
-rest_command: !include rest_command.yaml
-influxdb: !include influxdb.yaml
-webostv: !include webostv.yaml
-alarm_control_panel: !include alarm_control_panel.yaml
-light: !include light.yaml
-panel_iframe: !include panel_iframe.yaml

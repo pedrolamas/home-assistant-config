@@ -25,18 +25,6 @@
   resolver: 1.1.1.1
   scan_interval: 30
 
-#- platform: metoffice
-#  api_key: !secret metoffice_api_key
-#  monitored_conditions:
-#    - weather
-#    - temperature
-#    - feels_like_temperature
-#    - wind_speed
-#    - wind_direction
-#    - wind_gust
-#    - visibility
-#    - visibility_distance
-
 #- platform: google_travel_time
 #  name: Pedro to Home
 #  api_key: !secret google_travel_time_api_key
@@ -103,4 +91,4 @@
       unit_of_measurement: "°C"
       device_class: temperature
       value_template: >-
-        {{ state_attr('weather.dark_sky', 'temperature') }}
+        {{ state_attr('weather.home', 'temperature') }}

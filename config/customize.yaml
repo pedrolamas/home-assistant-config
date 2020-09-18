@@ -63,13 +63,13 @@ sensor.islington:
 sensor.external_ip:
   icon: mdi:wan
 
-sensor.pedro_oneplus7pro_battery:
+sensor.pedro_oneplus7pro_battery_level:
   recipient: pedro
 
 sensor.pedro_oneplus7pro_battery_state:
   recipient: pedro
 
-sensor.joana_oneplus7_battery:
+sensor.joana_oneplus7_battery_level:
   recipient: joana
 
 sensor.joana_oneplus7_battery_state:

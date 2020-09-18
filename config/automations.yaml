@@ -293,8 +293,8 @@
   trigger:
     - platform: numeric_state
       entity_id:
-        - sensor.joana_oneplus7_battery
-        - sensor.pedro_oneplus7pro_battery
+        - sensor.joana_oneplus7_battery_level
+        - sensor.pedro_oneplus7pro_battery_level
       above: 89
       below: 100
   condition:
@@ -313,8 +313,8 @@
   trigger:
     - platform: numeric_state
       entity_id:
-        - sensor.joana_oneplus7_battery
-        - sensor.pedro_oneplus7pro_battery
+        - sensor.joana_oneplus7_battery_level
+        - sensor.pedro_oneplus7pro_battery_level
       above: 99
   action:
     - service: script.send_notification
