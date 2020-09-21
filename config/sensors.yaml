@@ -82,7 +82,6 @@
   sensors:
 
     lg_smart_tv_is_playing:
-      entity_id: media_player.lg_smart_tv
       value_template: 0
       icon_template: >-
         {% if is_state('media_player.lg_smart_tv', 'playing') %}mdi:pause{% else %}mdi:play{% endif %}

@@ -24,7 +24,7 @@
       below: 20
   action:
     - service: persistent_notification.create
-      data_template:
+      data:
         title: "Device with low battery"
         message: "The {{ trigger.to_state.attributes.friendly_name }} sensor has low battery!"
 
@@ -38,12 +38,10 @@
       for:
         minutes: 2
   condition:
-    - condition: template
-      value_template: >-
-        {{ is_state(trigger.to_state.attributes.switch, 'on') }}
+    - "{{ is_state(trigger.to_state.attributes.switch, 'on') }}"
   action:
     - service: switch.turn_off
-      data_template:
+      data:
         entity_id: "{{ trigger.to_state.attributes.switch }}"
 
 - alias: Device offline, send notification
@@ -65,7 +63,7 @@
         minutes: 1
   action:
     - service: script.send_notification
-      data_template:
+      data:
         recipient: "pedro"
         message: "{{ trigger.to_state.attributes.friendly_name }} is offline."
         color: "red"
@@ -89,7 +87,7 @@
       to: "online"
   action:
     - service: script.clear_notification
-      data_template:
+      data:
         recipient: "pedro"
         channel: "System"
         tag: "{{ trigger.entity_id }}-deviceoffline"
@@ -101,9 +99,7 @@
         - sensor.external_ip
         - sensor.reported_ip
   condition:
-    - condition: template
-      value_template: >-
-        {{ not(is_state('sensor.external_ip', 'unknown') or is_state('sensor.reported_ip', 'unknown')) and states('sensor.external_ip') != states('sensor.reported_ip') }}
+    - "{{ not(is_state('sensor.external_ip', 'unknown') or is_state('sensor.reported_ip', 'unknown')) and states('sensor.external_ip') != states('sensor.reported_ip') }}"
   action:
     - service: script.update_reported_ip
 
@@ -128,7 +124,7 @@
       to: "on"
   action:
     - service: script.send_notification
-      data_template:
+      data:
         message: "{{ trigger.to_state.attributes.friendly_name }} is open!"
         channel: "Alarm"
         tag: "{{ trigger.entity_id }}"
@@ -141,15 +137,13 @@
         - binary_sensor.frontdoor_contact
       to: "on"
   condition:
-    - condition: template
-      value_template: >-
-        {{ is_state(trigger.to_state.attributes.lamp_entity_id, 'off') }}
+    - "{{ is_state(trigger.to_state.attributes.lamp_entity_id, 'off') }}"
   action:
     - service: light.turn_on
-      data_template:
+      data:
         entity_id: "{{ trigger.to_state.attributes.lamp_entity_id }}"
     - service: input_boolean.turn_on
-      data_template:
+      data:
         entity_id: "{{ trigger.to_state.attributes.lamp_off_entity_id }}"
 
 - alias: Door closed for 30s, turn off lamp
@@ -162,15 +156,13 @@
       for:
         seconds: 30
   condition:
-    - condition: template
-      value_template: >-
-        {{ is_state(trigger.to_state.attributes.lamp_off_entity_id, 'on') }}
+    - "{{ is_state(trigger.to_state.attributes.lamp_off_entity_id, 'on') }}"
   action:
     - service: input_boolean.turn_off
-      data_template:
+      data:
         entity_id: "{{ trigger.to_state.attributes.lamp_off_entity_id }}"
     - service: light.turn_off
-      data_template:
+      data:
         entity_id: "{{ trigger.to_state.attributes.lamp_entity_id }}"
 
 - alias: Door open for 5 minutes, send notification
@@ -184,7 +176,7 @@
         minutes: 5
   action:
     - service: script.send_notification
-      data_template:
+      data:
         message: "{{ trigger.to_state.attributes.friendly_name }} is still open!"
         color: "red"
         channel: "Alarm"
@@ -199,7 +191,7 @@
       to: "off"
   action:
     - service: script.send_notification
-      data_template:
+      data:
         message: "{{ trigger.to_state.attributes.friendly_name }} is closed!"
         channel: "Alarm"
         tag: "{{ trigger.entity_id }}"
@@ -211,12 +203,10 @@
       entity_id: sensor.frontdoormailbox_action
       from: ""
   condition:
-    - condition: template
-      value_template: >-
-        {{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' and is_state('binary_sensor.frontdoor_contact', 'off') }}
+    - "{{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' and is_state('binary_sensor.frontdoor_contact', 'off') }}"
   action:
     - service: script.send_notification
-      data_template:
+      data:
         message: "Movement detected on Front Door Mailbox"
         channel: "Automation"
         tag: "frontdoormailbox"
@@ -253,9 +243,7 @@
         - person.joana
       from: "home"
   condition:
-    - condition: template
-      value_template: >-
-        {{ not(is_state('person.pedro', 'home') or is_state('person.joana', 'home')) }}
+    - "{{ not(is_state('person.pedro', 'home') or is_state('person.joana', 'home')) }}"
   action:
     - service: alarm_control_panel.alarm_arm_away
       entity_id: alarm_control_panel.home_alarm
@@ -281,12 +269,10 @@
       entity_id: sensor.smartvibrationsensor_action
       from: ""
   condition:
-    - condition: template
-      value_template: >-
-        {{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' }}
+    - "{{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' }}"
   action:
     - service: script.send_notification_with_lower_floor_camera_snapshot
-      data_template:
+      data:
         message: "Movement detected on Smart Vibration Sensor"
 
 - alias: Phone battery at 90% and charging, send notification
@@ -298,12 +284,10 @@
       above: 89
       below: 100
   condition:
-    - condition: template
-      value_template: >-
-        {{ is_state(trigger.entity_id ~ '_state', 'charging') }}
+    - "{{ is_state(trigger.entity_id ~ '_state', 'charging') }}"
   action:
     - service: script.send_notification
-      data_template:
+      data:
         recipient: "{{ trigger.to_state.attributes.recipient }}"
         message: "Phone battery charged to {{ trigger.to_state.state }}%!"
         channel: "Phone"
@@ -318,7 +302,7 @@
       above: 99
   action:
     - service: script.send_notification
-      data_template:
+      data:
         recipient: "{{ trigger.to_state.attributes.recipient }}"
         message: "Phone battery fully charged!"
         channel: "Phone"
@@ -333,7 +317,7 @@
       to: "discharging"
   action:
     - service: script.clear_notification
-      data_template:
+      data:
         recipient: "{{ trigger.to_state.attributes.recipient }}"
         channel: "Phone"
         tag: "Battery"
@@ -346,7 +330,7 @@
       to: "on"
   action:
     - service: script.send_notification
-      data_template:
+      data:
         recipient: "pedro"
         message: "Home Assistant update available!"
         channel: "System"

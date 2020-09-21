@@ -1,6 +1,6 @@
 send_notification:
   sequence:
-    - service_template: >-
+    - service: >-
         {% if recipient == 'pedro' %}
           notify.mobile_app_pedro_oneplus7pro
         {% elif recipient == 'joana' %}
@@ -8,7 +8,7 @@ send_notification:
         {% else %}
           notify.mobile_app_all
         {% endif %}
-      data_template:
+      data:
         message: >-
           {% if allow_clear == "true" and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}{{ message }}{% endif %}
         title: "{{ title }}"
@@ -21,7 +21,7 @@ send_notification:
 
 clear_notification:
   sequence:
-    - service_template: >-
+    - service: >-
         {% if recipient == 'pedro' %}
           notify.mobile_app_pedro_oneplus7pro
         {% elif recipient == 'joana' %}
@@ -29,7 +29,7 @@ clear_notification:
         {% else %}
           notify.mobile_app_all
         {% endif %}
-      data_template:
+      data:
         message: clear_notification
         data:
           channel: "{{ channel }}"
@@ -43,7 +43,7 @@ send_notification_with_living_room_camera_snapshot:
         entity_id: camera.living_room_camera
         filename: "/config/www/snapshot.jpg"
     - service: notify.hangouts_pedro
-      data_template:
+      data:
         message: "{{ message }}"
         data:
           image_file: "/config/www/snapshot.jpg"
@@ -55,7 +55,7 @@ send_notification_with_lower_floor_camera_snapshot:
         entity_id: camera.lower_floor_camera
         filename: "/config/www/snapshot2.jpg"
     - service: notify.hangouts_pedro
-      data_template:
+      data:
         message: "{{ message }}"
         data:
           image_file: "/config/www/snapshot2.jpg"
@@ -63,14 +63,14 @@ send_notification_with_lower_floor_camera_snapshot:
 update_reported_ip:
   sequence:
     - service: rest_command.cloudflare_update
-      data_template:
+      data:
         zone_id: !secret cloudflare_zone_id
         dns_record_id: !secret cloudflare_dns_record_id
         dns_record_name: !secret cloudflare_dns_record_name
         ip_address: "{{ states('sensor.external_ip') }}"
     - service: hangouts.reconnect
     - service: script.send_notification_pedro
-      data_template:
+      data:
         message: "External IP address changed to {{ states('sensor.external_ip') }}"
 
 turn_on_lg_smart_tv:
@@ -79,7 +79,7 @@ turn_on_lg_smart_tv:
       entity_id: media_player.lg_smart_tv
       state: "off"
     - service: media_player.turn_on
-      data_template:
+      data:
         entity_id: media_player.lg_smart_tv
 
 watch_netflix_on_lg_smart_tv:
@@ -91,7 +91,7 @@ watch_netflix_on_lg_smart_tv:
         seconds: 15
       continue_on_timeout: "true"
     - service: media_player.select_source
-      data_template:
+      data:
         entity_id: media_player.lg_smart_tv
         source: "Netflix"
 
@@ -104,7 +104,7 @@ watch_plex_on_lg_smart_tv:
         seconds: 15
       continue_on_timeout: "true"
     - service: media_player.select_source
-      data_template:
+      data:
         entity_id: media_player.lg_smart_tv
         source: "Plex"
 
@@ -117,7 +117,7 @@ watch_bbc_one_on_lg_smart_tv:
         seconds: 15
       continue_on_timeout: "true"
     - service: media_player.play_media
-      data_template:
+      data:
         entity_id: media_player.lg_smart_tv
         media_content_id: "BBC ONE HD"
         media_content_type: "channel"
@@ -131,7 +131,7 @@ watch_bbc_news_on_lg_smart_tv:
         seconds: 15
       continue_on_timeout: "true"
     - service: media_player.play_media
-      data_template:
+      data:
         entity_id: media_player.lg_smart_tv
         media_content_id: "BBC NEWS HD"
         media_content_type: "channel"
@@ -145,7 +145,7 @@ watch_cbeebies_on_lg_smart_tv:
         seconds: 15
       continue_on_timeout: "true"
     - service: media_player.play_media
-      data_template:
+      data:
         entity_id: media_player.lg_smart_tv
         media_content_id: "CBeebies HD"
         media_content_type: "channel"
@@ -159,7 +159,7 @@ watch_channel_4_on_lg_smart_tv:
         seconds: 15
       continue_on_timeout: "true"
     - service: media_player.play_media
-      data_template:
+      data:
         entity_id: media_player.lg_smart_tv
         media_content_id: "Channel 4 HD"
         media_content_type: "channel"
