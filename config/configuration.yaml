@@ -59,6 +59,9 @@ light: !include light.yaml
 
 logbook: !include logbook.yaml
 
+logger:
+  default: warn
+
 lovelace:
   mode: yaml
 

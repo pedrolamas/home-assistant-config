@@ -30,6 +30,9 @@ binary_sensor.frontdoor_contact:
   lamp_entity_id: light.lamp_2
   lamp_off_entity_id: input_boolean.turn_off_lamp_on_front_door_close
 
+binary_sensor.pirsensor_occupancy:
+  friendly_name: Master Bedroom occupancy
+
 binary_sensor.philips_hue_bridge:
   icon: mdi:server
 

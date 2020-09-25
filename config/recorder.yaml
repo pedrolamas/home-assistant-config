@@ -9,8 +9,7 @@ include:
     - binary_sensor.backdoor_contact
     - binary_sensor.external_ip_detected
     - binary_sensor.frontdoor_contact
-    - device_tracker.oneplus_7_joana
-    - device_tracker.oneplus_7_pro_pedro
+    - binary_sensor.pirsensor_occupancy
     - person.joana
     - person.pedro
     - media_player.lg_smart_tv

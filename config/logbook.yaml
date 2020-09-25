@@ -4,6 +4,7 @@ include:
     - binary_sensor.backdoor_contact
     - binary_sensor.external_ip_detected
     - binary_sensor.frontdoor_contact
+    - binary_sensor.pirsensor_occupancy
     - person.joana
     - person.pedro
     - sensor.external_ip

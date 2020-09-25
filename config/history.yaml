@@ -4,6 +4,7 @@ include:
     - alarm_control_panel.home_alarm
     - binary_sensor.backdoor_contact
     - binary_sensor.frontdoor_contact
+    - binary_sensor.pirsensor_occupancy
     - light.lamp_1
     - light.lamp_2
     - light.lamp_3
