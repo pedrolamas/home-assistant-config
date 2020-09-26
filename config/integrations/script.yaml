@@ -1,4 +1,5 @@
 send_notification:
+  mode: parallel
   sequence:
     - service: >-
         {% if recipient == 'pedro' %}
@@ -20,6 +21,7 @@ send_notification:
           priority: "high"
 
 clear_notification:
+  mode: parallel
   sequence:
     - service: >-
         {% if recipient == 'pedro' %}
@@ -37,6 +39,7 @@ clear_notification:
           priority: "high"
 
 send_notification_with_living_room_camera_snapshot:
+  mode: queued
   sequence:
     - service: camera.snapshot
       data:
@@ -49,6 +52,7 @@ send_notification_with_living_room_camera_snapshot:
           image_file: "/config/www/snapshot.jpg"
 
 send_notification_with_lower_floor_camera_snapshot:
+  mode: queued
   sequence:
     - service: camera.snapshot
       data:
@@ -61,6 +65,7 @@ send_notification_with_lower_floor_camera_snapshot:
           image_file: "/config/www/snapshot2.jpg"
 
 update_reported_ip:
+  mode: queued
   sequence:
     - service: rest_command.cloudflare_update
       data:

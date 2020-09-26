@@ -6,112 +6,12 @@ homeassistant:
   unit_system: metric
   time_zone: Europe/London
   internal_url: !secret internal_url
+
   customize: !include customize.yaml
+
   customize_glob: !include customize_glob.yaml
 
-#default_config:
-
-alarm_control_panel: !include alarm_control_panel.yaml
-
-alexa: !include alexa.yaml
-
-api:
+  packages:
+    integrations: !include_dir_named integrations/
 
 automation: !include automations.yaml
-
-binary_sensor: !include binary_sensors.yaml
-
-camera: !include cameras.yaml
-
-config:
-
-discovery:
-
-frontend:
-  themes: !include_dir_merge_named themes/
-
-#group: !include groups.yaml
-
-history: !include history.yaml
-
-http:
-  use_x_forwarded_for: true
-  trusted_proxies: !secret http_trusted_proxies
-
-ifttt:
-  key: !secret ifttt_key
-
-influxdb: !include influxdb.yaml
-
-input_boolean: !include input_boolean.yaml
-
-input_datetime:
-
-input_number:
-
-input_select: !include input_select.yaml
-
-input_text:
-
-light: !include light.yaml
-
-#lock: !include locks.yaml
-
-logbook: !include logbook.yaml
-
-logger:
-  default: warn
-
-lovelace:
-  mode: yaml
-
-#media_player: !include media_players.yaml
-
-mobile_app:
-
-mqtt:
-  broker: !secret mqtt_broker
-  discovery: true
-  # username: !secret mqtt_username
-  # password: !secret mqtt_password
-
-notify: !include notify.yaml
-
-panel_iframe: !include panel_iframe.yaml
-
-person: !include persons.yaml
-
-recorder: !include recorder.yaml
-
-rest_command: !include rest_command.yaml
-
-script: !include scripts.yaml
-
-sensor: !include sensors.yaml
-
-ssdp:
-
-stream:
-
-sun:
-
-switch: !include switches.yaml
-
-system_health:
-
-#timer: !include timers.yaml
-
-updater:
-  reporting: false
-
-wake_on_lan:
-
-webostv: !include webostv.yaml
-
-zeroconf:
-  default_interface: true
-  ipv6: false
-
-zigbee2mqtt_networkmap:
-
-zone: !include zones.yaml
