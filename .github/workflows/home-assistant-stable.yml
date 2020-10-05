@@ -1,0 +1,24 @@
+name: Home Assistant (Stable)
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: 0 12 * * *
+
+jobs:
+  build:
+    name: Test configuration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Create secrets.yaml file
+        run: |
+          mv ./config/secrets.template.yaml ./config/secrets.yaml
+      - name: Check configuration with Home Assistant
+        uses: "docker://homeassistant/home-assistant:latest"
+        with:
+          args: python -m homeassistant --version
+      - name: Check configuration with Home Assistant
+        uses: "docker://homeassistant/home-assistant:latest"
+        with:
+          args: python -m homeassistant --config ./config --script check_config --info all
