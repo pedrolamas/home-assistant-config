@@ -1,4 +1,10 @@
-# Home Assistant Configuration ![CI build status](https://github.com/PedroLamas/home-assistant-config/workflows/CI/badge.svg)
+# Home Assistant Configuration
+
+![Project Maintenance](https://img.shields.io/maintenance/yes/2020.svg)
+![License](https://img.shields.io/github/license/PedroLamas/home-assistant-config.svg)
+
+![Home Assistant Stable CI](https://github.com/PedroLamas/home-assistant-config/workflows/Home%2BAssistant%2B%28Stable%29/badge.svg)
+![Home Assistant Beta CI](https://github.com/PedroLamas/home-assistant-config/workflows/Home%2BAssistant%2B%28Stable%29/badge.svg)
 
 **My personal Home Assistant configuration!**
 
@@ -12,22 +18,26 @@ Feel free to send questions or PR's with improvements!
 
 ![Home](images/tab_home.png)
 
-### People
-
-![People](images/tab_people.png)
-
 ### Lights
 
 ![Lights](images/tab_lights.png)
+
+### Climate
+
+![Climate](images/tab_climate.png)
 
 ### Media
 
 ![Media](images/tab_media.png)
 
-### Ambient
+### Smart plugs
 
-![Ambient](images/tab_ambient.png)
+![Plugs](images/tab_plugs.png)
+
+### People
+
+![People](images/tab_people.png)
 
 ### Map
 
-![Ambient](images/tab_map.png)
+![Map](images/tab_map.png)
