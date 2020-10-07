@@ -1,10 +1,12 @@
 # Home Assistant Configuration
 
 ![Project Maintenance](https://img.shields.io/maintenance/yes/2020.svg)
-![License](https://img.shields.io/github/license/PedroLamas/home-assistant-config.svg)
+[![License](https://img.shields.io/github/license/PedroLamas/home-assistant-config.svg)](https://github.com/PedroLamas/home-assistant-config/blob/master/LICENSE)
 
 ![Home Assistant Stable CI](https://github.com/PedroLamas/home-assistant-config/workflows/Home%20Assistant%20(Stable)/badge.svg)
 ![Home Assistant Beta CI](https://github.com/PedroLamas/home-assistant-config/workflows/Home%20Assistant%20(Beta)/badge.svg)
+
+[![Twitter Follow](https://img.shields.io/twitter/follow/pedrolamas?style=social)](https://twitter.com/pedrolamas)
 
 **My personal Home Assistant configuration!**
 
