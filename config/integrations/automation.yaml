@@ -331,6 +331,17 @@
         channel: "System"
         tag: "homeassistantupdate"
 
+- alias: AdguardHome enabled after 2 minutes
+  trigger:
+    - platform: state
+      entity_id: switch.adguard_protection
+      to: "off"
+      for:
+        minutes: 2
+  action:
+    - service: switch.turn_on
+      entity_id: switch.adguard_protection
+
 - alias: Zigbee2mqtt Log Level
   trigger:
     - platform: state
