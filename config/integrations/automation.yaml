@@ -342,7 +342,7 @@
     - service: switch.turn_on
       entity_id: switch.adguard_protection
 
-- alias: Zigbee2mqtt Log Level
+- alias: Set Zigbee2mqtt log level
   trigger:
     - platform: state
       entity_id: input_select.zigbee2mqtt_log_level
@@ -351,3 +351,15 @@
       data:
         payload_template: "{{ trigger.to_state.state }}"
         topic: "zigbee2mqtt/bridge/config/log_level"
+
+- alias: Log Zigbee2mqtt errors
+  trigger:
+    - platform: mqtt
+      topic: "zigbee2mqtt/bridge/log"
+  condition:
+    - "{{ 'error' in trigger.payload_json.type }}"
+  action:
+    - service: system_log.write
+      data_template:
+        message: "{{ trigger.payload_json }}"
+        level: warning
