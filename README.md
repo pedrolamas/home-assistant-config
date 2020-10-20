@@ -1,12 +1,12 @@
 # Home Assistant Configuration
 
-![Project Maintenance](https://img.shields.io/maintenance/yes/2020.svg)
-[![License](https://img.shields.io/github/license/pedrolamas/home-assistant-config.svg)](https://github.com/pedrolamas/home-assistant-config/blob/master/LICENSE)
+[![Project Maintenance](https://img.shields.io/maintenance/yes/2020.svg)](https://github.com/pedrolamas/home-assistant-config 'GitHub Repository')
+[![License](https://img.shields.io/github/license/pedrolamas/home-assistant-config.svg)](https://github.com/pedrolamas/home-assistant-config/blob/master/LICENSE 'License')
 
-![Home Assistant Stable CI](https://github.com/pedrolamas/home-assistant-config/workflows/Home%20Assistant%20(Stable)/badge.svg)
-![Home Assistant Beta CI](https://github.com/pedrolamas/home-assistant-config/workflows/Home%20Assistant%20(Beta)/badge.svg)
+[![Home Assistant Stable CI](https://github.com/pedrolamas/home-assistant-config/workflows/Home%20Assistant%20(Stable)/badge.svg)](https://github.com/pedrolamas/home-assistant-config/actions 'Build Status')
+[![Home Assistant Beta CI](https://github.com/pedrolamas/home-assistant-config/workflows/Home%20Assistant%20(Beta)/badge.svg)](https://github.com/pedrolamas/home-assistant-config/actions 'Build Status')
 
-[![Twitter Follow](https://img.shields.io/twitter/follow/pedrolamas?style=social)](https://twitter.com/pedrolamas)
+[![Twitter Follow](https://img.shields.io/twitter/follow/pedrolamas?style=social)](https://twitter.com/pedrolamas '@pedrolamas')
 
 **My personal Home Assistant configuration!**
 
@@ -43,3 +43,7 @@ Feel free to send questions or PR's with improvements!
 ### Map
 
 ![Map](images/tab_map.png)
+
+## License
+
+MIT
