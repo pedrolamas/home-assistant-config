@@ -96,17 +96,6 @@
         channel: "System"
         tag: "{{ trigger.entity_id }}-deviceoffline"
 
-- alias: External IP doesn't match reported IP, update reported IP
-  trigger:
-    - platform: state
-      entity_id:
-        - sensor.external_ip
-        - sensor.reported_ip
-  condition:
-    - "{{ not(is_state('sensor.external_ip', 'unknown') or is_state('sensor.reported_ip', 'unknown')) and states('sensor.external_ip') != states('sensor.reported_ip') }}"
-  action:
-    - service: script.update_reported_ip
-
 - alias: Washing Machine program finished, send notification
   trigger:
     - platform: state
