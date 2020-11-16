@@ -9,6 +9,7 @@ cards:
       - entity: light.lamp_1
       - entity: light.lamp_2
       - entity: light.lamp_3
+      - entity: light.kids_corner
 
   - type: entities
     title: Master Bedroom
