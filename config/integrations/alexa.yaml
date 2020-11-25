@@ -7,6 +7,9 @@ smart_home:
       - binary_sensor.backdoor_contact
       - binary_sensor.frontdoor_contact
       - light.kidsbedroomdimmer_light
+      - light.lamp4_light
+      - light.lamp5_light
+      - light.lamp6_light
       - light.masterbedroomdimmer_light
       - media_player.lg_smart_tv
       - sensor.kidsbedroomclimate_temperature
@@ -56,6 +59,12 @@ smart_home:
       name: Front Door
     light.kidsbedroomdimmer_light:
       name: Kids Bedroom Dimmer
+    light.lamp4_light:
+      name: Lamp 4
+    light.lamp5_light:
+      name: Lamp 5
+    light.lamp6_light:
+      name: Lamp 6
     light.masterbedroomdimmer_light:
       name: Master Bedroom Dimmer
     media_player.lg_smart_tv:

@@ -45,6 +45,15 @@ binary_sensor.raspberry_pi_2_model_b:
 light.kidsbedroomdimmer_light:
   friendly_name: Kids Bedroom Dimmer
 
+light.lamp4_light:
+  friendly_name: Lamp 4
+
+light.lamp5_light:
+  friendly_name: Lamp 5
+
+light.lamp6_light:
+  friendly_name: Lamp 6
+
 light.masterbedroomdimmer_light:
   friendly_name: Master Bedroom Dimmer
 

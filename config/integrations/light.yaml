@@ -9,7 +9,7 @@
 - platform: group
   name: Master Bedroom Lights
   entities:
-    - light.lamp_4
+    - light.lamp4_light
     - light.masterbedroomdimmer_light
 
 - platform: group

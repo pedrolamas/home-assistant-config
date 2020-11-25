@@ -8,7 +8,9 @@ include:
     - light.lamp_1
     - light.lamp_2
     - light.lamp_3
-    - light.lamp_4
+    - light.lamp4_light
+    - light.lamp5_light
+    - light.lamp6_light
     - media_player.lg_smart_tv
     - person.joana
     - person.pedro

@@ -17,7 +17,7 @@ cards:
     entities:
       - entity: light.masterbedroomdimmer_light
         name: Ceiling dimmer
-      - entity: light.lamp_4
+      - entity: light.lamp4_light
 
   - type: entities
     title: Kids Bedroom
