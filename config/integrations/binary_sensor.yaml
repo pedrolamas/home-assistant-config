@@ -2,10 +2,6 @@
 #  country: UK
 
 - platform: ping
-  name: UniFi Cloud Key Gen2 Plus
-  host: !secret unifi_cloud_key_host
-
-- platform: ping
   name: Philips Hue Bridge 2.1
   host: !secret philips_hue_bridge_host
 
