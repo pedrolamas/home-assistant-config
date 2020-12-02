@@ -42,19 +42,19 @@ binary_sensor.synology_ds412_nas:
 binary_sensor.raspberry_pi_2_model_b:
   icon: mdi:raspberry-pi
 
-light.kidsbedroomdimmer_light:
+light.kidsbedroomdimmer:
   friendly_name: Kids Bedroom Dimmer
 
-light.lamp4_light:
+light.lamp4:
   friendly_name: Lamp 4
 
-light.lamp5_light:
+light.lamp5:
   friendly_name: Lamp 5
 
-light.lamp6_light:
+light.lamp6:
   friendly_name: Lamp 6
 
-light.masterbedroomdimmer_light:
+light.masterbedroomdimmer:
   friendly_name: Master Bedroom Dimmer
 
 sensor.bakerloo:
@@ -91,28 +91,28 @@ sensor.reported_ip:
   icon: mdi:wan
 
 sensor.smartplug4_power:
-  switch: switch.smartplug4_switch
+  switch: switch.smartplug4
 
 sensor.smartplug7_power:
-  switch: switch.smartplug7_switch
+  switch: switch.smartplug7
 
-switch.smartplug1_switch:
+switch.smartplug1:
   friendly_name: Living Room Smart Plug
 
-switch.smartplug2_switch:
+switch.smartplug2:
   friendly_name: Lower Floor Smart Plug
 
-switch.smartplug3_switch:
+switch.smartplug3:
   friendly_name: Smart Plug 3
 
-switch.smartplug4_switch:
+switch.smartplug4:
   friendly_name: Kids Bedroom Smart Plug
 
-switch.smartplug5_switch:
+switch.smartplug5:
   friendly_name: Washing Machine Smart Plug
 
-switch.smartplug6_switch:
+switch.smartplug6:
   friendly_name: Smart Plug 6
 
-switch.smartplug7_switch:
+switch.smartplug7:
   friendly_name: Master Bedroom Smart Plug

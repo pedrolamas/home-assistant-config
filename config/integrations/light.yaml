@@ -9,13 +9,13 @@
 - platform: group
   name: Master Bedroom Lights
   entities:
-    - light.lamp4_light
-    - light.masterbedroomdimmer_light
+    - light.lamp4
+    - light.masterbedroomdimmer
 
 - platform: group
   name: Kids Bedroom Lights
   entities:
-    - light.kidsbedroomdimmer_light
+    - light.kidsbedroomdimmer
 
 - platform: mqtt
   name: Kids Corner

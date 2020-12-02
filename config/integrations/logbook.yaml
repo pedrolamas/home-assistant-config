@@ -9,10 +9,10 @@ include:
     - person.pedro
     - sensor.external_ip
     - sensor.reported_ip
-    - switch.smartplug1_switch
-    - switch.smartplug2_switch
-    - switch.smartplug3_switch
-    - switch.smartplug4_switch
-    - switch.smartplug5_switch
-    - switch.smartplug6_switch
-    - switch.smartplug7_switch
+    - switch.smartplug1
+    - switch.smartplug2
+    - switch.smartplug3
+    - switch.smartplug4
+    - switch.smartplug5
+    - switch.smartplug6
+    - switch.smartplug7

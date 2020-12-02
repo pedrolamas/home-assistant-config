@@ -8,9 +8,9 @@ include:
     - light.lamp_1
     - light.lamp_2
     - light.lamp_3
-    - light.lamp4_light
-    - light.lamp5_light
-    - light.lamp6_light
+    - light.lamp4
+    - light.lamp5
+    - light.lamp6
     - media_player.lg_smart_tv
     - person.joana
     - person.pedro
@@ -23,10 +23,10 @@ include:
     - sensor.masterbedroomclimate_humidity
     - sensor.masterbedroomclimate_temperature
     - sensor.smartvibrationsensor_action
-    - switch.smartplug1_switch
-    - switch.smartplug2_switch
-    - switch.smartplug3_switch
-    - switch.smartplug4_switch
-    - switch.smartplug5_switch
-    - switch.smartplug6_switch
-    - switch.smartplug7_switch
+    - switch.smartplug1
+    - switch.smartplug2
+    - switch.smartplug3
+    - switch.smartplug4
+    - switch.smartplug5
+    - switch.smartplug6
+    - switch.smartplug7

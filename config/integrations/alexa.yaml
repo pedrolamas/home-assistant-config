@@ -6,11 +6,11 @@ smart_home:
     include_entities:
       - binary_sensor.backdoor_contact
       - binary_sensor.frontdoor_contact
-      - light.kidsbedroomdimmer_light
-      - light.lamp4_light
-      - light.lamp5_light
-      - light.lamp6_light
-      - light.masterbedroomdimmer_light
+      - light.kidsbedroomdimmer
+      - light.lamp4
+      - light.lamp5
+      - light.lamp6
+      - light.masterbedroomdimmer
       - media_player.lg_smart_tv
       - sensor.kidsbedroomclimate_temperature
       - sensor.livingroomclimate_temperature
@@ -22,13 +22,13 @@ smart_home:
       - script.watch_bbc_news_on_lg_smart_tv
       - script.watch_cbeebies_on_lg_smart_tv
       - script.watch_channel_4_on_lg_smart_tv
-      - switch.smartplug1_switch
-      - switch.smartplug2_switch
-      - switch.smartplug3_switch
-      - switch.smartplug4_switch
-      - switch.smartplug5_switch
-      - switch.smartplug6_switch
-      - switch.smartplug7_switch
+      - switch.smartplug1
+      - switch.smartplug2
+      - switch.smartplug3
+      - switch.smartplug4
+      - switch.smartplug5
+      - switch.smartplug6
+      - switch.smartplug7
     exclude_domains:
       - automation
       - binary_sensor
@@ -57,15 +57,15 @@ smart_home:
       name: Back Door
     binary_sensor.frontdoor_contact:
       name: Front Door
-    light.kidsbedroomdimmer_light:
+    light.kidsbedroomdimmer:
       name: Kids Bedroom Dimmer
-    light.lamp4_light:
+    light.lamp4:
       name: Lamp 4
-    light.lamp5_light:
+    light.lamp5:
       name: Lamp 5
-    light.lamp6_light:
+    light.lamp6:
       name: Lamp 6
-    light.masterbedroomdimmer_light:
+    light.masterbedroomdimmer:
       name: Master Bedroom Dimmer
     media_player.lg_smart_tv:
       name: TV
@@ -89,24 +89,24 @@ smart_home:
       name: CBeebies
     script.watch_channel_4_on_lg_smart_tv:
       name: Channel 4
-    switch.smartplug1_switch:
+    switch.smartplug1:
       name: Smart Plug 1
       display_categories: SMARTPLUG
-    switch.smartplug2_switch:
+    switch.smartplug2:
       name: Smart Plug 2
       display_categories: SMARTPLUG
-    switch.smartplug3_switch:
+    switch.smartplug3:
       name: Smart Plug 3
       display_categories: SMARTPLUG
-    switch.smartplug4_switch:
+    switch.smartplug4:
       name: Smart Plug 4
       display_categories: SMARTPLUG
-    switch.smartplug5_switch:
+    switch.smartplug5:
       name: Smart Plug 5
       display_categories: SMARTPLUG
-    switch.smartplug6_switch:
+    switch.smartplug6:
       name: Smart Plug 6
       display_categories: SMARTPLUG
-    switch.smartplug7_switch:
+    switch.smartplug7:
       name: Smart Plug 7
       display_categories: SMARTPLUG

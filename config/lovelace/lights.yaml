@@ -15,13 +15,13 @@ cards:
     title: Master Bedroom
     show_header_toggle: false
     entities:
-      - entity: light.masterbedroomdimmer_light
+      - entity: light.masterbedroomdimmer
         name: Ceiling dimmer
-      - entity: light.lamp4_light
+      - entity: light.lamp4
 
   - type: entities
     title: Kids Bedroom
     show_header_toggle: false
     entities:
-      - entity: light.kidsbedroomdimmer_light
+      - entity: light.kidsbedroomdimmer
         name: Ceiling dimmer
