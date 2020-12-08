@@ -2,31 +2,29 @@ include:
   domains:
   entities:
     - alarm_control_panel.home_alarm
-    - binary_sensor.backdoor_contact
-    - binary_sensor.frontdoor_contact
-    - binary_sensor.pirsensor_occupancy
+    - binary_sensor.back_door_contact
+    - binary_sensor.front_door_contact
+    - binary_sensor.master_bedroom_pir_sensor_occupancy
     - light.lamp_1
     - light.lamp_2
     - light.lamp_3
-    - light.lamp4
-    - light.lamp5
-    - light.lamp6
+    - light.lamp_4
+    - light.lamp_5
+    - light.lamp_6
     - media_player.lg_smart_tv
     - person.joana
     - person.pedro
-    - sensor.kidsbedroomclimate_humidity
-    - sensor.kidsbedroomclimate_temperature
-    - sensor.livingroomclimate_humidity
-    - sensor.livingroomclimate_temperature
-    - sensor.lowerfloorclimate_humidity
-    - sensor.lowerfloorclimate_temperature
-    - sensor.masterbedroomclimate_humidity
-    - sensor.masterbedroomclimate_temperature
-    - sensor.smartvibrationsensor_action
-    - switch.smartplug1
-    - switch.smartplug2
-    - switch.smartplug3
-    - switch.smartplug4
-    - switch.smartplug5
-    - switch.smartplug6
-    - switch.smartplug7
+    - sensor.kids_bedroom_climate_humidity
+    - sensor.kids_bedroom_climate_temperature
+    - sensor.living_room_climate_humidity
+    - sensor.living_room_climate_temperature
+    - sensor.lower_floor_climate_humidity
+    - sensor.lower_floor_climate_temperature
+    - sensor.master_bedroom_climate_humidity
+    - sensor.master_bedroom_climate_temperature
+    - sensor.smart_vibration_sensor_action
+    - switch.living_room_smart_plug
+    - switch.lower_floor_smart_plug
+    - switch.kids_bedroom_smart_plug
+    - switch.washing_machine_smart_plug
+    - switch.master_bedroom_smart_plug

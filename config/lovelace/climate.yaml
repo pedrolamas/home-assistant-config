@@ -9,17 +9,17 @@ cards:
         cards:
           - type: sensor
             name: Temperature
-            entity: sensor.livingroomclimate_temperature
+            entity: sensor.living_room_climate_temperature
             graph: line
           - type: sensor
             name: Humidity
-            entity: sensor.livingroomclimate_humidity
+            entity: sensor.living_room_climate_humidity
             graph: line
       - type: glance
         show_name: false
         entities:
-          - sensor.livingroomclimate_pressure
-          - sensor.livingroomclimate_battery
+          - sensor.living_room_climate_pressure
+          - sensor.living_room_climate_battery
 
   - type: vertical-stack
     title: Lower Floor
@@ -28,17 +28,17 @@ cards:
         cards:
           - type: sensor
             name: Temperature
-            entity: sensor.lowerfloorclimate_temperature
+            entity: sensor.lower_floor_climate_temperature
             graph: line
           - type: sensor
             name: Humidity
-            entity: sensor.lowerfloorclimate_humidity
+            entity: sensor.lower_floor_climate_humidity
             graph: line
       - type: glance
         show_name: false
         entities:
-          - sensor.lowerfloorclimate_pressure
-          - sensor.lowerfloorclimate_battery
+          - sensor.lower_floor_climate_pressure
+          - sensor.lower_floor_climate_battery
 
   - type: vertical-stack
     title: Laundry Room
@@ -47,17 +47,17 @@ cards:
         cards:
           - type: sensor
             name: Temperature
-            entity: sensor.laundryroomclimate_temperature
+            entity: sensor.laundry_room_climate_temperature
             graph: line
           - type: sensor
             name: Humidity
-            entity: sensor.laundryroomclimate_humidity
+            entity: sensor.laundry_room_climate_humidity
             graph: line
       - type: glance
         show_name: false
         entities:
-          - sensor.laundryroomclimate_pressure
-          - sensor.laundryroomclimate_battery
+          - sensor.laundry_room_climate_pressure
+          - sensor.laundry_room_climate_battery
 
   - type: vertical-stack
     title: Master Bedroom
@@ -66,17 +66,17 @@ cards:
         cards:
           - type: sensor
             name: Temperature
-            entity: sensor.masterbedroomclimate_temperature
+            entity: sensor.master_bedroom_climate_temperature
             graph: line
           - type: sensor
             name: Humidity
-            entity: sensor.masterbedroomclimate_humidity
+            entity: sensor.master_bedroom_climate_humidity
             graph: line
       - type: glance
         show_name: false
         entities:
-          - sensor.masterbedroomclimate_pressure
-          - sensor.masterbedroomclimate_battery
+          - sensor.master_bedroom_climate_pressure
+          - sensor.master_bedroom_climate_battery
 
   - type: vertical-stack
     title: Kids Bedroom
@@ -85,17 +85,17 @@ cards:
         cards:
           - type: sensor
             name: Temperature
-            entity: sensor.kidsbedroomclimate_temperature
+            entity: sensor.kids_bedroom_climate_temperature
             graph: line
           - type: sensor
             name: Humidity
-            entity: sensor.kidsbedroomclimate_humidity
+            entity: sensor.kids_bedroom_climate_humidity
             graph: line
       - type: glance
         show_name: false
         entities:
-          - sensor.kidsbedroomclimate_pressure
-          - sensor.kidsbedroomclimate_battery
+          - sensor.kids_bedroom_climate_pressure
+          - sensor.kids_bedroom_climate_battery
 
   - type: vertical-stack
     title: Mold Indicators

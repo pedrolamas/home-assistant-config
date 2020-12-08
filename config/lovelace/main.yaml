@@ -17,25 +17,25 @@ cards:
         tap_action:
           action: navigate
           navigation_path: /lovelace/lights
-      - entity: sensor.livingroomclimate_temperature
+      - entity: sensor.living_room_climate_temperature
         name: Temperature
         tap_action:
           action: navigate
           navigation_path: /lovelace/climate
-      - entity: sensor.livingroomclimate_humidity
+      - entity: sensor.living_room_climate_humidity
         name: Humidity
         tap_action:
           action: navigate
           navigation_path: /lovelace/climate
       - entity: camera.living_room_camera
         name: Camera
-      - entity: switch.smartplug1
+      - entity: switch.living_room_smart_plug
         name: Smart Plug
         tap_action:
           action: navigate
           navigation_path: /lovelace/plugs
-      - entity: binary_sensor.frontdoor_contact
-      - entity: binary_sensor.backdoor_contact
+      - entity: binary_sensor.front_door_contact
+      - entity: binary_sensor.back_door_contact
       - entity: media_player.lg_smart_tv
         tap_action:
           action: navigate
@@ -47,19 +47,19 @@ cards:
     entities:
       - entity: binary_sensor.washing_machine_program_running
         name: Washer
-      - entity: sensor.lowerfloorclimate_temperature
+      - entity: sensor.lower_floor_climate_temperature
         name: Temperature
         tap_action:
           action: navigate
           navigation_path: /lovelace/climate
-      - entity: sensor.lowerfloorclimate_humidity
+      - entity: sensor.lower_floor_climate_humidity
         name: Humidity
         tap_action:
           action: navigate
           navigation_path: /lovelace/climate
       - entity: camera.lower_floor_camera
         name: Camera
-      - entity: switch.smartplug2
+      - entity: switch.lower_floor_smart_plug
         name: Smart Plug
         tap_action:
           action: navigate
@@ -74,17 +74,17 @@ cards:
         tap_action:
           action: navigate
           navigation_path: /lovelace/lights
-      - entity: sensor.masterbedroomclimate_temperature
+      - entity: sensor.master_bedroom_climate_temperature
         name: Temperature
         tap_action:
           action: navigate
           navigation_path: /lovelace/climate
-      - entity: sensor.masterbedroomclimate_humidity
+      - entity: sensor.master_bedroom_climate_humidity
         name: Humidity
         tap_action:
           action: navigate
           navigation_path: /lovelace/climate
-      - entity: switch.smartplug7
+      - entity: switch.master_bedroom_smart_plug
         name: Smart Plug
         tap_action:
           action: navigate
@@ -99,17 +99,17 @@ cards:
         tap_action:
           action: navigate
           navigation_path: /lovelace/lights
-      - entity: sensor.kidsbedroomclimate_temperature
+      - entity: sensor.kids_bedroom_climate_temperature
         name: Temperature
         tap_action:
           action: navigate
           navigation_path: /lovelace/climate
-      - entity: sensor.kidsbedroomclimate_humidity
+      - entity: sensor.kids_bedroom_climate_humidity
         name: Humidity
         tap_action:
           action: navigate
           navigation_path: /lovelace/climate
-      - entity: switch.smartplug4
+      - entity: switch.kids_bedroom_smart_plug
         name: Smart Plug
         tap_action:
           action: navigate

@@ -3,16 +3,16 @@
   trigger:
     - platform: numeric_state
       entity_id:
-        - sensor.backdoor_battery
-        - sensor.frontdoor_battery
-        - sensor.frontdoormailbox_battery
-        - sensor.kidsbedroomclimate_battery
-        - sensor.laundryroomclimate_battery
-        - sensor.livingroomclimate_battery
-        - sensor.lowerfloorclimate_battery
-        - sensor.masterbedroomclimate_battery
-        - sensor.smartswitch_battery
-        - sensor.smartvibrationsensor_battery
+        - sensor.back_door_battery
+        - sensor.front_door_battery
+        - sensor.front_door_mailbox_battery
+        - sensor.kids_bedroom_climate_battery
+        - sensor.laundry_room_climate_battery
+        - sensor.living_room_climate_battery
+        - sensor.lower_floor_climate_battery
+        - sensor.master_bedroom_climate_battery
+        - sensor.smart_switch_battery
+        - sensor.smart_vibration_sensor_battery
       below: 20
   action:
     - service: persistent_notification.create
@@ -25,8 +25,8 @@
   trigger:
     - platform: numeric_state
       entity_id:
-        - sensor.smartplug4_power
-        - sensor.smartplug7_power
+        - sensor.kids_bedroom_smart_plug_power
+        - sensor.master_bedroom_smart_plug_power
       below: 0.5
       for:
         minutes: 2
@@ -102,8 +102,8 @@
   trigger:
     - platform: state
       entity_id:
-        - binary_sensor.backdoor_contact
-        - binary_sensor.frontdoor_contact
+        - binary_sensor.back_door_contact
+        - binary_sensor.front_door_contact
       to: "on"
   action:
     - service: script.send_notification
@@ -117,8 +117,8 @@
   trigger:
     - platform: state
       entity_id:
-        - binary_sensor.backdoor_contact
-        - binary_sensor.frontdoor_contact
+        - binary_sensor.back_door_contact
+        - binary_sensor.front_door_contact
       to: "on"
   condition:
     - "{{ is_state(trigger.to_state.attributes.lamp_entity_id, 'off') }}"
@@ -135,8 +135,8 @@
   trigger:
     - platform: state
       entity_id:
-        - binary_sensor.backdoor_contact
-        - binary_sensor.frontdoor_contact
+        - binary_sensor.back_door_contact
+        - binary_sensor.front_door_contact
       to: "off"
       for:
         seconds: 30
@@ -155,8 +155,8 @@
   trigger:
     - platform: state
       entity_id:
-        - binary_sensor.backdoor_contact
-        - binary_sensor.frontdoor_contact
+        - binary_sensor.back_door_contact
+        - binary_sensor.front_door_contact
       to: "on"
       for:
         minutes: 5
@@ -173,8 +173,8 @@
   trigger:
     - platform: state
       entity_id:
-        - binary_sensor.backdoor_contact
-        - binary_sensor.frontdoor_contact
+        - binary_sensor.back_door_contact
+        - binary_sensor.front_door_contact
       to: "off"
   action:
     - service: script.send_notification
@@ -187,16 +187,16 @@
 - alias: Front Door Mailbox movement, send notification
   trigger:
     - platform: state
-      entity_id: sensor.frontdoormailbox_action
+      entity_id: sensor.front_door_mailbox_action
       from: ""
   condition:
-    - "{{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' and is_state('binary_sensor.frontdoor_contact', 'off') }}"
+    - "{{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' and is_state('binary_sensor.front_door_contact', 'off') }}"
   action:
     - service: script.send_notification
       data:
         message: "Movement detected on Front Door Mailbox"
         channel: "Automation"
-        tag: "frontdoormailbox"
+        tag: "front_door_mailbox"
 
 - alias: Set alarm state
   trigger:
@@ -237,7 +237,7 @@
 - alias: Smart Vibration Sensor movement, send notification
   trigger:
     - platform: state
-      entity_id: sensor.smartvibrationsensor_action
+      entity_id: sensor.smart_vibration_sensor_action
       from: ""
   condition:
     - "{{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' }}"

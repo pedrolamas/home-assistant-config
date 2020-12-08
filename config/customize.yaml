@@ -20,17 +20,17 @@ device_tracker.oneplus_7_joana:
   friendly_name: Joana OnePlus 7 WiFi
   icon: mdi:cellphone-android
 
-binary_sensor.backdoor_contact:
+binary_sensor.back_door_contact:
   friendly_name: Back Door
   lamp_entity_id: light.lamp_3
   lamp_off_entity_id: input_boolean.turn_off_lamp_on_back_door_close
 
-binary_sensor.frontdoor_contact:
+binary_sensor.front_door_contact:
   friendly_name: Front Door
   lamp_entity_id: light.lamp_2
   lamp_off_entity_id: input_boolean.turn_off_lamp_on_front_door_close
 
-binary_sensor.pirsensor_occupancy:
+binary_sensor.master_bedroom_pir_sensor_occupancy:
   friendly_name: Master Bedroom occupancy
 
 binary_sensor.philips_hue_bridge:
@@ -42,19 +42,19 @@ binary_sensor.synology_ds412_nas:
 binary_sensor.raspberry_pi_2_model_b:
   icon: mdi:raspberry-pi
 
-light.kidsbedroomdimmer:
+light.kids_bedroom_dimmer:
   friendly_name: Kids Bedroom Dimmer
 
-light.lamp4:
+light.lamp_4:
   friendly_name: Lamp 4
 
-light.lamp5:
+light.lamp_5:
   friendly_name: Lamp 5
 
-light.lamp6:
+light.lamp_6:
   friendly_name: Lamp 6
 
-light.masterbedroomdimmer:
+light.master_bedroom_dimmer:
   friendly_name: Master Bedroom Dimmer
 
 sensor.bakerloo:
@@ -90,29 +90,47 @@ sensor.joana_oneplus7_battery_state:
 sensor.reported_ip:
   icon: mdi:wan
 
-sensor.smartplug4_power:
-  switch: switch.smartplug4
+sensor.kids_bedroom_climate_temperature:
+  friendly_name: Kids Bedroom Temperature
 
-sensor.smartplug7_power:
-  switch: switch.smartplug7
+sensor.kids_bedroom_climate_humidity:
+  friendly_name: Kids Bedroom Humidity
 
-switch.smartplug1:
+sensor.living_room_climate_temperature:
+  friendly_name: Living Room Temperature
+
+sensor.living_room_climate_humidity:
+  friendly_name: Living Room Humidity
+
+sensor.lower_floor_climate_temperature:
+  friendly_name: Lower Floor Temperature
+
+sensor.lower_floor_climate_humidity:
+  friendly_name: Lower Floor Humidity
+
+sensor.master_bedroom_climate_temperature:
+  friendly_name: Master Bedroom Temperature
+
+sensor.master_bedroom_climate_humidity:
+  friendly_name: Master Bedroom Humidity
+
+sensor.kids_bedroom_smart_plug_power:
+  switch: switch.kids_bedroom_smart_plug
+
+sensor.master_bedroom_smart_plug_power:
+  switch: switch.master_bedroom_smart_plug
+
+switch.living_room_smart_plug:
   friendly_name: Living Room Smart Plug
 
-switch.smartplug2:
+switch.lower_floor_smart_plug:
   friendly_name: Lower Floor Smart Plug
 
-switch.smartplug3:
-  friendly_name: Smart Plug 3
-
-switch.smartplug4:
+switch.kids_bedroom_smart_plug:
   friendly_name: Kids Bedroom Smart Plug
 
-switch.smartplug5:
+switch.washing_machine_smart_plug:
   friendly_name: Washing Machine Smart Plug
 
-switch.smartplug6:
-  friendly_name: Smart Plug 6
-
-switch.smartplug7:
+switch.master_bedroom_smart_plug:
   friendly_name: Master Bedroom Smart Plug

@@ -1,18 +1,16 @@
 include:
   entities:
     - alarm_control_panel.home_alarm
-    - binary_sensor.backdoor_contact
+    - binary_sensor.back_door_contact
     - binary_sensor.external_ip_detected
-    - binary_sensor.frontdoor_contact
-    - binary_sensor.pirsensor_occupancy
+    - binary_sensor.front_door_contact
+    - binary_sensor.master_bedroom_pir_sensor_occupancy
     - person.joana
     - person.pedro
     - sensor.external_ip
     - sensor.reported_ip
-    - switch.smartplug1
-    - switch.smartplug2
-    - switch.smartplug3
-    - switch.smartplug4
-    - switch.smartplug5
-    - switch.smartplug6
-    - switch.smartplug7
+    - switch.living_room_smart_plug
+    - switch.lower_floor_smart_plug
+    - switch.kids_bedroom_smart_plug
+    - switch.washing_machine_smart_plug
+    - switch.master_bedroom_smart_plug

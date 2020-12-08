@@ -6,33 +6,31 @@ include:
     - light
   entities:
     - alarm_control_panel.home_alarm
-    - binary_sensor.backdoor_contact
+    - binary_sensor.back_door_contact
     - binary_sensor.external_ip_detected
-    - binary_sensor.frontdoor_contact
-    - binary_sensor.pirsensor_occupancy
+    - binary_sensor.front_door_contact
+    - binary_sensor.master_bedroom_pir_sensor_occupancy
     - person.joana
     - person.pedro
     - media_player.lg_smart_tv
     - sensor.cpu_temperature
     - sensor.external_ip
     - sensor.kids_bedroom_mold
-    - sensor.kidsbedroomclimate_humidity
-    - sensor.kidsbedroomclimate_temperature
-    - sensor.laundryroomclimate_humidity
-    - sensor.laundryroomclimate_temperature
+    - sensor.kids_bedroom_climate_humidity
+    - sensor.kids_bedroom_climate_temperature
+    - sensor.laundry_room_climate_humidity
+    - sensor.laundry_room_climate_temperature
     - sensor.living_room_mold
-    - sensor.livingroomclimate_humidity
-    - sensor.livingroomclimate_temperature
-    - sensor.lowerfloorclimate_humidity
-    - sensor.lowerfloorclimate_temperature
+    - sensor.living_room_climate_humidity
+    - sensor.living_room_climate_temperature
+    - sensor.lower_floor_climate_humidity
+    - sensor.lower_floor_climate_temperature
     - sensor.master_bedroom_mold
-    - sensor.masterbedroomclimate_humidity
-    - sensor.masterbedroomclimate_temperature
+    - sensor.master_bedroom_climate_humidity
+    - sensor.master_bedroom_climate_temperature
     - sensor.reported_ip
-    - switch.smartplug1
-    - switch.smartplug2
-    - switch.smartplug3
-    - switch.smartplug4
-    - switch.smartplug5
-    - switch.smartplug6
-    - switch.smartplug7
+    - switch.living_room_smart_plug
+    - switch.lower_floor_smart_plug
+    - switch.kids_bedroom_smart_plug
+    - switch.washing_machine_smart_plug
+    - switch.master_bedroom_smart_plug
