@@ -20,6 +20,6 @@
 - platform: mqtt
   name: Kids Corner
   schema: json
-  command_topic: "zigbee2mqtt/KidsCornerGroup/set"
-  state_topic: "zigbee2mqtt/KidsCornerGroup"
+  command_topic: "zigbee2mqtt/kids_corner_group/set"
+  state_topic: "zigbee2mqtt/kids_corner_group"
   brightness: true
