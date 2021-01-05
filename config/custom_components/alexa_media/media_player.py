@@ -474,14 +474,14 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
             self._capabilities = device["capabilities"]
             self._cluster_members = device["clusterMembers"]
             self._parent_clusters = device["parentClusters"]
-            self._bluetooth_state = device["bluetooth_state"]
+            self._bluetooth_state = device.get("bluetooth_state", {})
             self._locale = device["locale"] if "locale" in device else "en-US"
             self._timezone = device["timeZoneId"] if "timeZoneId" in device else "UTC"
             self._dnd = device["dnd"] if "dnd" in device else None
             self._set_authentication_details(device["auth_info"])
         session = None
         if self.available:
-            _LOGGER.debug("%s: Refreshing %s", self.account, self.name)
+            _LOGGER.debug("%s: Refreshing %s", self.account, self)
             self._assumed_state = False
             if "PAIR_BT_SOURCE" in self._capabilities:
                 self._source = self._get_source()
@@ -635,6 +635,8 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
                             ),
                         )
                     )
+        if self.hass:
+            self.async_write_ha_state()
 
     @property
     def source(self):
@@ -652,7 +654,7 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
         if source == "Local Speaker":
             await self.alexa_api.disconnect_bluetooth()
             self._source = "Local Speaker"
-        elif self._bluetooth_state["pairedDeviceList"] is not None:
+        elif self._bluetooth_state.get("pairedDeviceList"):
             for devices in self._bluetooth_state["pairedDeviceList"]:
                 if devices["friendlyName"] == source:
                     await self.alexa_api.set_bluetooth(devices["address"])
