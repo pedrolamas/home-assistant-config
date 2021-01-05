@@ -122,3 +122,9 @@
         minutes: 1
       delay_on:
         seconds: 30
+
+    mains_powered:
+      friendly_name: Mains Power
+      device_class: power
+      value_template: >-
+        {{ states('sensor.ups_input_voltage') | float > 1 }}

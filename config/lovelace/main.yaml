@@ -140,3 +140,4 @@ cards:
         name: AdGuard Home
         tap_action:
           action: toggle
+      - entity: binary_sensor.mains_powered

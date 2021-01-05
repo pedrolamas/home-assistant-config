@@ -10,6 +10,8 @@ cards:
       - entity: switch.living_room_smart_plug
       - type: divider
       - entity: switch.lower_floor_smart_plug
+      - entity: sensor.lower_floor_smart_plug_power
+        name: Power
       - type: divider
       - entity: switch.master_bedroom_smart_plug
       - entity: sensor.master_bedroom_smart_plug_power
