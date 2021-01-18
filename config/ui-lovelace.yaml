@@ -5,5 +5,6 @@ views:
   - !include lovelace/climate.yaml
   - !include lovelace/media.yaml
   - !include lovelace/plugs.yaml
+  - !include lovelace/plants.yaml
   - !include lovelace/people.yaml
   - !include lovelace/map.yaml

@@ -1,6 +1,6 @@
 title: Plugs
 path: plugs
-icon: mdi:flash
+icon: mdi:flash-outline
 cards:
   - type: entities
     title: Smart Plugs

@@ -20,23 +20,6 @@
         title: "Device with low battery"
         message: "The {{ trigger.to_state.attributes.friendly_name }} sensor has low battery!"
 
-- alias: Smart Plug on with low power for 2 minutes, turn off
-  mode: queued
-  trigger:
-    - platform: numeric_state
-      entity_id:
-        - sensor.kids_bedroom_smart_plug_power
-        - sensor.master_bedroom_smart_plug_power
-      below: 0.5
-      for:
-        minutes: 2
-  condition:
-    - "{{ is_state(trigger.to_state.attributes.switch, 'on') }}"
-  action:
-    - service: switch.turn_off
-      data:
-        entity_id: "{{ trigger.to_state.attributes.switch }}"
-
 - alias: Device offline, send notification
   mode: queued
   trigger:
@@ -245,55 +228,6 @@
     - service: script.send_notification_with_lower_floor_camera_snapshot
       data:
         message: "Movement detected on Smart Vibration Sensor"
-
-- alias: Phone battery at 90% and charging, send notification
-  trigger:
-    - platform: numeric_state
-      entity_id:
-        - sensor.joana_oneplus7_battery_level
-        - sensor.pedro_oneplus7pro_battery_level
-      above: 89
-      below: 100
-  condition:
-    - "{{ is_state(trigger.entity_id | replace ('_level', '_state'), 'charging') }}"
-  action:
-    - service: script.send_notification
-      data:
-        recipient: "{{ trigger.to_state.attributes.recipient }}"
-        message: "Phone battery charged to {{ trigger.to_state.state }}%!"
-        channel: "Phone"
-        tag: "Battery"
-
-- alias: Phone battery fully charged, send notification
-  mode: queued
-  trigger:
-    - platform: numeric_state
-      entity_id:
-        - sensor.joana_oneplus7_battery_level
-        - sensor.pedro_oneplus7pro_battery_level
-      above: 99
-  action:
-    - service: script.send_notification
-      data:
-        recipient: "{{ trigger.to_state.attributes.recipient }}"
-        message: "Phone battery fully charged!"
-        channel: "Phone"
-        tag: "Battery"
-
-- alias: Phone not charging, clear notification
-  mode: queued
-  trigger:
-    - platform: state
-      entity_id:
-        - sensor.joana_oneplus7_battery_state
-        - sensor.pedro_oneplus7pro_battery_state
-      to: "discharging"
-  action:
-    - service: script.clear_notification
-      data:
-        recipient: "{{ trigger.to_state.attributes.recipient }}"
-        channel: "Phone"
-        tag: "Battery"
 
 - alias: Update available, send notification
   trigger:

@@ -1,0 +1,80 @@
+blueprint:
+  name: Phone battery charging
+  description: Send notifications while phone battery is charging
+  domain: automation
+  input:
+    # phone_device:
+    #   name: Phone
+    #   description: The phone to monitor the battery state
+    #   selector:
+    #     device:
+    #       integration: mobile_app
+    battery_level_entity:
+      name: Battery Level
+      description: The phone battery level sensor
+      selector:
+        entity:
+          integration: mobile_app
+          domain: sensor
+          device_class: battery
+    battery_state_entity:
+      name: Battery State
+      description: The phone battery state sensor
+      selector:
+        entity:
+          integration: mobile_app
+          domain: sensor
+          device_class: battery
+    recipient:
+      name: Recipient
+      description: The notification recipient
+
+variables:
+  battery_state_entity: !input battery_state_entity
+  battery_level_entity: !input battery_level_entity
+
+trigger:
+  - platform: state
+    entity_id: !input battery_state_entity
+  - platform: numeric_state
+    entity_id: !input battery_level_entity
+    above: 89
+
+action:
+  - variables:
+      battery_state: "{{ states(battery_state_entity) }}"
+      battery_level: "{{ states(battery_level_entity) }}"
+  - service: system_log.write
+    data:
+      message: "trigger: ({{ trigger.entity_id }}: {{ trigger.to_state.state }}) battery_state: {{ battery_state }} battery_level: {{ battery_level }}"
+      level: warning
+  - choose:
+      - conditions:
+          - "{{ battery_state == 'full' }}"
+        sequence:
+          - service: script.send_notification
+            data:
+              recipient: !input recipient
+              message: "Phone battery fully charged!"
+              channel: "Phone"
+              tag: "Battery"
+
+      - conditions:
+          - "{{ battery_state == 'charging' }}"
+          - "{{ battery_level > 89 }}"
+        sequence:
+          - service: script.send_notification
+            data:
+              recipient: !input recipient
+              message: "Phone battery charged to {{ battery_level }}%!"
+              channel: "Phone"
+              tag: "Battery"
+
+      - conditions:
+          - "{{ battery_state == 'discharging' }}"
+        sequence:
+          - service: script.clear_notification
+            data:
+              recipient: !input recipient
+              channel: "Phone"
+              tag: "Battery"

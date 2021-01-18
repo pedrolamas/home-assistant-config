@@ -1,0 +1,37 @@
+blueprint:
+  name: Smart Plug automatic off
+  description: Turns off a smart plug after 2 minutes in low power
+  domain: automation
+  input:
+    smart_plug_power_sensor_entity:
+      name: Smart plug power sensor
+      description: The smart plug power sensor to monitor
+      selector:
+        entity:
+          integration: mqtt
+          domain: sensor
+    smart_plug_switch_entity:
+      name: Smart plug switch
+      description: The smart plug switch to turn it off
+      selector:
+        entity:
+          integration: mqtt
+          domain: switch
+
+variables:
+  smart_plug_switch_entity: !input smart_plug_switch_entity
+
+trigger:
+  - platform: numeric_state
+    entity_id: !input smart_plug_power_sensor_entity
+    below: 0.5
+    for:
+      minutes: 2
+
+condition:
+    - "{{ is_state(smart_plug_switch_entity, 'on') }}"
+
+action:
+  - service: switch.turn_off
+    data:
+      entity_id: "{{ smart_plug_switch_entity }}"

@@ -1,1 +1,74 @@
-[]
+- id: '1606771938461'
+  alias: Turn on the heaters at 7:30
+  description: ''
+  trigger:
+  - platform: time
+    at: '7:30'
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 164a26f77b3c886a6aa30d31b7bd551b
+    entity_id: switch.kids_bedroom_smart_plug
+    domain: switch
+  - type: turn_on
+    device_id: 202bd9a9b7d702e39d79205e8e915cca
+    entity_id: switch.master_bedroom_smart_plug
+    domain: switch
+  mode: single
+- id: '1607965134765'
+  alias: Phone battery charging (Pedro)
+  description: ''
+  use_blueprint:
+    path: phone_battery_charging.yaml
+    input:
+      battery_level_entity: sensor.pedro_oneplus7pro_battery_level
+      battery_state_entity: sensor.pedro_oneplus7pro_battery_state
+      recipient: pedro
+- id: '1607965154395'
+  alias: Phone battery charging (Joana)
+  description: ''
+  use_blueprint:
+    path: phone_battery_charging.yaml
+    input:
+      battery_level_entity: sensor.joana_oneplus7_battery_level
+      battery_state_entity: sensor.joana_oneplus7_battery_state
+      recipient: joana
+- id: '1608120411887'
+  alias: Smart Plug automatic off (Lower Floor)
+  description: ''
+  use_blueprint:
+    path: smart_plug_automatic_off.yaml
+    input:
+      smart_plug_power_sensor_entity: sensor.lower_floor_smart_plug_power
+      smart_plug_switch_entity: switch.lower_floor_smart_plug
+- id: '1608120455334'
+  alias: Smart Plug automatic off (Master Bedroom)
+  description: ''
+  use_blueprint:
+    path: smart_plug_automatic_off.yaml
+    input:
+      smart_plug_power_sensor_entity: sensor.master_bedroom_smart_plug_power
+      smart_plug_switch_entity: switch.master_bedroom_smart_plug
+- id: '1608120481443'
+  alias: Smart Plug automatic off (Kids Bedroom)
+  description: ''
+  use_blueprint:
+    path: smart_plug_automatic_off.yaml
+    input:
+      smart_plug_power_sensor_entity: sensor.kids_bedroom_smart_plug_power
+      smart_plug_switch_entity: switch.kids_bedroom_smart_plug
+- id: '1608277751596'
+  alias: Master Bedroom PIR Alarm
+  description: ''
+  trigger:
+  - type: motion
+    platform: device
+    device_id: 038838f1b8c6411690f00a15dfc66a6c
+    entity_id: binary_sensor.master_bedroom_pir_sensor_occupancy
+    domain: binary_sensor
+  condition: []
+  action:
+  - service: script.send_notification_with_lower_floor_camera_snapshot
+    data:
+      message: PIR
+  mode: single
