@@ -3,7 +3,7 @@ path: plants
 icon: mdi:flower-outline
 cards:
   - type: entities
-    title: Lily
+    title: Bromy
     show_header_toggle: false
     state_color: true
     entities:
@@ -16,7 +16,7 @@ cards:
       - entity: sensor.node07_plant_1_illuminance
         name: Illuminance
   - type: entities
-    title: Broly
+    title: Lily
     show_header_toggle: false
     state_color: true
     entities:

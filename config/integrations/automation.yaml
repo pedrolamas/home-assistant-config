@@ -7,6 +7,7 @@
         - sensor.front_door_battery
         - sensor.front_door_mailbox_battery
         - sensor.kids_bedroom_climate_battery
+        - sensor.kids_corner_switch_battery
         - sensor.laundry_room_climate_battery
         - sensor.living_room_climate_battery
         - sensor.lower_floor_climate_battery
