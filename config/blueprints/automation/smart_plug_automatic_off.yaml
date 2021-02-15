@@ -10,6 +10,7 @@ blueprint:
         entity:
           integration: mqtt
           domain: sensor
+          device_class: power
     smart_plug_switch_entity:
       name: Smart plug switch
       description: The smart plug switch to turn it off

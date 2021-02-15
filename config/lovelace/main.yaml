@@ -129,7 +129,7 @@ cards:
     entity: weather.home
 
   - type: glance
-    title: Network
+    title: System Status
     columns: 4
     entities:
       - entity: sensor.external_ip
@@ -141,3 +141,5 @@ cards:
         tap_action:
           action: toggle
       - entity: binary_sensor.mains_powered
+      - entity: sensor.hacs
+        name: HACS
