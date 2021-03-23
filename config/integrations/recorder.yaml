@@ -27,12 +27,12 @@ include:
     - sensor.master_bedroom_mold
     - sensor.master_bedroom_climate_humidity
     - sensor.master_bedroom_climate_temperature
-    - sensor.node07_plant_1_moisture
-    - sensor.node07_plant_1_soil_conductivity
-    - sensor.node07_plant_1_temperature
-    - sensor.node07_plant_2_moisture
-    - sensor.node07_plant_2_soil_conductivity
-    - sensor.node07_plant_2_temperature
+    - sensor.node08_plant_1_moisture
+    - sensor.node08_plant_1_soil_conductivity
+    - sensor.node08_plant_1_temperature
+    - sensor.node08_plant_2_moisture
+    - sensor.node08_plant_2_soil_conductivity
+    - sensor.node08_plant_2_temperature
     - sensor.reported_ip
     - switch.living_room_smart_plug
     - switch.lower_floor_smart_plug

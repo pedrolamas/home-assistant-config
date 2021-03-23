@@ -7,24 +7,24 @@ cards:
     show_header_toggle: false
     state_color: true
     entities:
-      - entity: sensor.node07_plant_1_moisture
+      - entity: sensor.node08_plant_1_moisture
         name: Moisture
-      - entity: sensor.node07_plant_1_soil_conductivity
+      - entity: sensor.node08_plant_1_soil_conductivity
         name: Conductivity
-      - entity: sensor.node07_plant_1_temperature
+      - entity: sensor.node08_plant_1_temperature
         name: Temperature
-      - entity: sensor.node07_plant_1_illuminance
+      - entity: sensor.node08_plant_1_illuminance
         name: Illuminance
   - type: entities
     title: Lily
     show_header_toggle: false
     state_color: true
     entities:
-      - entity: sensor.node07_plant_2_moisture
+      - entity: sensor.node08_plant_2_moisture
         name: Moisture
-      - entity: sensor.node07_plant_2_soil_conductivity
+      - entity: sensor.node08_plant_2_soil_conductivity
         name: Conductivity
-      - entity: sensor.node07_plant_2_temperature
+      - entity: sensor.node08_plant_2_temperature
         name: Temperature
-      - entity: sensor.node07_plant_2_illuminance
+      - entity: sensor.node08_plant_2_illuminance
         name: Illuminance
