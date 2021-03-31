@@ -10,6 +10,8 @@ cards:
       - entity: light.lamp_2
       - entity: light.lamp_3
       - entity: light.kids_corner
+      - entity: light.elgato_key_light_air
+        name: Desk lamp
 
   - type: entities
     title: Master Bedroom
