@@ -12,12 +12,12 @@ send_notification:
       data:
         message: >-
           {% if allow_clear == "true" and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}{{ message }}{% endif %}
-        title: "{{ title }}"
+        title: "{{ title | default }}"
         data:
-          color: "{{ color }}"
-          image_file: "{{ filename }}"
-          channel: "{{ channel }}"
-          tag: "{{ tag }}"
+          color: "{{ color | default }}"
+          image_file: "{{ filename | default }}"
+          channel: "{{ channel | default }}"
+          tag: "{{ tag | default }}"
           priority: "high"
 
 clear_notification:
@@ -34,8 +34,8 @@ clear_notification:
       data:
         message: clear_notification
         data:
-          channel: "{{ channel }}"
-          tag: "{{ tag }}"
+          channel: "{{ channel | default }}"
+          tag: "{{ tag | default }}"
           priority: "high"
 
 send_notification_with_living_room_camera_snapshot:

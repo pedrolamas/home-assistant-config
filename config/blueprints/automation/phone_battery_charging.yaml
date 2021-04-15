@@ -44,10 +44,6 @@ action:
   - variables:
       battery_state: "{{ states(battery_state_entity) }}"
       battery_level: "{{ states(battery_level_entity) }}"
-  - service: system_log.write
-    data:
-      message: "trigger: ({{ trigger.entity_id }}: {{ trigger.to_state.state }}) battery_state: {{ battery_state }} battery_level: {{ battery_level }}"
-      level: warning
   - choose:
       - conditions:
           - "{{ battery_state == 'full' }}"

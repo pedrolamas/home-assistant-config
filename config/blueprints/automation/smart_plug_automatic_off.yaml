@@ -26,8 +26,7 @@ trigger:
   - platform: numeric_state
     entity_id: !input smart_plug_power_sensor_entity
     below: 0.5
-    for:
-      minutes: 2
+    for: "00:02:00"
 
 condition:
     - "{{ is_state(smart_plug_switch_entity, 'on') }}"

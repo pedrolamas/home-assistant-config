@@ -1,4 +1,5 @@
 - alias: Sensor low battery, send notification
+  id: 18fc67d1-97f9-4d81-93bc-71bf0c47a05e
   mode: queued
   trigger:
     - platform: numeric_state
@@ -22,6 +23,7 @@
         message: "The {{ trigger.to_state.attributes.friendly_name }} sensor has low battery!"
 
 - alias: Device offline, send notification
+  id: 95278467-6b3e-4f4a-a912-10220166dd76
   mode: queued
   trigger:
     - platform: state
@@ -30,14 +32,12 @@
         - binary_sensor.raspberry_pi_2_model_b
         - binary_sensor.synology_ds412_nas
       to: "off"
-      for:
-        minutes: 1
+      for: "00:01:00"
     - platform: state
       entity_id:
         - sensor.zigbee2mqtt_bridge_state
       to: "offline"
-      for:
-        minutes: 1
+      for: "00:01:00"
   action:
     - service: script.send_notification
       data:
@@ -48,6 +48,7 @@
         tag: "{{ trigger.entity_id }}-deviceoffline"
 
 - alias: Device online, clear notification
+  id: 69afbe80-e2ab-419e-b0e9-fd230543d25e
   mode: queued
   trigger:
     - platform: state
@@ -70,6 +71,7 @@
         tag: "{{ trigger.entity_id }}-deviceoffline"
 
 - alias: Washing Machine program finished, send notification
+  id: c5948e61-ec36-42ef-a057-e9dc0e5c220f
   trigger:
     - platform: state
       entity_id: binary_sensor.washing_machine_program_running
@@ -82,6 +84,7 @@
         tag: "washingmachine"
 
 - alias: Door open, send notification
+  id: 65925a44-8500-4e15-a173-a5c8ff1a8cb3
   mode: queued
   trigger:
     - platform: state
@@ -97,6 +100,7 @@
         tag: "{{ trigger.entity_id }}"
 
 - alias: Door open and lamp off, turn on lamp
+  id: ed9a108b-8ec0-4c1e-a4da-cc88092c0941
   mode: queued
   trigger:
     - platform: state
@@ -115,6 +119,7 @@
         entity_id: "{{ trigger.to_state.attributes.lamp_off_entity_id }}"
 
 - alias: Door closed for 30s, turn off lamp
+  id: 571fe8c9-bf3b-4711-9f10-9b1c23d4e7ca
   mode: queued
   trigger:
     - platform: state
@@ -122,8 +127,7 @@
         - binary_sensor.back_door_contact
         - binary_sensor.front_door_contact
       to: "off"
-      for:
-        seconds: 30
+      for: "00:00:30"
   condition:
     - "{{ is_state(trigger.to_state.attributes.lamp_off_entity_id, 'on') }}"
   action:
@@ -135,6 +139,7 @@
         entity_id: "{{ trigger.to_state.attributes.lamp_entity_id }}"
 
 - alias: Door open for 5 minutes, send notification
+  id: 260663cf-9523-406f-9368-6bd35555815f
   mode: queued
   trigger:
     - platform: state
@@ -142,8 +147,7 @@
         - binary_sensor.back_door_contact
         - binary_sensor.front_door_contact
       to: "on"
-      for:
-        minutes: 5
+      for: "00:05:00"
   action:
     - service: script.send_notification
       data:
@@ -153,6 +157,7 @@
         tag: "{{ trigger.entity_id }}"
 
 - alias: Door closed, send notification
+  id: c0da4ec0-91cc-46c2-b21b-2f67d4c9a44e
   mode: queued
   trigger:
     - platform: state
@@ -169,12 +174,16 @@
         allow_clear: "true"
 
 - alias: Front Door Mailbox movement, send notification
+  id: 5c3f86a6-9406-43fe-a7c3-c8552a69b350
   trigger:
     - platform: state
       entity_id: sensor.front_door_mailbox_action
-      from: ""
+      to:
+        - "drop"
+        - "tilt"
+        - "vibration"
   condition:
-    - "{{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' and is_state('binary_sensor.front_door_contact', 'off') }}"
+    - "{{ is_state('binary_sensor.front_door_contact', 'off') }}"
   action:
     - service: script.send_notification
       data:
@@ -183,6 +192,7 @@
         tag: "front_door_mailbox"
 
 - alias: Set alarm state
+  id: 2d53ff7e-e2b2-40e6-8362-33ede62ae3f6
   trigger:
     - platform: homeassistant
       event: start
@@ -219,18 +229,21 @@
         entity_id: alarm_control_panel.home_alarm
 
 - alias: Smart Vibration Sensor movement, send notification
+  id: 39b75e6e-19c9-4a60-bd72-a7616ed50645
   trigger:
     - platform: state
       entity_id: sensor.smart_vibration_sensor_action
-      from: ""
-  condition:
-    - "{{ trigger.to_state.state != 'unknown' and trigger.to_state.state != 'unavailable' }}"
+      to:
+        - "drop"
+        - "tilt"
+        - "vibration"
   action:
     - service: script.send_notification_with_lower_floor_camera_snapshot
       data:
         message: "Movement detected on Smart Vibration Sensor"
 
 - alias: Update available, send notification
+  id: eafd8f59-39c2-434c-9b29-c1b8be3dfd52
   trigger:
     - platform: state
       entity_id: binary_sensor.updater
@@ -245,17 +258,18 @@
         tag: "homeassistantupdate"
 
 - alias: AdguardHome enabled after 2 minutes
+  id: 3ba3ddc1-8f62-4413-9e23-42ae60cc3ba2
   trigger:
     - platform: state
       entity_id: switch.adguard_protection
       to: "off"
-      for:
-        minutes: 2
+      for: "00:02:00"
   action:
     - service: switch.turn_on
       entity_id: switch.adguard_protection
 
 - alias: Set Zigbee2mqtt log level
+  id: 6eb24622-8f61-4a04-bcc4-c24113c2c639
   trigger:
     - platform: state
       entity_id: input_select.zigbee2mqtt_log_level
@@ -266,6 +280,7 @@
         topic: "zigbee2mqtt/bridge/config/log_level"
 
 - alias: Log Zigbee2mqtt errors
+  id: 3f7282b9-5543-47da-966b-0751445c0273
   trigger:
     - platform: mqtt
       topic: "zigbee2mqtt/bridge/log"
