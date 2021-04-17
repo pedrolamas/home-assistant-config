@@ -4,6 +4,7 @@
     "keesschollaart.vscode-home-assistant",
     "lukas-tr.materialdesignicons-intellisense",
     "redhat.vscode-yaml",
+    "esbenp.prettier-vscode",
     "emilast.LogFileHighlighter"
   ]
 }

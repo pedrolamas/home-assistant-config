@@ -22,53 +22,17 @@
         title: "Device with low battery"
         message: "The {{ trigger.to_state.attributes.friendly_name }} sensor has low battery!"
 
-- alias: Device offline, send notification
-  id: 95278467-6b3e-4f4a-a912-10220166dd76
-  mode: queued
-  trigger:
-    - platform: state
-      entity_id:
+- alias: Set device connectivity state
+  id: 04401784-2ac3-408d-a75e-4edd6e2c24cb
+  use_blueprint:
+    path: device_connectivity_state.yaml
+    input:
+      on_off_entities:
         - binary_sensor.philips_hue_bridge_2_1
         - binary_sensor.raspberry_pi_2_model_b
         - binary_sensor.synology_ds412_nas
-      to: "off"
-      for: "00:01:00"
-    - platform: state
-      entity_id:
+      online_offline_entities:
         - sensor.zigbee2mqtt_bridge_state
-      to: "offline"
-      for: "00:01:00"
-  action:
-    - service: script.send_notification
-      data:
-        recipient: "pedro"
-        message: "{{ trigger.to_state.attributes.friendly_name }} is offline."
-        color: "red"
-        channel: "System"
-        tag: "{{ trigger.entity_id }}-deviceoffline"
-
-- alias: Device online, clear notification
-  id: 69afbe80-e2ab-419e-b0e9-fd230543d25e
-  mode: queued
-  trigger:
-    - platform: state
-      entity_id:
-        - binary_sensor.philips_hue_bridge_2_1
-        - binary_sensor.raspberry_pi_2_model_b
-        - binary_sensor.synology_ds412_nas
-      from: "off"
-      to: "on"
-    - platform: state
-      entity_id:
-        - sensor.zigbee2mqtt_bridge_state
-      from: "offline"
-      to: "online"
-  action:
-    - service: script.clear_notification
-      data:
-        recipient: "pedro"
-        channel: "System"
-        tag: "{{ trigger.entity_id }}-deviceoffline"
 
 - alias: Washing Machine program finished, send notification
   id: c5948e61-ec36-42ef-a057-e9dc0e5c220f
@@ -83,95 +47,41 @@
         channel: "Automation"
         tag: "washingmachine"
 
-- alias: Door open, send notification
-  id: 65925a44-8500-4e15-a173-a5c8ff1a8cb3
-  mode: queued
-  trigger:
-    - platform: state
-      entity_id:
-        - binary_sensor.back_door_contact
-        - binary_sensor.front_door_contact
-      to: "on"
-  action:
-    - service: script.send_notification
-      data:
-        message: "{{ trigger.to_state.attributes.friendly_name }} is open!"
-        channel: "Alarm"
-        tag: "{{ trigger.entity_id }}"
+- alias: Set door state (Back Door)
+  id: 95e1e1a4-85a5-4702-ae25-05186075840c
+  use_blueprint:
+    path: door_state.yaml
+    input:
+      door_state_entity: binary_sensor.back_door_contact
+      companion_light_entity: light.lamp_3
+      light_off_on_door_closed_helper_entity: input_boolean.turn_off_lamp_on_back_door_close
 
-- alias: Door open and lamp off, turn on lamp
-  id: ed9a108b-8ec0-4c1e-a4da-cc88092c0941
-  mode: queued
-  trigger:
-    - platform: state
-      entity_id:
-        - binary_sensor.back_door_contact
-        - binary_sensor.front_door_contact
-      to: "on"
-  condition:
-    - "{{ is_state(trigger.to_state.attributes.lamp_entity_id, 'off') }}"
-  action:
-    - service: light.turn_on
-      data:
-        entity_id: "{{ trigger.to_state.attributes.lamp_entity_id }}"
-    - service: input_boolean.turn_on
-      data:
-        entity_id: "{{ trigger.to_state.attributes.lamp_off_entity_id }}"
+- alias: Set door state (Front Door)
+  id: 3f673a0b-8ff1-4fcd-b415-4e4b6d0076eb
+  use_blueprint:
+    path: door_state.yaml
+    input:
+      door_state_entity: binary_sensor.front_door_contact
+      companion_light_entity: light.lamp_2
+      light_off_on_door_closed_helper_entity: input_boolean.turn_off_lamp_on_front_door_close
 
-- alias: Door closed for 30s, turn off lamp
-  id: 571fe8c9-bf3b-4711-9f10-9b1c23d4e7ca
-  mode: queued
-  trigger:
-    - platform: state
-      entity_id:
-        - binary_sensor.back_door_contact
-        - binary_sensor.front_door_contact
-      to: "off"
-      for: "00:00:30"
-  condition:
-    - "{{ is_state(trigger.to_state.attributes.lamp_off_entity_id, 'on') }}"
-  action:
-    - service: input_boolean.turn_off
-      data:
-        entity_id: "{{ trigger.to_state.attributes.lamp_off_entity_id }}"
-    - service: light.turn_off
-      data:
-        entity_id: "{{ trigger.to_state.attributes.lamp_entity_id }}"
+- alias: Set phone battery state (Pedro)
+  id: 3d24676c-7c32-4879-a2c6-5ae513bd4218
+  use_blueprint:
+    path: phone_battery_state.yaml
+    input:
+      battery_level_entity: sensor.pedro_oneplus7pro_battery_level
+      battery_state_entity: sensor.pedro_oneplus7pro_battery_state
+      recipient: pedro
 
-- alias: Door open for 5 minutes, send notification
-  id: 260663cf-9523-406f-9368-6bd35555815f
-  mode: queued
-  trigger:
-    - platform: state
-      entity_id:
-        - binary_sensor.back_door_contact
-        - binary_sensor.front_door_contact
-      to: "on"
-      for: "00:05:00"
-  action:
-    - service: script.send_notification
-      data:
-        message: "{{ trigger.to_state.attributes.friendly_name }} is still open!"
-        color: "red"
-        channel: "Alarm"
-        tag: "{{ trigger.entity_id }}"
-
-- alias: Door closed, send notification
-  id: c0da4ec0-91cc-46c2-b21b-2f67d4c9a44e
-  mode: queued
-  trigger:
-    - platform: state
-      entity_id:
-        - binary_sensor.back_door_contact
-        - binary_sensor.front_door_contact
-      to: "off"
-  action:
-    - service: script.send_notification
-      data:
-        message: "{{ trigger.to_state.attributes.friendly_name }} is closed!"
-        channel: "Alarm"
-        tag: "{{ trigger.entity_id }}"
-        allow_clear: "true"
+- alias: Set phone battery state (Joana)
+  id: 7f291143-de8e-4a29-bcac-5c487dc7457f
+  use_blueprint:
+    path: phone_battery_state.yaml
+    input:
+      battery_level_entity: sensor.joana_oneplus7_battery_level
+      battery_state_entity: sensor.joana_oneplus7_battery_state
+      recipient: joana
 
 - alias: Front Door Mailbox movement, send notification
   id: 5c3f86a6-9406-43fe-a7c3-c8552a69b350

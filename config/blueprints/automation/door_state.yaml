@@ -1,0 +1,131 @@
+blueprint:
+  name: Door state change
+  description: Process door state changes
+  domain: automation
+  input:
+    door_state_entity:
+      name: Door
+      description: The door state sensor
+      selector:
+        entity:
+          integration: mqtt
+          domain: binary_sensor
+          device_class: door
+    companion_light_entity:
+      name: Light
+      description: Light to turn on when door is open
+      selector:
+        entity:
+          domain: light
+    light_off_on_door_closed_helper_entity:
+      name: Light off on door closed helper
+      description: Helper to indicate that light should be turned off after delay from closing the door
+      selector:
+        entity:
+          domain: input_boolean
+    warning_on_door_open_delay:
+      name: Warning delay on door open
+      description: The time in seconds before sending a notification warning about the door open
+      default: 300
+      selector:
+        number:
+          min: 60
+          max: 600
+          step: 10
+          unit_of_measurement: seconds
+    light_off_on_door_closed_delay:
+      name: Lights off delay on door close
+      description: The time in seconds before turning the light off after closing the door
+      default: 30
+      selector:
+        number:
+          min: 10
+          max: 120
+          step: 10
+          unit_of_measurement: seconds
+
+mode: queued
+
+variables:
+  door_state_entity: !input door_state_entity
+  companion_light_entity: !input companion_light_entity
+  light_off_on_door_closed_helper_entity: !input light_off_on_door_closed_helper_entity
+  warning_on_door_open_delay: !input warning_on_door_open_delay
+  light_off_on_door_closed_delay: !input light_off_on_door_closed_delay
+  door_state_friendly_name: "{{ state_attr(door_state_entity, 'friendly_name') }}"
+
+trigger:
+  - platform: state
+    entity_id: !input door_state_entity
+    to: "on"
+    for:
+      seconds: !input warning_on_door_open_delay
+  - platform: state
+    entity_id: !input door_state_entity
+    to: "off"
+    for:
+      seconds: !input light_off_on_door_closed_delay
+  - platform: state
+    entity_id: !input door_state_entity
+
+condition:
+  - "{{ trigger.from_state.state != trigger.to_state.state or trigger.for != None }}"
+
+action:
+  - variables:
+      door_state: "{{ trigger.to_state.state }}"
+      door_state_total_seconds: >-
+        {% if trigger.for != None %}{{ trigger.for.total_seconds() }}{% else %}0{% endif %}
+  - choose:
+      - conditions:
+          - "{{ door_state == 'on' }}"
+        sequence:
+          - choose:
+              - conditions:
+                  - "{{ door_state_total_seconds >= warning_on_door_open_delay }}"
+                sequence:
+                  - service: script.send_notification
+                    data:
+                      message: "{{ door_state_friendly_name }} is still open!"
+                      color: "red"
+                      channel: "Alarm"
+                      tag: "{{ door_state_entity }}"
+
+            default:
+              - service: script.send_notification
+                data:
+                  message: "{{ door_state_friendly_name }} is open!"
+                  channel: "Alarm"
+                  tag: "{{ door_state_entity }}"
+              - condition: template
+                value_template: "{{ is_state(companion_light_entity, 'off') }}"
+              - service: light.turn_on
+                data:
+                  entity_id: "{{ companion_light_entity }}"
+              - service: input_boolean.turn_on
+                data:
+                  entity_id: "{{ light_off_on_door_closed_helper_entity }}"
+
+      - conditions:
+          - "{{ door_state == 'off' }}"
+        sequence:
+          - choose:
+              - conditions:
+                  - "{{ door_state_total_seconds >= light_off_on_door_closed_delay }}"
+                sequence:
+                  - condition: template
+                    value_template: "{{ is_state(light_off_on_door_closed_helper_entity, 'on') }}"
+                  - service: input_boolean.turn_off
+                    data:
+                      entity_id: "{{ light_off_on_door_closed_helper_entity }}"
+                  - service: light.turn_off
+                    data:
+                      entity_id: "{{ companion_light_entity }}"
+
+            default:
+              - service: script.send_notification
+                data:
+                  message: "{{ door_state_friendly_name }} is closed!"
+                  channel: "Alarm"
+                  tag: "{{ door_state_entity }}"
+                  allow_clear: "true"

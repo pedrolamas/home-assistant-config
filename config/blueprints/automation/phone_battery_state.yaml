@@ -1,14 +1,8 @@
 blueprint:
-  name: Phone battery charging
-  description: Send notifications while phone battery is charging
+  name: Phone battery state
+  description: Process phone battery state changes
   domain: automation
   input:
-    # phone_device:
-    #   name: Phone
-    #   description: The phone to monitor the battery state
-    #   selector:
-    #     device:
-    #       integration: mobile_app
     battery_level_entity:
       name: Battery Level
       description: The phone battery level sensor

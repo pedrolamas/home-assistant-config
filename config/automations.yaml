@@ -15,24 +15,6 @@
     entity_id: switch.master_bedroom_smart_plug
     domain: switch
   mode: single
-- id: '1607965134765'
-  alias: Phone battery charging (Pedro)
-  description: ''
-  use_blueprint:
-    path: phone_battery_charging.yaml
-    input:
-      battery_level_entity: sensor.pedro_oneplus7pro_battery_level
-      battery_state_entity: sensor.pedro_oneplus7pro_battery_state
-      recipient: pedro
-- id: '1607965154395'
-  alias: Phone battery charging (Joana)
-  description: ''
-  use_blueprint:
-    path: phone_battery_charging.yaml
-    input:
-      battery_level_entity: sensor.joana_oneplus7_battery_level
-      battery_state_entity: sensor.joana_oneplus7_battery_state
-      recipient: joana
 - id: '1608120411887'
   alias: Smart Plug automatic off (Lower Floor)
   description: ''

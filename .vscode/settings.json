@@ -72,7 +72,11 @@
   "[home-assistant]": {
     "editor.autoIndent": "full",
     "editor.insertSpaces": true,
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true
   },
-  "yaml.format.enable": true
+  "yaml.format.enable": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
