@@ -13,5 +13,5 @@
 - name: mobile_app_all
   platform: group
   services:
-    - service: mobile_app_pedro_oneplus7pro
+    - service: mobile_app_pedro_oneplus9pro
     - service: mobile_app_joana_oneplus7

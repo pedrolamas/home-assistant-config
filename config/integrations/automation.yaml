@@ -70,8 +70,8 @@
   use_blueprint:
     path: phone_battery_state.yaml
     input:
-      battery_level_entity: sensor.pedro_oneplus7pro_battery_level
-      battery_state_entity: sensor.pedro_oneplus7pro_battery_state
+      battery_level_entity: sensor.pedro_oneplus9pro_battery_level
+      battery_state_entity: sensor.pedro_oneplus9pro_battery_state
       recipient: pedro
 
 - alias: Set phone battery state (Joana)

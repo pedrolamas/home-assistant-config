@@ -3,7 +3,7 @@ send_notification:
   sequence:
     - service: >-
         {% if recipient == 'pedro' %}
-          notify.mobile_app_pedro_oneplus7pro
+          notify.mobile_app_pedro_oneplus9pro
         {% elif recipient == 'joana' %}
           notify.mobile_app_joana_oneplus7
         {% else %}
@@ -25,7 +25,7 @@ clear_notification:
   sequence:
     - service: >-
         {% if recipient == 'pedro' %}
-          notify.mobile_app_pedro_oneplus7pro
+          notify.mobile_app_pedro_oneplus9pro
         {% elif recipient == 'joana' %}
           notify.mobile_app_joana_oneplus7
         {% else %}

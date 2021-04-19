@@ -2,8 +2,8 @@
   name: Pedro
   user_id: !secret pedro_user_id
   device_trackers:
-    - device_tracker.pedro_oneplus7pro
-    - device_tracker.oneplus_7_pro_pedro
+    - device_tracker.pedro_oneplus9pro
+    - device_tracker.oneplus_9_pro_pedro
 
 - id: joana
   name: Joana

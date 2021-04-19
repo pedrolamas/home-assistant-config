@@ -9,16 +9,16 @@ cards:
         name: Location
         hold_action:
           action: call-service
-          service: notify.mobile_app_pedro_oneplus7pro
+          service: notify.mobile_app_pedro_oneplus9pro
           service_data:
             message: "request_location_update"
-      - entity: device_tracker.pedro_oneplus7pro
+      - entity: device_tracker.pedro_oneplus9pro
         name: GPS
         icon: mdi:crosshairs-gps
-      - entity: device_tracker.oneplus_7_pro_pedro
+      - entity: device_tracker.oneplus_9_pro_pedro
         name: WiFi
         icon: mdi:wifi
-      - entity: sensor.pedro_oneplus7pro_battery_level
+      - entity: sensor.pedro_oneplus9pro_battery_level
         name: Battery
 
   - type: glance
