@@ -1,7 +1,50 @@
 send_notification:
+  description: Sends a notification
+  fields:
+    recipient:
+      name: Recipient
+      description: The notification recipient
+      selector:
+        select:
+          options:
+            - All
+            - Pedro
+            - Joana
+    message:
+      name: Message
+      description: The notification message
+      selector:
+        text:
+          multiline: true
+    title:
+      name: Title
+      description: The notification title
+      selector:
+        text:
+    color:
+      name: Color
+      description: The notification icon color
+      selector:
+        text:
+    channel:
+      name: Channel
+      description: The notification channel
+      selector:
+        text:
+    tag:
+      name: Tag
+      description: The notification tag
+      selector:
+        text:
+    allow_clear:
+      name: Allow clear
+      description: If set to true and the alarm is disarmed, it will clear any existing notification instead of showing a new one
+      selector:
+        boolean:
   mode: parallel
   sequence:
     - service: >-
+        {% set recipient = recipient | default | lower %}
         {% if recipient == 'pedro' %}
           notify.mobile_app_pedro_oneplus9pro
         {% elif recipient == 'joana' %}
@@ -11,7 +54,7 @@ send_notification:
         {% endif %}
       data:
         message: >-
-          {% if allow_clear == "true" and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}{{ message }}{% endif %}
+          {% if allow_clear and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}{{ message }}{% endif %}
         title: "{{ title | default }}"
         data:
           color: "{{ color | default }}"
@@ -21,6 +64,27 @@ send_notification:
           priority: "high"
 
 clear_notification:
+  description: Clears an existing notification
+  fields:
+    recipient:
+      name: Recipient
+      description: The notification recipient
+      selector:
+        select:
+          options:
+            - All
+            - Pedro
+            - Joana
+    channel:
+      name: Channel
+      description: The notification channel
+      selector:
+        text:
+    tag:
+      name: Tag
+      description: The notification tag
+      selector:
+        text:
   mode: parallel
   sequence:
     - service: >-
@@ -94,7 +158,7 @@ watch_netflix_on_lg_smart_tv:
         {{ not is_state("media_player.lg_smart_tv", "off") }}
       timeout:
         seconds: 15
-      continue_on_timeout: "true"
+      continue_on_timeout: true
     - service: media_player.select_source
       data:
         entity_id: media_player.lg_smart_tv
@@ -107,7 +171,7 @@ watch_plex_on_lg_smart_tv:
         {{ not is_state("media_player.lg_smart_tv", "off") }}
       timeout:
         seconds: 15
-      continue_on_timeout: "true"
+      continue_on_timeout: true
     - service: media_player.select_source
       data:
         entity_id: media_player.lg_smart_tv
@@ -120,7 +184,7 @@ watch_bbc_one_on_lg_smart_tv:
         {{ not is_state("media_player.lg_smart_tv", "off") }}
       timeout:
         seconds: 15
-      continue_on_timeout: "true"
+      continue_on_timeout: true
     - service: media_player.play_media
       data:
         entity_id: media_player.lg_smart_tv
@@ -134,7 +198,7 @@ watch_bbc_news_on_lg_smart_tv:
         {{ not is_state("media_player.lg_smart_tv", "off") }}
       timeout:
         seconds: 15
-      continue_on_timeout: "true"
+      continue_on_timeout: true
     - service: media_player.play_media
       data:
         entity_id: media_player.lg_smart_tv
@@ -148,7 +212,7 @@ watch_cbeebies_on_lg_smart_tv:
         {{ not is_state("media_player.lg_smart_tv", "off") }}
       timeout:
         seconds: 15
-      continue_on_timeout: "true"
+      continue_on_timeout: true
     - service: media_player.play_media
       data:
         entity_id: media_player.lg_smart_tv
@@ -162,7 +226,7 @@ watch_channel_4_on_lg_smart_tv:
         {{ not is_state("media_player.lg_smart_tv", "off") }}
       timeout:
         seconds: 15
-      continue_on_timeout: "true"
+      continue_on_timeout: true
     - service: media_player.play_media
       data:
         entity_id: media_player.lg_smart_tv

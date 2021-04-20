@@ -128,4 +128,4 @@ action:
                   message: "{{ door_state_friendly_name }} is closed!"
                   channel: "Alarm"
                   tag: "{{ door_state_entity }}"
-                  allow_clear: "true"
+                  allow_clear: true
