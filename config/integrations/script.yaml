@@ -41,10 +41,18 @@ send_notification:
       description: If set to true and the alarm is disarmed, it will clear any existing notification instead of showing a new one
       selector:
         boolean:
+  variables:
+    recipient: "{{ recipient | default | lower }}"
+    message: "{{ message | default }}"
+    title: "{{ title | default }}"
+    color: "{{ color | default }}"
+    filename: "{{ filename | default }}"
+    channel: "{{ channel | default }}"
+    tag: "{{ tag | default }}"
+    allow_clear: "{{ allow_clear | default(false) }}"
   mode: parallel
   sequence:
     - service: >-
-        {% set recipient = recipient | default | lower %}
         {% if recipient == 'pedro' %}
           notify.mobile_app_pedro_oneplus9pro
         {% elif recipient == 'joana' %}
@@ -55,12 +63,12 @@ send_notification:
       data:
         message: >-
           {% if allow_clear and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}{{ message }}{% endif %}
-        title: "{{ title | default }}"
+        title: "{{ title }}"
         data:
-          color: "{{ color | default }}"
-          image_file: "{{ filename | default }}"
-          channel: "{{ channel | default }}"
-          tag: "{{ tag | default }}"
+          color: "{{ color }}"
+          image_file: "{{ filename }}"
+          channel: "{{ channel }}"
+          tag: "{{ tag }}"
           priority: "high"
 
 clear_notification:
@@ -85,6 +93,10 @@ clear_notification:
       description: The notification tag
       selector:
         text:
+  variables:
+    recipient: "{{ recipient | default | lower }}"
+    channel: "{{ channel | default }}"
+    tag: "{{ tag | default }}"
   mode: parallel
   sequence:
     - service: >-
@@ -98,8 +110,8 @@ clear_notification:
       data:
         message: clear_notification
         data:
-          channel: "{{ channel | default }}"
-          tag: "{{ tag | default }}"
+          channel: "{{ channel }}"
+          tag: "{{ tag }}"
           priority: "high"
 
 send_notification_with_living_room_camera_snapshot:
