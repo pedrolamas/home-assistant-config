@@ -28,16 +28,16 @@ cards:
         name: Location
         hold_action:
           action: call-service
-          service: notify.mobile_app_joana_oneplus7
+          service: notify.mobile_app_joana_oneplus9
           service_data:
             message: "request_location_update"
-      - entity: device_tracker.joana_oneplus7
+      - entity: device_tracker.joana_oneplus9
         name: GPS
         icon: mdi:crosshairs-gps
-      - entity: device_tracker.oneplus_7_joana
+      - entity: device_tracker.oneplus_9_joana
         name: WiFi
         icon: mdi:wifi
-      - entity: sensor.joana_oneplus7_battery_level
+      - entity: sensor.joana_oneplus9_battery_level
         name: Battery
 
   - type: alarm-panel

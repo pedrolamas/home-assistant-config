@@ -8,16 +8,16 @@ device_tracker.pedro_oneplus9pro:
   friendly_name: Pedro OnePlus 9 Pro GPS
   icon: mdi:cellphone-android
 
-device_tracker.joana_oneplus7:
-  friendly_name: Joana OnePlus 7 GPS
+device_tracker.joana_oneplus9:
+  friendly_name: Joana OnePlus 9 GPS
   icon: mdi:cellphone-android
 
 device_tracker.oneplus_9_pro_pedro:
   friendly_name: Pedro OnePlus 9 Pro WiFi
   icon: mdi:cellphone-android
 
-device_tracker.oneplus_7_joana:
-  friendly_name: Joana OnePlus 7 WiFi
+device_tracker.oneplus_9_joana:
+  friendly_name: Joana OnePlus 9 WiFi
   icon: mdi:cellphone-android
 
 binary_sensor.back_door_contact:

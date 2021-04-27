@@ -56,7 +56,7 @@ send_notification:
         {% if recipient == 'pedro' %}
           notify.mobile_app_pedro_oneplus9pro
         {% elif recipient == 'joana' %}
-          notify.mobile_app_joana_oneplus7
+          notify.mobile_app_joana_oneplus9
         {% else %}
           notify.mobile_app_all
         {% endif %}
@@ -103,7 +103,7 @@ clear_notification:
         {% if recipient == 'pedro' %}
           notify.mobile_app_pedro_oneplus9pro
         {% elif recipient == 'joana' %}
-          notify.mobile_app_joana_oneplus7
+          notify.mobile_app_joana_oneplus9
         {% else %}
           notify.mobile_app_all
         {% endif %}
