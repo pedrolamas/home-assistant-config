@@ -62,7 +62,7 @@ send_notification:
         {% endif %}
       data:
         message: >-
-          {% if allow_clear and is_state('alarm_control_panel.home_alarm', 'disarmed') %}clear_notification{% else %}{{ message }}{% endif %}
+          {{ 'clear_notification' if allow_clear and is_state('alarm_control_panel.home_alarm', 'disarmed') else message }}
         title: "{{ title }}"
         data:
           color: "{{ color }}"

@@ -29,7 +29,6 @@
 
 - platform: template
   sensors:
-
     lg_smart_tv_is_watching_live_tv:
       friendly_name: Live TV
       icon_template: mdi:television-classic
@@ -105,11 +104,7 @@
     external_ip_detected:
       friendly_name: External IP detected
       icon_template: >-
-        {% if is_state('sensor.external_ip', 'unknown') %}
-          mdi:cloud-off-outline
-        {% else %}
-          mdi:cloud-outline
-        {% endif %}
+        {{ 'mdi:cloud-off-outline' if is_state('sensor.external_ip', 'unknown') else 'mdi:cloud-outline' }}
       value_template: >-
         {{ not(is_state('sensor.external_ip', 'unknown')) }}
 

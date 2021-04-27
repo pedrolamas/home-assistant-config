@@ -74,8 +74,7 @@ condition:
 action:
   - variables:
       door_state: "{{ trigger.to_state.state }}"
-      door_state_total_seconds: >-
-        {% if trigger.for != None %}{{ trigger.for.total_seconds() }}{% else %}0{% endif %}
+      door_state_total_seconds: "{{ trigger.for.total_seconds() if trigger.for != None else 0 }}"
   - choose:
       - conditions:
           - "{{ door_state == 'on' }}"
