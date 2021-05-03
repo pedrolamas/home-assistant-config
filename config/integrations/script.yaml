@@ -36,13 +36,18 @@ send_notification:
       description: The notification tag
       selector:
         text:
+    actions:
+      name: Actions
+      description: The notification actions
+      selector:
+        object:
     allow_clear:
       name: Allow clear
       description: If set to true and the alarm is disarmed, it will clear any existing notification instead of showing a new one
       selector:
         boolean:
   variables:
-    recipient: "{{ recipient | default | lower }}"
+    recipient: "{{ recipient | default }}"
     message: "{{ message | default }}"
     title: "{{ title | default }}"
     color: "{{ color | default }}"
@@ -50,12 +55,16 @@ send_notification:
     channel: "{{ channel | default }}"
     tag: "{{ tag | default }}"
     allow_clear: "{{ allow_clear | default(false) }}"
+    actions: >-
+      {{ actions | default }}
   mode: parallel
   sequence:
+    - variables:
+        recipient_lower: "{{ recipient | lower }}"
     - service: >-
-        {% if recipient == 'pedro' %}
+        {% if recipient_lower == 'pedro' %}
           notify.mobile_app_pedro_oneplus9pro
-        {% elif recipient == 'joana' %}
+        {% elif recipient_lower == 'joana' %}
           notify.mobile_app_joana_oneplus9
         {% else %}
           notify.mobile_app_all
@@ -70,6 +79,8 @@ send_notification:
           channel: "{{ channel }}"
           tag: "{{ tag }}"
           priority: "high"
+          actions: >-
+            {{ actions }}
 
 clear_notification:
   description: Clears an existing notification
@@ -99,10 +110,12 @@ clear_notification:
     tag: "{{ tag | default }}"
   mode: parallel
   sequence:
+    - variables:
+        recipient_lower: "{{ recipient | lower }}"
     - service: >-
-        {% if recipient == 'pedro' %}
+        {% if recipient_lower == 'pedro' %}
           notify.mobile_app_pedro_oneplus9pro
-        {% elif recipient == 'joana' %}
+        {% elif recipient_lower == 'joana' %}
           notify.mobile_app_joana_oneplus9
         {% else %}
           notify.mobile_app_all
