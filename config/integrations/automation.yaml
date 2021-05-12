@@ -15,7 +15,7 @@
         - sensor.master_bedroom_climate_battery
         - sensor.smart_switch_battery
         - sensor.smart_vibration_sensor_battery
-      below: 20
+      below: 15
   action:
     - service: persistent_notification.create
       data:

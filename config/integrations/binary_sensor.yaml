@@ -113,10 +113,8 @@
       icon_template: mdi:washing-machine
       value_template: >-
         {{ states('sensor.washing_machine_smart_plug_power') | float > 0.5 }}
-      delay_off:
-        minutes: 1
-      delay_on:
-        seconds: 30
+      delay_off: '00:01:00'
+      delay_on: '00:00:30'
 
     mains_powered:
       friendly_name: Mains Power

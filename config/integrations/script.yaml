@@ -169,21 +169,18 @@ update_reported_ip:
 
 turn_on_lg_smart_tv:
   sequence:
-    - condition: state
-      entity_id: media_player.lg_smart_tv
-      state: "off"
+    - condition: template
+      value_template: "{{ is_state('media_player.lg_smart_tv', 'off') }}"
     - service: media_player.turn_on
       data:
         entity_id: media_player.lg_smart_tv
+    - wait_template: "{{ not is_state('media_player.lg_smart_tv', 'off') }}"
+      timeout: "00:00:50"
+      continue_on_timeout: true
 
 watch_netflix_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
-    - wait_template: >-
-        {{ not is_state("media_player.lg_smart_tv", "off") }}
-      timeout:
-        seconds: 15
-      continue_on_timeout: true
     - service: media_player.select_source
       data:
         entity_id: media_player.lg_smart_tv
@@ -192,11 +189,6 @@ watch_netflix_on_lg_smart_tv:
 watch_plex_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
-    - wait_template: >-
-        {{ not is_state("media_player.lg_smart_tv", "off") }}
-      timeout:
-        seconds: 15
-      continue_on_timeout: true
     - service: media_player.select_source
       data:
         entity_id: media_player.lg_smart_tv
@@ -205,11 +197,6 @@ watch_plex_on_lg_smart_tv:
 watch_bbc_one_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
-    - wait_template: >-
-        {{ not is_state("media_player.lg_smart_tv", "off") }}
-      timeout:
-        seconds: 15
-      continue_on_timeout: true
     - service: media_player.play_media
       data:
         entity_id: media_player.lg_smart_tv
@@ -219,11 +206,6 @@ watch_bbc_one_on_lg_smart_tv:
 watch_bbc_news_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
-    - wait_template: >-
-        {{ not is_state("media_player.lg_smart_tv", "off") }}
-      timeout:
-        seconds: 15
-      continue_on_timeout: true
     - service: media_player.play_media
       data:
         entity_id: media_player.lg_smart_tv
@@ -233,11 +215,6 @@ watch_bbc_news_on_lg_smart_tv:
 watch_cbeebies_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
-    - wait_template: >-
-        {{ not is_state("media_player.lg_smart_tv", "off") }}
-      timeout:
-        seconds: 15
-      continue_on_timeout: true
     - service: media_player.play_media
       data:
         entity_id: media_player.lg_smart_tv
@@ -247,11 +224,6 @@ watch_cbeebies_on_lg_smart_tv:
 watch_channel_4_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
-    - wait_template: >-
-        {{ not is_state("media_player.lg_smart_tv", "off") }}
-      timeout:
-        seconds: 15
-      continue_on_timeout: true
     - service: media_player.play_media
       data:
         entity_id: media_player.lg_smart_tv
