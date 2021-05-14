@@ -114,9 +114,7 @@
         - "01:00:00"
         - "07:00:00"
     - platform: state
-      entity_id:
-        - person.pedro
-        - person.joana
+      entity_id: group.family
   action:
     choose:
       - conditions:
@@ -127,17 +125,38 @@
           - service: alarm_control_panel.alarm_arm_night
             entity_id: alarm_control_panel.home_alarm
       - conditions:
-          - condition: not
-            conditions:
-              - condition: state
-                entity_id: group.family
-                state: "home"
+          - "{{ not is_state('group.family', 'home') }}"
         sequence:
           - service: alarm_control_panel.alarm_arm_away
             entity_id: alarm_control_panel.home_alarm
     default:
       - service: alarm_control_panel.alarm_disarm
         entity_id: alarm_control_panel.home_alarm
+
+- alias: Octoprint print state changed, send notification
+  id: 9c2ec395-2c8d-4b4c-bbc1-1af04d38d168
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.octoprint_printing
+  action:
+    choose:
+      - conditions:
+          - "{{ trigger.from_state.state == 'on' and trigger.to_state.state == 'off' }}"
+        sequence:
+          - service: script.send_notification
+            data:
+              recipient: "pedro"
+              message: "Octoprint done!"
+              channel: "Automation"
+              tag: "octoprint"
+      - conditions:
+          - "{{ trigger.to_state.state == 'on' }}"
+        sequence:
+          - service: script.clear_notification
+            data:
+              recipient: "pedro"
+              channel: "Automation"
+              tag: "octoprint"
 
 - alias: Smart Vibration Sensor movement, send notification
   id: 39b75e6e-19c9-4a60-bd72-a7616ed50645
