@@ -10,8 +10,10 @@ cards:
       - entity: light.lamp_2
       - entity: light.lamp_3
       - entity: light.kids_corner
-      - entity: light.elgato_key_light_air
+      - entity: light.lamp_7
         name: Desk lamp
+      - entity: light.elgato_key_light_air
+        name: Desk camera lamp
 
   - type: entities
     title: Master Bedroom
@@ -20,6 +22,8 @@ cards:
       - entity: light.master_bedroom_dimmer
         name: Ceiling dimmer
       - entity: light.lamp_4
+      - entity: light.lamp_8
+        name: Desk lamp
 
   - type: entities
     title: Kids Bedroom

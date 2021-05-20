@@ -11,6 +11,8 @@ include:
     - light.lamp_4
     - light.lamp_5
     - light.lamp_6
+    - light.lamp_7
+    - light.lamp_8
     - media_player.lg_smart_tv
     - person.joana
     - person.pedro

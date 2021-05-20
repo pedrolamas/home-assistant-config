@@ -158,6 +158,21 @@
               channel: "Automation"
               tag: "octoprint"
 
+- alias: Transmission download complete, send notification
+  id: 1091a93a-be80-440b-a61d-ecd27ced6abb
+  mode: queued
+  trigger:
+    - platform: event
+      event_type: transmission_downloaded_torrent
+  action:
+    - service: script.send_notification
+      data:
+        recipient: "pedro"
+        title: "Transmission download complete"
+        message: "{{ trigger.event.data.name }}"
+        channel: "Automation"
+        tag: "transmission"
+
 - alias: Smart Vibration Sensor movement, send notification
   id: 39b75e6e-19c9-4a60-bd72-a7616ed50645
   trigger:

@@ -4,12 +4,14 @@
     - light.lamp_1
     - light.lamp_2
     - light.lamp_3
+    - light.lamp_7
     - light.kids_corner
 
 - platform: group
   name: Master Bedroom Lights
   entities:
     - light.lamp_4
+    - light.lamp_8
     - light.master_bedroom_dimmer
 
 - platform: group
