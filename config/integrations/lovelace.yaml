@@ -1,1 +1,4 @@
 mode: yaml
+resources:
+  - url: /hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js
+    type: module
