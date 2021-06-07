@@ -7,6 +7,7 @@ smart_home:
       - binary_sensor.back_door_contact
       - binary_sensor.front_door_contact
       - light.kids_bedroom_dimmer
+      - light.lamp_3
       - light.lamp_4
       - light.lamp_5
       - light.lamp_6
