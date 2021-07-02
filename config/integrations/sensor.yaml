@@ -49,7 +49,6 @@
 
 - platform: london_underground
   line:
-    - Bakerloo
     - London Overground
     - Victoria
 

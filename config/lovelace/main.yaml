@@ -120,7 +120,6 @@ cards:
     columns: 4
     entities:
       - entity: sensor.victoria
-      - entity: sensor.bakerloo
       - entity: sensor.london_overground
       - entity: sensor.islington
 

@@ -38,10 +38,6 @@ binary_sensor.synology_ds412_nas:
 binary_sensor.raspberry_pi_2_model_b:
   icon: mdi:raspberry-pi
 
-sensor.bakerloo:
-  friendly_name: Bakerloo Line
-  icon: mdi:subway-variant
-
 sensor.london_overground:
   friendly_name: Overground
   icon: mdi:train
