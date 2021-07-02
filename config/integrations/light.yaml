@@ -5,7 +5,7 @@
     - light.lamp_2
     - light.lamp_3
     - light.lamp_7
-    - light.kids_corner
+    - light.kids_corner_group
 
 - platform: group
   name: Master Bedroom Lights
@@ -18,10 +18,3 @@
   name: Kids Bedroom Lights
   entities:
     - light.kids_bedroom_dimmer
-
-- platform: mqtt
-  name: Kids Corner
-  schema: json
-  command_topic: "zigbee2mqtt/Kids Corner Group/set"
-  state_topic: "zigbee2mqtt/Kids Corner Group"
-  brightness: true
