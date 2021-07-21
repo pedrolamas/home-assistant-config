@@ -15,6 +15,7 @@ cards:
             name: Humidity
             entity: sensor.living_room_climate_humidity
             graph: line
+            limits: []
       - type: glance
         show_name: false
         entities:
@@ -34,6 +35,7 @@ cards:
             name: Humidity
             entity: sensor.lower_floor_climate_humidity
             graph: line
+            limits: []
       - type: glance
         show_name: false
         entities:
@@ -53,6 +55,7 @@ cards:
             name: Humidity
             entity: sensor.laundry_room_climate_humidity
             graph: line
+            limits: []
       - type: glance
         show_name: false
         entities:
@@ -72,6 +75,7 @@ cards:
             name: Humidity
             entity: sensor.master_bedroom_climate_humidity
             graph: line
+            limits: []
       - type: glance
         show_name: false
         entities:
@@ -91,6 +95,7 @@ cards:
             name: Humidity
             entity: sensor.kids_bedroom_climate_humidity
             graph: line
+            limits: []
       - type: glance
         show_name: false
         entities:
