@@ -214,6 +214,22 @@
     - service: switch.turn_on
       entity_id: switch.adguard_protection
 
+- alias: OBS state changed, set Elgato Key Light Air state
+  id: ad07265c-d8aa-441f-9170-b005b1a2e26b
+  mode: queued
+  trigger:
+    - platform: state
+      entity_id: switch.obs_virtualcam
+  action:
+    - service: >-
+        {% if trigger.to_state.state == 'on' %}
+          light.turn_on
+        {% else %}
+          light.turn_off
+        {% endif %}
+      target:
+        entity_id: light.elgato_key_light_air
+
 - alias: Set Zigbee2mqtt log level
   id: 6eb24622-8f61-4a04-bcc4-c24113c2c639
   trigger:
