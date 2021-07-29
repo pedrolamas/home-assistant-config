@@ -40,6 +40,7 @@
   trigger:
     - platform: state
       entity_id: binary_sensor.washing_machine_program_running
+      from: "on"
       to: "off"
   action:
     - service: script.send_notification

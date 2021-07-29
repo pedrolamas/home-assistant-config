@@ -13,6 +13,7 @@ cards:
         entity: switch.lower_floor_smart_plug
         name: Lower floor
         toggle: true
+        state_color: true
         entities:
           - entity: sensor.lower_floor_smart_plug_power
             name: " "
@@ -20,6 +21,7 @@ cards:
         entity: switch.master_bedroom_smart_plug
         name: Master Bedroom
         toggle: true
+        state_color: true
         entities:
           - entity: sensor.master_bedroom_smart_plug_power
             name: " "
@@ -27,6 +29,7 @@ cards:
         entity: switch.kids_bedroom_smart_plug
         name: Kids Bedroom
         toggle: true
+        state_color: true
         entities:
           - entity: sensor.kids_bedroom_smart_plug_power
             name: " "
@@ -34,6 +37,7 @@ cards:
         entity: switch.washing_machine_smart_plug
         name: Washing Machine
         toggle: true
+        state_color: true
         entities:
           - entity: sensor.washing_machine_smart_plug_power
             name: " "
