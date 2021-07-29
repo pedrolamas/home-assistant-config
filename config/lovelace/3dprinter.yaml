@@ -7,70 +7,67 @@ cards:
     cards:
       - type: conditional
         conditions:
-          - entity: sensor.octoprint_current_state
-            state: "Printing"
+          - entity: binary_sensor.ender_3_v2_printing
+            state: "on"
         card:
           type: entities
-          title: Ender 3 V2
+          title: Creality Ender 3 V2
           show_header_toggle: false
           state_color: true
           entities:
             - type: custom:multiple-entity-row
               name: State
-              entity: sensor.octoprint_current_state
+              entity: sensor.ender_3_v2_current_state
               entities:
-                - entity: sensor.octoprint_job_percentage
+                - entity: sensor.ender_3_v2_job_percentage
                   name: " "
             - type: custom:multiple-entity-row
               name: Time
-              entity: sensor.octoprint_time_remaining
+              entity: sensor.ender_3_v2_time_remaining
               state_header: Remaining
               format: duration
               entities:
-                - entity: sensor.octoprint_time_elapsed
+                - entity: sensor.ender_3_v2_time_elapsed
                   name: Elapsed
                   format: duration
             - type: custom:multiple-entity-row
               name: Bed temperature
-              entity: sensor.octoprint_actual_bed_temp
+              entity: sensor.ender_3_v2_actual_bed_temp
               state_header: Actual
               entities:
-                - entity: sensor.octoprint_target_bed_temp
+                - entity: sensor.ender_3_v2_target_bed_temp
                   name: Target
             - type: custom:multiple-entity-row
-              name: Nozzle temperature
-              entity: sensor.octoprint_actual_tool0_temp
+              name: Extruder temperature
+              entity: sensor.ender_3_v2_actual_extruder_temp
               state_header: Actual
               entities:
-                - entity: sensor.octoprint_target_tool0_temp
+                - entity: sensor.ender_3_v2_target_extruder_temp
                   name: Target
 
       - type: conditional
         conditions:
-          - entity: sensor.octoprint_current_state
-            state_not: "Printing"
+          - entity: binary_sensor.ender_3_v2_printing
+            state: "off"
         card:
           type: entities
-          title: Ender 3 V2
+          title: Creality Ender 3 V2
           show_header_toggle: false
           state_color: true
           entities:
-            - entity: sensor.octoprint_current_state
+            - entity: sensor.ender_3_v2_current_state
               name: State
             - type: custom:multiple-entity-row
               name: Bed temperature
-              entity: sensor.octoprint_actual_bed_temp
+              entity: sensor.ender_3_v2_actual_bed_temp
               state_header: Actual
               entities:
-                - entity: sensor.octoprint_target_bed_temp
+                - entity: sensor.ender_3_v2_target_bed_temp
                   name: Target
             - type: custom:multiple-entity-row
-              name: Nozzle temperature
-              entity: sensor.octoprint_actual_tool0_temp
+              name: Extruder temperature
+              entity: sensor.ender_3_v2_actual_extruder_temp
               state_header: Actual
               entities:
-                - entity: sensor.octoprint_target_tool0_temp
+                - entity: sensor.ender_3_v2_target_extruder_temp
                   name: Target
-
-  - type: picture-entity
-    entity: camera.octoprint

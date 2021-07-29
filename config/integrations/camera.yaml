@@ -15,8 +15,3 @@
   password: !secret lower_floor_camera_password
   authentication: digest
   verify_ssl: false
-
-- platform: mjpeg
-  name: OctoPrint
-  still_image_url: !secret octoprint_still_image_url
-  mjpeg_url: !secret octoprint_mjpeg_url

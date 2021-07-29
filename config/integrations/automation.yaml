@@ -134,30 +134,30 @@
       - service: alarm_control_panel.alarm_disarm
         entity_id: alarm_control_panel.home_alarm
 
-- alias: Octoprint print state changed, send notification
-  id: 9c2ec395-2c8d-4b4c-bbc1-1af04d38d168
+- alias: Ender-3 V2 print complete, send notification
+  id: 5b90fea9-37e6-4692-9c3f-5fdeb2e77fab
   trigger:
     - platform: state
-      entity_id: binary_sensor.octoprint_printing
+      entity_id: binary_sensor.ender_3_v2_printing
   action:
     choose:
       - conditions:
-          - "{{ trigger.from_state.state == 'on' and trigger.to_state.state == 'off' }}"
+          - "{{ trigger.to_state.state == 'complete' }}"
         sequence:
           - service: script.send_notification
             data:
               recipient: "pedro"
-              message: "Octoprint done!"
+              message: "Ender-3 V2 print complete!"
               channel: "Automation"
-              tag: "octoprint"
+              tag: "ender3v2"
       - conditions:
-          - "{{ trigger.to_state.state == 'on' }}"
+          - "{{ trigger.to_state.state != 'complete' }}"
         sequence:
           - service: script.clear_notification
             data:
               recipient: "pedro"
               channel: "Automation"
-              tag: "octoprint"
+              tag: "ender3v2"
 
 - alias: Transmission download complete, send notification
   id: 1091a93a-be80-440b-a61d-ecd27ced6abb

@@ -121,3 +121,8 @@
       device_class: power
       value_template: >-
         {{ states('sensor.ups_input_voltage') | float > 1 }}
+
+    ender_3_v2_printing:
+      friendly_name: Ender-3 V2 Printing
+      value_template: >-
+        {{ states('sensor.ender_3_v2_current_state') in ['printing', 'paused'] }}
