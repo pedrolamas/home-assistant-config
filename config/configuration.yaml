@@ -4,6 +4,7 @@ homeassistant:
   longitude: !secret home_longitude
   elevation: !secret home_elevation
   unit_system: metric
+  currency: GBP
   time_zone: Europe/London
   internal_url: !secret internal_url
 

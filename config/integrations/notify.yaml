@@ -1,17 +1,18 @@
-- name: pushbullet
-  platform: pushbullet
+- platform: pushbullet
+  name: pushbullet
   api_key: !secret pushbullet_api_key
 
-- name: hangouts_pedro
-  platform: hangouts
+- platform: hangouts
+  name: hangouts_pedro
   default_conversations: !secret hangouts_conversations_pedro
 
-- name: hangouts_all
-  platform: hangouts
+- platform: hangouts
+  name: hangouts_all
   default_conversations: !secret hangouts_conversations_all
 
-- name: mobile_app_all
-  platform: group
+- platform: group
+  name: mobile_app_all
+  unique_id: 7914eb5a-f5f2-4600-8081-d6a2ec300931
   services:
     - service: mobile_app_pedro_oneplus9pro
     - service: mobile_app_joana_oneplus9

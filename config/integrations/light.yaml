@@ -1,5 +1,6 @@
 - platform: group
   name: Living Room Lights
+  unique_id: 7574522c-9dcc-4789-9146-c2d28e05ecda
   entities:
     - light.lamp_1
     - light.lamp_2
@@ -9,6 +10,7 @@
 
 - platform: group
   name: Master Bedroom Lights
+  unique_id: ccdd5681-6261-4c4e-94fd-8958e8e3652f
   entities:
     - light.lamp_4
     - light.lamp_8
@@ -16,5 +18,6 @@
 
 - platform: group
   name: Kids Bedroom Lights
+  unique_id: 01df0332-ef2a-4a9c-9597-390b5bf907a0
   entities:
     - light.kids_bedroom_dimmer

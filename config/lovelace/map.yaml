@@ -1,7 +1,7 @@
 title: Map
 path: map
 icon: mdi:map-outline
-panel: true
+type: sidebar
 cards:
   - type: map
     dark_mode: true
@@ -12,3 +12,49 @@ cards:
       - zone.work
       - zone.paddington_station
       - zone.victoria_station
+  - type: glance
+    title: Pedro's Phone
+    entities:
+      - entity: person.pedro
+        name: Location
+        hold_action:
+          action: call-service
+          service: notify.mobile_app_pedro_oneplus9pro
+          service_data:
+            message: "request_location_update"
+      - entity: device_tracker.pedro_oneplus9pro
+        name: GPS
+        icon: mdi:crosshairs-gps
+      - entity: device_tracker.oneplus_9_pro_pedro
+        name: WiFi
+        icon: mdi:wifi
+      - entity: sensor.pedro_oneplus9pro_battery_level
+        name: Battery
+    view_layout:
+      position: sidebar
+
+  - type: glance
+    title: Joana's Phone
+    entities:
+      - entity: person.joana
+        name: Location
+        hold_action:
+          action: call-service
+          service: notify.mobile_app_joana_oneplus9
+          service_data:
+            message: "request_location_update"
+      - entity: device_tracker.joana_oneplus9
+        name: GPS
+        icon: mdi:crosshairs-gps
+      - entity: device_tracker.oneplus_9_joana
+        name: WiFi
+        icon: mdi:wifi
+      - entity: sensor.joana_oneplus9_battery_level
+        name: Battery
+    view_layout:
+      position: sidebar
+
+  - type: alarm-panel
+    entity: alarm_control_panel.home_alarm
+    view_layout:
+      position: sidebar

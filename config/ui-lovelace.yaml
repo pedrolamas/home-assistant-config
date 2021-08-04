@@ -7,5 +7,4 @@ views:
   - !include lovelace/plugs.yaml
   - !include lovelace/plants.yaml
   - !include lovelace/3dprinter.yaml
-  - !include lovelace/people.yaml
   - !include lovelace/map.yaml
