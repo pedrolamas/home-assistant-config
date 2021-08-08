@@ -3,12 +3,7 @@ blueprint:
   description: Process device connectivity state changes
   domain: automation
   input:
-    on_off_entities:
-      name: On/Off entities
-      description: The entities to monitor for on/off state changes
-      selector:
-        entity:
-    online_offline_entities:
+    state_entity_id:
       name: Online/Offline entities
       description: The entities to monitor for online/offline state changes
       selector:
@@ -28,47 +23,46 @@ mode: queued
 
 trigger:
   - platform: state
-    entity_id: !input on_off_entities
-    to: "off"
+    id: device_offline
+    entity_id: !input state_entity_id
+    to:
+      - "off"
+      - "offline"
     for:
       seconds: !input warning_delay
   - platform: state
-    entity_id: !input online_offline_entities
-    to: "offline"
-    for:
-      seconds: !input warning_delay
-  - platform: state
-    entity_id: !input on_off_entities
-    from: "off"
-    to: "on"
-  - platform: state
-    entity_id: !input online_offline_entities
-    from: "offline"
-    to: "online"
-
-condition:
-  - "{{ trigger.from_state.state != trigger.to_state.state }}"
+    id: device_online
+    entity_id: !input state_entity_id
+    from:
+      - "off"
+      - "offline"
+    to:
+      - "on"
+      - "online"
 
 action:
   - variables:
-      device_entity: "{{ trigger.entity_id }}"
-      device_state: "{{ trigger.to_state.state }}"
+      device_entity_id: "{{ trigger.entity_id }}"
       device_friendly_name: "{{ trigger.to_state.attributes.friendly_name }}"
   - choose:
       - conditions:
-          - "{{ device_state == 'on' or device_state == 'online' }}"
+          - condition: trigger
+            id: device_offline
+        sequence:
+          - service: script.send_notification
+            data:
+              recipient: "pedro"
+              message: "{{ device_friendly_name }} is offline."
+              color: "red"
+              channel: "System"
+              tag: "{{ device_entity_id }}-deviceoffline"
+
+      - conditions:
+          - condition: trigger
+            id: device_online
         sequence:
           - service: script.clear_notification
             data:
               recipient: "pedro"
               channel: "System"
-              tag: "{{ device_entity }}-deviceoffline"
-
-    default:
-      - service: script.send_notification
-        data:
-          recipient: "pedro"
-          message: "{{ device_friendly_name }} is offline."
-          color: "red"
-          channel: "System"
-          tag: "{{ device_entity }}-deviceoffline"
+              tag: "{{ device_entity_id }}-deviceoffline"

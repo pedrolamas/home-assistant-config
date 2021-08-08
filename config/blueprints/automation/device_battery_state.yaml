@@ -1,0 +1,24 @@
+blueprint:
+  name: Device battery state change
+  description: Process device battery state changes
+  domain: automation
+  input:
+    battery_state_entity_id:
+      name: Battery entity
+      description: The entity to monitor for battery state changes
+      selector:
+        entity:
+
+mode: queued
+
+trigger:
+  - platform: numeric_state
+    entity_id: !input battery_state_entity_id
+    below: 15
+
+action:
+  - service: persistent_notification.create
+    data:
+      title: "Device with low battery"
+      message: "The {{ trigger.to_state.attributes.friendly_name }} sensor has low battery!"
+      notification_id: "{{ trigger.entity_id }}-battery"

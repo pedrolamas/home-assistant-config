@@ -21,24 +21,24 @@
   use_blueprint:
     path: smart_plug_automatic_off.yaml
     input:
-      smart_plug_power_sensor_entity: sensor.lower_floor_smart_plug_power
-      smart_plug_switch_entity: switch.lower_floor_smart_plug
+      smart_plug_power_sensor_entity_id: sensor.lower_floor_smart_plug_power
+      smart_plug_switch_entity_id: switch.lower_floor_smart_plug
 - id: '1608120455334'
   alias: Smart Plug automatic off (Master Bedroom)
   description: ''
   use_blueprint:
     path: smart_plug_automatic_off.yaml
     input:
-      smart_plug_power_sensor_entity: sensor.master_bedroom_smart_plug_power
-      smart_plug_switch_entity: switch.master_bedroom_smart_plug
+      smart_plug_power_sensor_entity_id: sensor.master_bedroom_smart_plug_power
+      smart_plug_switch_entity_id: switch.master_bedroom_smart_plug
 - id: '1608120481443'
   alias: Smart Plug automatic off (Kids Bedroom)
   description: ''
   use_blueprint:
     path: smart_plug_automatic_off.yaml
     input:
-      smart_plug_power_sensor_entity: sensor.kids_bedroom_smart_plug_power
-      smart_plug_switch_entity: switch.kids_bedroom_smart_plug
+      smart_plug_power_sensor_entity_id: sensor.kids_bedroom_smart_plug_power
+      smart_plug_switch_entity_id: switch.kids_bedroom_smart_plug
 - id: '1608277751596'
   alias: Master Bedroom PIR Alarm
   description: ''

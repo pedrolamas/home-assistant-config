@@ -1,9 +1,9 @@
-- alias: Sensor low battery, send notification
+- alias: Device low battery, create persistent notification
   id: 18fc67d1-97f9-4d81-93bc-71bf0c47a05e
-  mode: queued
-  trigger:
-    - platform: numeric_state
-      entity_id:
+  use_blueprint:
+    path: device_battery_state.yaml
+    input:
+      battery_state_entity_id:
         - sensor.back_door_battery
         - sensor.front_door_battery
         - sensor.front_door_mailbox_battery
@@ -15,24 +15,15 @@
         - sensor.master_bedroom_climate_battery
         - sensor.smart_switch_battery
         - sensor.smart_vibration_sensor_battery
-      below: 15
-  action:
-    - service: persistent_notification.create
-      data:
-        title: "Device with low battery"
-        message: "The {{ trigger.to_state.attributes.friendly_name }} sensor has low battery!"
-        notification_id: "{{ trigger.entity_id }}-battery"
 
-- alias: Set device connectivity state
+- alias: Device offline, send notification
   id: 04401784-2ac3-408d-a75e-4edd6e2c24cb
   use_blueprint:
     path: device_connectivity_state.yaml
     input:
-      on_off_entities:
-        - binary_sensor.philips_hue_bridge_2_1
+      state_entity_id:
         - binary_sensor.raspberry_pi_2_model_b
         - binary_sensor.synology_ds412_nas
-      online_offline_entities:
         - sensor.zigbee2mqtt_bridge_state
 
 - alias: Washing Machine program finished, send notification
@@ -54,26 +45,26 @@
   use_blueprint:
     path: door_state.yaml
     input:
-      door_state_entity: binary_sensor.back_door_contact
-      companion_light_entity: light.lamp_3
-      light_off_on_door_closed_helper_entity: input_boolean.turn_off_lamp_on_back_door_close
+      door_state_entity_id: binary_sensor.back_door_contact
+      companion_light_entity_id: light.lamp_3
+      light_off_on_door_closed_helper_entity_id: input_boolean.turn_off_lamp_on_back_door_close
 
 - alias: Set door state (Front Door)
   id: 3f673a0b-8ff1-4fcd-b415-4e4b6d0076eb
   use_blueprint:
     path: door_state.yaml
     input:
-      door_state_entity: binary_sensor.front_door_contact
-      companion_light_entity: light.lamp_2
-      light_off_on_door_closed_helper_entity: input_boolean.turn_off_lamp_on_front_door_close
+      door_state_entity_id: binary_sensor.front_door_contact
+      companion_light_entity_id: light.lamp_2
+      light_off_on_door_closed_helper_entity_id: input_boolean.turn_off_lamp_on_front_door_close
 
 - alias: Set phone battery state (Pedro)
   id: 3d24676c-7c32-4879-a2c6-5ae513bd4218
   use_blueprint:
     path: phone_battery_state.yaml
     input:
-      battery_level_entity: sensor.pedro_oneplus9pro_battery_level
-      battery_state_entity: sensor.pedro_oneplus9pro_battery_state
+      battery_level_entity_id: sensor.pedro_oneplus9pro_battery_level
+      battery_state_entity_id: sensor.pedro_oneplus9pro_battery_state
       recipient: pedro
 
 - alias: Set phone battery state (Joana)
@@ -81,8 +72,8 @@
   use_blueprint:
     path: phone_battery_state.yaml
     input:
-      battery_level_entity: sensor.joana_oneplus9_battery_level
-      battery_state_entity: sensor.joana_oneplus9_battery_state
+      battery_level_entity_id: sensor.joana_oneplus9_battery_level
+      battery_state_entity_id: sensor.joana_oneplus9_battery_state
       recipient: joana
 
 - alias: Front Door Mailbox movement, send notification
@@ -138,11 +129,18 @@
   id: 5b90fea9-37e6-4692-9c3f-5fdeb2e77fab
   trigger:
     - platform: state
-      entity_id: binary_sensor.ender_3_v2_printing
+      id: print_complete
+      entity_id: sensor.ender_3_v2_current_state
+      to: "complete"
+    - platform: state
+      id: print_not_complete
+      entity_id: sensor.ender_3_v2_current_state
+      from: "complete"
   action:
     choose:
       - conditions:
-          - "{{ trigger.to_state.state == 'complete' }}"
+          - condition: trigger
+            id: print_complete
         sequence:
           - service: script.send_notification
             data:
@@ -151,7 +149,8 @@
               channel: "Automation"
               tag: "ender3v2"
       - conditions:
-          - "{{ trigger.to_state.state != 'complete' }}"
+          - condition: trigger
+            id: print_not_complete
         sequence:
           - service: script.clear_notification
             data:
