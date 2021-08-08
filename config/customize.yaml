@@ -29,9 +29,6 @@ binary_sensor.front_door_contact:
 binary_sensor.master_bedroom_pir_sensor_occupancy:
   friendly_name: Master Bedroom occupancy
 
-binary_sensor.philips_hue_bridge:
-  icon: mdi:server
-
 binary_sensor.synology_ds412_nas:
   icon: mdi:nas
 

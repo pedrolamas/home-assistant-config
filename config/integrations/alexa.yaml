@@ -7,6 +7,8 @@ smart_home:
       - binary_sensor.back_door_contact
       - binary_sensor.front_door_contact
       - light.kids_bedroom_dimmer
+      - light.lamp_1
+      - light.lamp_2
       - light.lamp_3
       - light.lamp_4
       - light.lamp_5
@@ -40,9 +42,11 @@ smart_home:
       - input_boolean
       - input_number
       - input_select
+      - input_text
       - light
       - media_player
       - person
+      - remote
       - script
       - sensor
       - sun

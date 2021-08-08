@@ -10,23 +10,29 @@ include:
     - binary_sensor.external_ip_detected
     - binary_sensor.front_door_contact
     - binary_sensor.master_bedroom_pir_sensor_occupancy
+    - media_player.lg_smart_tv
     - person.joana
     - person.pedro
-    - media_player.lg_smart_tv
     - sensor.external_ip
-    - sensor.kids_bedroom_mold
     - sensor.kids_bedroom_climate_humidity
     - sensor.kids_bedroom_climate_temperature
+    - sensor.kids_bedroom_mold
+    - sensor.kids_bedroom_smart_plug_power
     - sensor.laundry_room_climate_humidity
     - sensor.laundry_room_climate_temperature
-    - sensor.living_room_mold
     - sensor.living_room_climate_humidity
     - sensor.living_room_climate_temperature
+    - sensor.living_room_mold
     - sensor.lower_floor_climate_humidity
     - sensor.lower_floor_climate_temperature
-    - sensor.master_bedroom_mold
+    - sensor.lower_floor_smart_plug_power
     - sensor.master_bedroom_climate_humidity
     - sensor.master_bedroom_climate_temperature
+    - sensor.master_bedroom_mold
+    - sensor.master_bedroom_smart_plug_power
+    - sensor.node02_power_meter
+    - sensor.node02_total_energy
+    - sensor.node02_total_energy_cost
     - sensor.node08_plant_1_moisture
     - sensor.node08_plant_1_soil_conductivity
     - sensor.node08_plant_1_temperature
@@ -34,8 +40,9 @@ include:
     - sensor.node08_plant_2_soil_conductivity
     - sensor.node08_plant_2_temperature
     - sensor.reported_ip
+    - sensor.washing_machine_smart_plug_power
+    - switch.kids_bedroom_smart_plug
     - switch.living_room_smart_plug
     - switch.lower_floor_smart_plug
-    - switch.kids_bedroom_smart_plug
-    - switch.washing_machine_smart_plug
     - switch.master_bedroom_smart_plug
+    - switch.washing_machine_smart_plug

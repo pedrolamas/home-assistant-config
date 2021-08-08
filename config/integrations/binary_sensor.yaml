@@ -2,10 +2,6 @@
 #  country: UK
 
 - platform: ping
-  name: Philips Hue Bridge 2.1
-  host: !secret philips_hue_bridge_host
-
-- platform: ping
   name: Synology DS412+ NAS
   host: !secret synology_ds412plus_nas_host
 
