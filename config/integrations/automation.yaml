@@ -187,6 +187,20 @@
       data:
         message: "Movement detected on Smart Vibration Sensor"
 
+- alias: ISS passing by, send notification
+  id: 42f74be7-975b-4199-aa01-c21b3ce9ca2b
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.iss
+      from: "off"
+      to: "on"
+  action:
+    - service: script.send_notification
+      data:
+        message: "International Space Station passing over!"
+        channel: "Automation"
+        tag: "iss"
+
 - alias: Update available, send notification
   id: eafd8f59-39c2-434c-9b29-c1b8be3dfd52
   trigger:

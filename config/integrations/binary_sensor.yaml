@@ -23,6 +23,8 @@
   password: !secret lower_floor_camera_password
   ssl: false
 
+- platform: iss
+
 - platform: template
   sensors:
     lg_smart_tv_is_watching_live_tv:
