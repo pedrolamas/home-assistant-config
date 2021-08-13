@@ -18,7 +18,6 @@ blueprint:
         entity:
           integration: mobile_app
           domain: sensor
-          device_class: battery
     recipient:
       name: Recipient
       description: The notification recipient
@@ -28,23 +27,18 @@ variables:
 
 trigger:
   - platform: state
-    id: battery_full
     entity_id: !input battery_state_entity_id
-    to: "full"
-  - platform: state
-    id: battery_discharging
-    entity_id: !input battery_state_entity_id
-    to: "discharging"
   - platform: numeric_state
-    id: battery_above_90
     entity_id: !input battery_level_entity_id
     above: 89
 
 action:
+  - variables:
+      battery_state: "{{ states(battery_state_entity_id) }}"
+      battery_level: "{{ states(battery_level_entity_id) }}"
   - choose:
       - conditions:
-          - condition: trigger
-            id: battery_full
+          - "{{ battery_state == 'full' }}"
         sequence:
           - service: script.send_notification
             data:
@@ -54,19 +48,17 @@ action:
               tag: "Battery"
 
       - conditions:
-          - condition: trigger
-            id: battery_above_90
+          - "{{ battery_state == 'charging' and battery_level > 89 }}"
         sequence:
           - service: script.send_notification
             data:
               recipient: !input recipient
-              message: "Phone battery charged to {{ states(battery_level_entity_id) }}%!"
+              message: "Phone battery charged to {{ battery_level }}%!"
               channel: "Phone"
               tag: "Battery"
 
       - conditions:
-          - condition: trigger
-            id: battery_discharging
+          - "{{ battery_state == 'discharging' }}"
         sequence:
           - service: script.clear_notification
             data:
