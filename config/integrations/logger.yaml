@@ -1,1 +1,5 @@
 default: warn
+filters:
+  homeassistant.components.rest.data:
+    - "\/printer\/objects\/query"
+    - "Empty reply found when expecting JSON data"
