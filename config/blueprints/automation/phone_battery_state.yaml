@@ -23,6 +23,7 @@ blueprint:
       description: The notification recipient
 
 variables:
+  battery_state_entity_id: !input battery_state_entity_id
   battery_level_entity_id: !input battery_level_entity_id
 
 trigger:
