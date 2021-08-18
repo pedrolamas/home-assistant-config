@@ -71,3 +71,7 @@ cards:
               entities:
                 - entity: sensor.ender_3_v2_target_extruder_temp
                   name: Target
+
+  - type: picture-entity
+    name: Creality Ender 3 V2
+    entity: camera.ender_3_v2
