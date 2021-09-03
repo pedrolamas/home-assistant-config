@@ -55,7 +55,7 @@
     path: door_state.yaml
     input:
       door_state_entity_id: binary_sensor.front_door_contact
-      companion_light_entity_id: light.light.kids_corner_group
+      companion_light_entity_id: light.kids_corner_group
       light_off_on_door_closed_helper_entity_id: input_boolean.turn_off_lamp_on_front_door_close
 
 - alias: Set phone battery state (Pedro)
