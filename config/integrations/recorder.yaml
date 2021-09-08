@@ -17,7 +17,7 @@ include:
     - sensor.kids_bedroom_climate_humidity
     - sensor.kids_bedroom_climate_temperature
     - sensor.kids_bedroom_mold
-    - sensor.kids_bedroom_smart_plug_power
+    - sensor.kids_bedroom_smart_plug_energy
     - sensor.laundry_room_climate_humidity
     - sensor.laundry_room_climate_temperature
     - sensor.living_room_climate_humidity
@@ -25,11 +25,11 @@ include:
     - sensor.living_room_mold
     - sensor.lower_floor_climate_humidity
     - sensor.lower_floor_climate_temperature
-    - sensor.lower_floor_smart_plug_power
+    - sensor.lower_floor_smart_plug_energy
     - sensor.master_bedroom_climate_humidity
     - sensor.master_bedroom_climate_temperature
     - sensor.master_bedroom_mold
-    - sensor.master_bedroom_smart_plug_power
+    - sensor.master_bedroom_smart_plug_energy
     - sensor.node02_power_meter
     - sensor.node02_total_energy
     - sensor.node02_total_energy_cost
@@ -40,7 +40,7 @@ include:
     - sensor.node08_plant_2_soil_conductivity
     - sensor.node08_plant_2_temperature
     - sensor.reported_ip
-    - sensor.washing_machine_smart_plug_power
+    - sensor.washing_machine_smart_plug_energy
     - switch.kids_bedroom_smart_plug
     - switch.living_room_smart_plug
     - switch.lower_floor_smart_plug
