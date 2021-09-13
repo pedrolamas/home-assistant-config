@@ -44,6 +44,9 @@ cards:
               entities:
                 - entity: sensor.ender_3_v2_target_extruder_temp
                   name: Target
+            - type: divider
+            - entity: light.ender_3_v2
+              name: Lights
 
       - type: conditional
         conditions:
@@ -71,6 +74,9 @@ cards:
               entities:
                 - entity: sensor.ender_3_v2_target_extruder_temp
                   name: Target
+            - type: divider
+            - entity: light.ender_3_v2
+              name: Lights
 
   - type: picture-entity
     name: Creality Ender 3 V2

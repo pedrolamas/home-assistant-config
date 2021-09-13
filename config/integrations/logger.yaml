@@ -1,4 +1,6 @@
 default: warn
+logs:
+  homeassistant.components.system_log.external: info
 filters:
   homeassistant.components.rest.data:
     - "All connection attempts failed"
