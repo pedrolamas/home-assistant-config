@@ -5,7 +5,7 @@ portainer:
 grafana:
   title: Grafana
   url: !secret panel_iframe_grafana_url
-  icon: mdi:chart-timeline
+  icon: si:grafana
 vscode:
   title: VSCode
   url: !secret panel_iframe_vscode_url
@@ -17,12 +17,12 @@ adguardhome:
 esphome:
   title: ESPHome
   url: !secret panel_iframe_esphome_url
-  icon: mdi:chip
+  icon: si:esphome
 zigbee2mqtt:
   title: Zigbee2MQTT
   url: !secret panel_iframe_zigbee2mqtt_url
   icon: mdi:zigbee
 zigbeemap:
   title: Zigbee Map
-  url: '/local/community/zigbee2mqtt_networkmap/map.html'
+  url: "/local/community/zigbee2mqtt_networkmap/map.html"
   icon: mdi:graphql

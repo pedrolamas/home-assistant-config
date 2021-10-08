@@ -45,7 +45,7 @@
   scan_interval: 150
   unit_of_measurement: "°C"
   value_template: >-
-    {{ value | multiply(0.001) | round(2) }}
+    {{ value | multiply(0.001, default=0) | round(2, default=0) }}
 
 - platform: london_underground
   line:
@@ -108,28 +108,28 @@
       unit_of_measurement: "°C"
       device_class: temperature
       value_template: >-
-        {{ states.sensor.ender_3_v2_status.attributes['extruder']['target'] | float | round(1) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+        {{ states.sensor.ender_3_v2_status.attributes['extruder']['target'] | round(1, default=0) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
 
     ender_3_v2_actual_extruder_temp:
       friendly_name: Ender-3 V2 actual extruder temp
       unit_of_measurement: "°C"
       device_class: temperature
       value_template: >-
-        {{ states.sensor.ender_3_v2_status.attributes['extruder']['temperature'] | float | round(1) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+        {{ states.sensor.ender_3_v2_status.attributes['extruder']['temperature'] | round(1, default=0) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
 
     ender_3_v2_target_bed_temp:
       friendly_name: Ender-3 V2 target bed temp
       unit_of_measurement: "°C"
       device_class: temperature
       value_template: >-
-        {{ states.sensor.ender_3_v2_status.attributes['heater_bed']['target'] | float | round(1) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+        {{ states.sensor.ender_3_v2_status.attributes['heater_bed']['target'] | round(1, default=0) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
 
     ender_3_v2_actual_bed_temp:
       friendly_name: Ender-3 V2 actual bed temp
       unit_of_measurement: "°C"
       device_class: temperature
       value_template: >-
-        {{ states.sensor.ender_3_v2_status.attributes['heater_bed']['temperature'] | float | round(1) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+        {{ states.sensor.ender_3_v2_status.attributes['heater_bed']['temperature'] | round(1, default=0) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
 
     ender_3_v2_current_state:
       friendly_name: Ender-3 V2 Current State
@@ -142,21 +142,21 @@
       unit_of_measurement: "%"
       icon_template: mdi:file-percent
       value_template: >-
-        {{ (states.sensor.ender_3_v2_status.attributes['display_status']['progress'] * 100) | round(1) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+        {{ (states.sensor.ender_3_v2_status.attributes['display_status']['progress'] * 100) | round(1, default=0) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
 
     ender_3_v2_time_elapsed:
       friendly_name: Ender-3 V2 Time Elapsed
       icon_template: mdi:clock-start
       value_template: >-
-        {{ states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration'] | timestamp_custom('%H:%M:%S', 0) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+        {{ states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration'] | timestamp_custom('%H:%M:%S', 0, default='') if is_state('sensor.ender_3_v2_status', 'OK') else None }}
 
     ender_3_v2_time_remaining:
       friendly_name: Ender-3 V2 Time Remaining
       icon_template: mdi:clock-end
       value_template: >-
-        {{ (((states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration'] / states.sensor.ender_3_v2_status.attributes['display_status']['progress'] - states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration']) if states.sensor.ender_3_v2_status.attributes['display_status']['progress'] > 0 else 0) | timestamp_custom('%H:%M:%S', 0)) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+        {{ (((states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration'] / states.sensor.ender_3_v2_status.attributes['display_status']['progress'] - states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration']) if states.sensor.ender_3_v2_status.attributes['display_status']['progress'] > 0 else 0) | timestamp_custom('%H:%M:%S', 0, default='')) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
 
     ender_3_v2_eta:
       friendly_name: Ender-3 V2 ETA
       value_template: >-
-        {{ ((as_timestamp(now()) + 2 * 60 * 60 + ((states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration'] / states.sensor.ender_3_v2_status.attributes['display_status']['progress'] - states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration']) if states.sensor.ender_3_v2_status.attributes['display_status']['progress'] > 0 else 0)) | timestamp_custom("%H:%M:%S", 0)) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+        {{ ((as_timestamp(now()) + 2 * 60 * 60 + ((states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration'] / states.sensor.ender_3_v2_status.attributes['display_status']['progress'] - states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration']) if states.sensor.ender_3_v2_status.attributes['display_status']['progress'] > 0 else 0)) | timestamp_custom("%H:%M:%S", 0, default='')) if is_state('sensor.ender_3_v2_status', 'OK') else None }}

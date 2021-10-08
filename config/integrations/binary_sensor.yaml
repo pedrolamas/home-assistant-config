@@ -33,7 +33,7 @@
 
     lg_smart_tv_is_watching_prime_video:
       friendly_name: Prime Video
-      icon_template: mdi:amazon
+      icon_template: si:amazonprime
       value_template: >-
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Amazon Prime Video') }}
 
@@ -108,7 +108,7 @@
       friendly_name: Washing Machine
       icon_template: mdi:washing-machine
       value_template: >-
-        {{ states('sensor.washing_machine_smart_plug_power') | float > 0.5 }}
+        {{ states('sensor.washing_machine_smart_plug_power') | float(default=0) > 0.5 }}
       delay_off: "00:01:00"
       delay_on: "00:00:30"
 
@@ -116,7 +116,7 @@
       friendly_name: Mains Power
       device_class: power
       value_template: >-
-        {{ states('sensor.ups_input_voltage') | float > 1 }}
+        {{ states('sensor.ups_input_voltage') | float(default=0) > 1 }}
 
     ender_3_v2_printing:
       friendly_name: Ender-3 V2 Printing

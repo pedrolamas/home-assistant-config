@@ -6,19 +6,19 @@ person.joana:
 
 device_tracker.pedro_oneplus9pro:
   friendly_name: Pedro OnePlus 9 Pro GPS
-  icon: mdi:cellphone-android
+  icon: mdi:cellphone
 
 device_tracker.joana_oneplus9:
   friendly_name: Joana OnePlus 9 GPS
-  icon: mdi:cellphone-android
+  icon: mdi:cellphone
 
 device_tracker.oneplus_9_pro_pedro:
   friendly_name: Pedro OnePlus 9 Pro WiFi
-  icon: mdi:cellphone-android
+  icon: mdi:cellphone
 
 device_tracker.oneplus_9_joana:
   friendly_name: Joana OnePlus 9 WiFi
-  icon: mdi:cellphone-android
+  icon: mdi:cellphone
 
 binary_sensor.back_door_contact:
   friendly_name: Back Door
@@ -34,6 +34,9 @@ binary_sensor.synology_ds412_nas:
 
 binary_sensor.raspberry_pi_2_model_b:
   icon: mdi:raspberry-pi
+
+sensor.cpu_temperature:
+  device_class: temperature
 
 sensor.london_overground:
   friendly_name: Overground
