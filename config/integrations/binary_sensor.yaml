@@ -33,7 +33,7 @@
 
     lg_smart_tv_is_watching_prime_video:
       friendly_name: Prime Video
-      icon_template: si:amazonprime
+      icon_template: si:prime
       value_template: >-
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Amazon Prime Video') }}
 
