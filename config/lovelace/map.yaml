@@ -9,7 +9,9 @@ cards:
       - person.pedro
       - person.joana
       - zone.home
-      - zone.work
+      - zone.home_porto
+      - zone.office_porto
+      - zone.park
       - zone.paddington_station
       - zone.victoria_station
   - type: glance

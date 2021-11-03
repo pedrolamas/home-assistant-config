@@ -10,11 +10,29 @@
 #   radius: 100
 #   icon: mdi:school
 
-- name: Work
-  latitude: !secret work_latitude
-  longitude: !secret work_longitude
+# - name: Work
+#   latitude: !secret work_latitude
+#   longitude: !secret work_longitude
+#   radius: 150
+#   icon: mdi:domain
+
+- name: Home (Porto)
+  latitude: !secret home_pt_latitude
+  longitude: !secret home_pt_longitude
   radius: 150
+  icon: mdi:home-variant
+
+- name: Office (Porto)
+  latitude: !secret office_pt_latitude
+  longitude: !secret office_pt_longitude
+  radius: 180
   icon: mdi:domain
+
+- name: Park
+  latitude: !secret park_latitude
+  longitude: !secret park_longitude
+  radius: 200
+  icon: mdi:tree
 
 - name: Porto, Portugal
   latitude: 41.157944
