@@ -5,15 +5,20 @@ type: sidebar
 cards:
   - type: map
     dark_mode: true
+    hours_to_show: 4
     entities:
       - person.pedro
       - person.joana
       - zone.home
-      - zone.home_porto
-      - zone.office_porto
+      - zone.home_pt
+      - zone.office_pt
       - zone.park
       - zone.paddington_station
       - zone.victoria_station
+      - zone.gatwick_airport
+      - zone.heathrow_airport
+      - zone.stansted_airport
+      - zone.porto_airport
   - type: glance
     title: Pedro's Phone
     entities:

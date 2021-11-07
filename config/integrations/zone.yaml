@@ -16,13 +16,13 @@
 #   radius: 150
 #   icon: mdi:domain
 
-- name: Home (Porto)
+- name: Home (PT)
   latitude: !secret home_pt_latitude
   longitude: !secret home_pt_longitude
   radius: 150
   icon: mdi:home-variant
 
-- name: Office (Porto)
+- name: Office (PT)
   latitude: !secret office_pt_latitude
   longitude: !secret office_pt_longitude
   radius: 180
@@ -34,7 +34,19 @@
   radius: 200
   icon: mdi:tree
 
-- name: Porto, Portugal
+- name: Porto Airport
+  latitude: 41.247116
+  longitude: -8.679150
+  radius: 2000
+  icon: mdi:airplane
+
+- name: Maia, PT
+  latitude: 41.244963
+  longitude: -8.606497
+  radius: 7000
+  icon: mdi:flag
+
+- name: Porto, PT
   latitude: 41.157944
   longitude: -8.629105
   radius: 12000
