@@ -8,3 +8,4 @@ filters:
     - "Empty reply found when expecting JSON data"
   homeassistant.components.rest.switch:
     - "Connect call failed"
+    - "[Name does not resolve]"
