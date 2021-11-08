@@ -139,28 +139,32 @@
   id: 5b90fea9-37e6-4692-9c3f-5fdeb2e77fab
   trigger:
     - platform: state
-      id: print_complete
+      id: print_is_paused_or_complete
       entity_id: sensor.ender_3_v2_current_state
-      to: "complete"
+      to:
+        - "paused"
+        - "complete"
     - platform: state
-      id: print_not_complete
+      id: print_was_paused_or_complete
       entity_id: sensor.ender_3_v2_current_state
-      from: "complete"
+      from:
+        - "paused"
+        - "complete"
   action:
     choose:
       - conditions:
           - condition: trigger
-            id: print_complete
+            id: print_is_paused_or_complete
         sequence:
           - service: script.send_notification
             data:
               recipient: "pedro"
-              message: "Ender-3 V2 print complete!"
+              message: "Ender-3 V2 print {{ trigger.to_state.state }}!"
               channel: "Automation"
               tag: "ender3v2"
       - conditions:
           - condition: trigger
-            id: print_not_complete
+            id: print_was_paused_or_complete
         sequence:
           - service: script.clear_notification
             data:
