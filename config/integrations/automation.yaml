@@ -86,7 +86,11 @@
         - "tilt"
         - "vibration"
   condition:
-    - "{{ is_state('binary_sensor.front_door_contact', 'off') }}"
+    - condition: state
+      entity_id: binary_sensor.front_door_contact
+      state: "off"
+      for:
+        seconds: 10
   action:
     - service: script.send_notification
       data:
@@ -135,7 +139,7 @@
       target:
         entity_id: sensor.ender_3_v2_status
 
-- alias: Ender-3 V2 print complete, send notification
+- alias: Ender-3 V2 print paused or complete, send notification
   id: 5b90fea9-37e6-4692-9c3f-5fdeb2e77fab
   trigger:
     - platform: state
