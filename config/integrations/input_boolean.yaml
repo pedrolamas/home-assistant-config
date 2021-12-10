@@ -3,3 +3,6 @@ turn_off_lamp_on_back_door_close:
 
 turn_off_lamp_on_front_door_close:
   initial: off
+
+turn_on_lamp_on_obs_virtualcam_off:
+  initial: off

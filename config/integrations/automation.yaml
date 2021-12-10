@@ -232,16 +232,45 @@
   mode: queued
   trigger:
     - platform: state
+      id: obs_virtualcam_on
       entity_id: switch.obs_virtualcam
+      to: "on"
+    - platform: state
+      id: obs_virtualcam_off
+      entity_id: switch.obs_virtualcam
+      to: "off"
   action:
-    - service: >-
-        {% if trigger.to_state.state == 'on' %}
-          light.turn_on
-        {% else %}
-          light.turn_off
-        {% endif %}
-      target:
-        entity_id: light.elgato_key_light_air
+    choose:
+      - conditions:
+          - condition: trigger
+            id: obs_virtualcam_on
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: light.elgato_key_light_air
+          - condition: template
+            value_template: "{{ is_state('light.lamp_7', 'on') }}"
+          - service: light.turn_off
+            data:
+              entity_id: light.lamp_7
+          - service: input_boolean.turn_on
+            data:
+              entity_id: input_boolean.turn_on_lamp_on_obs_virtualcam_off
+      - conditions:
+          - condition: trigger
+            id: obs_virtualcam_off
+        sequence:
+          - service: light.turn_off
+            target:
+              entity_id: light.elgato_key_light_air
+          - condition: template
+            value_template: "{{ is_state('input_boolean.turn_on_lamp_on_obs_virtualcam_off', 'on') }}"
+          - service: input_boolean.turn_off
+            data:
+              entity_id: input_boolean.turn_on_lamp_on_obs_virtualcam_off
+          - service: light.turn_on
+            data:
+              entity_id: light.lamp_7
 
 - alias: Set Zigbee2mqtt log level
   id: 6eb24622-8f61-4a04-bcc4-c24113c2c639
