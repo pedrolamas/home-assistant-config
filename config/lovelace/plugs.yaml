@@ -7,8 +7,16 @@ cards:
     show_header_toggle: false
     state_color: true
     entities:
-      - entity: switch.living_room_smart_plug
+      - type: custom:multiple-entity-row
+        entity: switch.living_room_smart_plug
         name: Living Room
+        toggle: true
+        state_color: true
+        entities:
+          - entity: sensor.living_room_smart_plug_power
+            name: " "
+      - entity: switch.kids_corner_smart_plug
+        name: Kids Corner
       - type: custom:multiple-entity-row
         entity: switch.lower_floor_smart_plug
         name: Lower floor

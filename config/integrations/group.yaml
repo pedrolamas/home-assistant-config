@@ -4,3 +4,10 @@ family:
   entities:
     - person.joana
     - person.pedro
+
+living_room_smart_plugs:
+  name: Living Room Plugs
+  icon: mdi:flash
+  entities:
+    - switch.living_room_smart_plug
+    - switch.kids_corner_smart_plug

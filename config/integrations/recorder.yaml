@@ -23,6 +23,7 @@ include:
     - sensor.living_room_climate_humidity
     - sensor.living_room_climate_temperature
     - sensor.living_room_mold
+    - sensor.living_room_smart_plug_energy
     - sensor.lower_floor_climate_humidity
     - sensor.lower_floor_climate_temperature
     - sensor.lower_floor_smart_plug_energy
