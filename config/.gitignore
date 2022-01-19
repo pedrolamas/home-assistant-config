@@ -1,6 +1,7 @@
 secrets.yaml
 home-assistant_v2.db
 *.log
+*.log.*
 *.conf
 .*
 www/*.jpg
