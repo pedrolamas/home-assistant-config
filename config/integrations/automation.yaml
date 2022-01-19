@@ -30,15 +30,32 @@
   id: c5948e61-ec36-42ef-a057-e9dc0e5c220f
   trigger:
     - platform: state
+      id: washing_machine_program_finished
       entity_id: binary_sensor.washing_machine_program_running
-      from: "on"
       to: "off"
+    - platform: state
+      id: washing_machine_program_not_finished
+      entity_id: binary_sensor.washing_machine_program_running
+      from: "off"
   action:
-    - service: script.send_notification
-      data:
-        message: "Washing Machine program finished!"
-        channel: "Automation"
-        tag: "washingmachine"
+    choose:
+      - conditions:
+          - condition: trigger
+            id: washing_machine_program_finished
+        sequence:
+          - service: script.send_notification
+            data:
+              message: "Washing Machine program finished!"
+              channel: "Automation"
+              tag: "washingmachine"
+      - conditions:
+          - condition: trigger
+            id: washing_machine_program_not_finished
+        sequence:
+          - service: script.clear_notification
+            data:
+              channel: "Automation"
+              tag: "washingmachine"
 
 - alias: Set door state (Back Door)
   id: 95e1e1a4-85a5-4702-ae25-05186075840c
