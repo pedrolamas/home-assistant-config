@@ -84,8 +84,7 @@ action:
               message: "{{ door_state_friendly_name }} is open!"
               channel: "Alarm"
               tag: "{{ door_state_entity_id }}"
-          - condition: template
-            value_template: "{{ is_state(companion_light_entity_id, 'off') }}"
+          - condition: "{{ is_state(companion_light_entity_id, 'off') }}"
           - service: light.turn_on
             data:
               entity_id: "{{ companion_light_entity_id }}"
@@ -119,8 +118,7 @@ action:
           - condition: trigger
             id: door_closed_delay
         sequence:
-          - condition: template
-            value_template: "{{ is_state(light_off_on_door_closed_helper_entity_id, 'on') }}"
+          - condition: "{{ is_state(light_off_on_door_closed_helper_entity_id, 'on') }}"
           - service: input_boolean.turn_off
             data:
               entity_id: "{{ light_off_on_door_closed_helper_entity_id }}"

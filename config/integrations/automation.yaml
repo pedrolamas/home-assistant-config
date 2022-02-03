@@ -32,6 +32,7 @@
     - platform: state
       id: washing_machine_program_finished
       entity_id: binary_sensor.washing_machine_program_running
+      from: "on"
       to: "off"
     - platform: state
       id: washing_machine_program_not_finished
@@ -208,6 +209,18 @@
         channel: "Automation"
         tag: "transmission"
 
+- alias: Turn on TV requested, send magic packet
+  id: bb2b09dd-5b40-4a94-a69a-b4808bed613f
+  mode: single
+  trigger:
+    - platform: webostv.turn_on
+      entity_id: media_player.lg_smart_tv
+  action:
+    - service: wake_on_lan.send_magic_packet
+      data:
+        mac: !secret lg_smart_tv_mac
+        broadcast_address: !secret lg_smart_tv_broadcast_address
+
 - alias: Smart Vibration Sensor movement, send notification
   id: 39b75e6e-19c9-4a60-bd72-a7616ed50645
   trigger:
@@ -269,8 +282,7 @@
           - service: light.turn_on
             target:
               entity_id: light.elgato_key_light_air
-          - condition: template
-            value_template: "{{ is_state('light.lamp_7', 'on') }}"
+          - condition: "{{ is_state('light.lamp_7', 'on') }}"
           - service: light.turn_off
             data:
               entity_id: light.lamp_7
@@ -284,8 +296,7 @@
           - service: light.turn_off
             target:
               entity_id: light.elgato_key_light_air
-          - condition: template
-            value_template: "{{ is_state('input_boolean.turn_on_lamp_on_obs_virtualcam_off', 'on') }}"
+          - condition: "{{ is_state('input_boolean.turn_on_lamp_on_obs_virtualcam_off', 'on') }}"
           - service: input_boolean.turn_off
             data:
               entity_id: input_boolean.turn_on_lamp_on_obs_virtualcam_off

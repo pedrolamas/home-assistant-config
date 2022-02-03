@@ -15,16 +15,6 @@
   name: Pacific Time Zone
   time_zone: PST8PDT
 
-- platform: dnsip
-  name: External IP
-  scan_interval: 30
-
-- platform: dnsip
-  name: Reported IP
-  hostname: !secret cloudflare_dns_record_name
-  resolver: 1.1.1.1
-  scan_interval: 30
-
 #- platform: google_travel_time
 #  name: Pedro to Home
 #  api_key: !secret google_travel_time_api_key
