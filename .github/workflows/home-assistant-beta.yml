@@ -14,6 +14,10 @@ jobs:
       - name: Create secrets.yaml file
         run: |
           mv ./config/secrets.template.yaml ./config/secrets.yaml
+      - name: Install HACS
+        run: |
+          wget -O - https://get.hacs.xyz | bash -
+        working-directory: config
       - name: Check configuration with Home Assistant
         uses: "docker://homeassistant/home-assistant:beta"
         with:
