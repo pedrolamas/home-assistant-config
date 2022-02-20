@@ -5,6 +5,7 @@ home-assistant_v2.db
 *.conf
 .*
 www/*.jpg
-www/community/zigbee2mqtt_networkmap
+www/community
+custom_components/hacs
 **/__pycache__
 !.gitignore
