@@ -65,10 +65,12 @@ trigger:
   - platform: state
     id: door_closed
     entity_id: !input door_state_entity_id
+    from: "on"
     to: "off"
   - platform: state
     id: door_closed_delay
     entity_id: !input door_state_entity_id
+    from: "on"
     to: "off"
     for:
       seconds: !input light_off_on_door_closed_delay

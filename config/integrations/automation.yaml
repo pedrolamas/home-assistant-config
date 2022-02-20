@@ -123,18 +123,14 @@
       event: start
     - platform: event
       event_type: automation_reloaded
-    - platform: time
-      at:
-        - "01:00:00"
-        - "07:00:00"
+    - platform: state
+      entity_id: binary_sensor.quiet_time
     - platform: state
       entity_id: group.family
   action:
     choose:
       - conditions:
-          - condition: time
-            after: "01:00:00"
-            before: "07:00:00"
+          - "{{ is_state('binary_sensor.quiet_time', 'on') }}"
         sequence:
           - service: alarm_control_panel.alarm_arm_night
             entity_id: alarm_control_panel.home_alarm
@@ -207,7 +203,7 @@
         title: "Transmission download complete"
         message: "{{ trigger.event.data.name }}"
         channel: "Automation"
-        tag: "transmission"
+        tag: "transmission-{{ trigger.event.data.name }}"
 
 - alias: Turn on TV requested, send magic packet
   id: bb2b09dd-5b40-4a94-a69a-b4808bed613f

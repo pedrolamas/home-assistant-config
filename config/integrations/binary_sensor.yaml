@@ -1,6 +1,11 @@
 #- platform: workday
 #  country: UK
 
+- platform: tod
+  name: Quiet Time
+  after: "01:00:00"
+  before: "07:00:00"
+
 - platform: ping
   name: Synology DS412+ NAS
   host: !secret synology_ds412plus_nas_host
