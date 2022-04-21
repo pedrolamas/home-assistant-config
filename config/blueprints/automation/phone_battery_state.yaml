@@ -59,7 +59,7 @@ action:
               tag: "Battery"
 
       - conditions:
-          - "{{ battery_state == 'discharging' }}"
+          - "{{ battery_state in ['discharging', 'not_charging'] }}"
         sequence:
           - service: script.clear_notification
             data:
