@@ -24,11 +24,6 @@
 
 - platform: moon
 
-- platform: mqtt
-  name: Zigbee2mqtt Bridge state
-  state_topic: "zigbee2mqtt/bridge/state"
-  icon: mdi:server-network
-
 - platform: command_line
   name: CPU Temperature
   command: "cat /sys/class/thermal/thermal_zone0/temp"
