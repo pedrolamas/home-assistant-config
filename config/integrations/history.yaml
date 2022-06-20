@@ -24,9 +24,10 @@ include:
     - sensor.lower_floor_climate_temperature
     - sensor.master_bedroom_climate_humidity
     - sensor.master_bedroom_climate_temperature
+    - sensor.node10_ikea_vindriktning_pm25
     - sensor.smart_vibration_sensor_action
+    - switch.kids_bedroom_smart_plug
     - switch.living_room_smart_plug
     - switch.lower_floor_smart_plug
-    - switch.kids_bedroom_smart_plug
-    - switch.washing_machine_smart_plug
     - switch.master_bedroom_smart_plug
+    - switch.washing_machine_smart_plug
