@@ -28,7 +28,7 @@
   radius: 180
   icon: mdi:domain
 
-- name: Park
+- name: Wood Play
   latitude: !secret park_latitude
   longitude: !secret park_longitude
   radius: 200
