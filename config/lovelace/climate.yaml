@@ -7,15 +7,26 @@ cards:
     cards:
       - type: horizontal-stack
         cards:
-          - type: sensor
+          - type: custom:mini-graph-card
             name: Temperature
-            entity: sensor.living_room_climate_temperature
-            graph: line
-          - type: sensor
+            font_size: 80
+            hours_to_show: 24
+            points_per_hour: 1
+            color_thresholds:
+              - value: 18
+                color: "#0080FF"
+              - color: "#00FF00"
+              - value: 22
+                color: "#FF0000"
+            entities:
+              - sensor.living_room_climate_temperature
+          - type: custom:mini-graph-card
             name: Humidity
-            entity: sensor.living_room_climate_humidity
-            graph: line
-            limits: []
+            font_size: 80
+            hours_to_show: 24
+            points_per_hour: 1
+            entities:
+              - sensor.living_room_climate_humidity
       - type: glance
         show_name: false
         entities:
@@ -27,15 +38,26 @@ cards:
     cards:
       - type: horizontal-stack
         cards:
-          - type: sensor
+          - type: custom:mini-graph-card
             name: Temperature
-            entity: sensor.lower_floor_climate_temperature
-            graph: line
-          - type: sensor
+            font_size: 80
+            hours_to_show: 24
+            points_per_hour: 1
+            color_thresholds:
+              - value: 18
+                color: "#0080FF"
+              - color: "#00FF00"
+              - value: 22
+                color: "#FF0000"
+            entities:
+              - sensor.lower_floor_climate_temperature
+          - type: custom:mini-graph-card
             name: Humidity
-            entity: sensor.lower_floor_climate_humidity
-            graph: line
-            limits: []
+            font_size: 80
+            hours_to_show: 24
+            points_per_hour: 1
+            entities:
+              - sensor.lower_floor_climate_humidity
       - type: glance
         show_name: false
         entities:
@@ -47,15 +69,26 @@ cards:
     cards:
       - type: horizontal-stack
         cards:
-          - type: sensor
+          - type: custom:mini-graph-card
             name: Temperature
-            entity: sensor.laundry_room_climate_temperature
-            graph: line
-          - type: sensor
+            font_size: 80
+            hours_to_show: 24
+            points_per_hour: 1
+            color_thresholds:
+              - value: 18
+                color: "#0080FF"
+              - color: "#00FF00"
+              - value: 22
+                color: "#FF0000"
+            entities:
+              - sensor.laundry_room_climate_temperature
+          - type: custom:mini-graph-card
             name: Humidity
-            entity: sensor.laundry_room_climate_humidity
-            graph: line
-            limits: []
+            font_size: 80
+            hours_to_show: 24
+            points_per_hour: 1
+            entities:
+              - sensor.laundry_room_climate_humidity
       - type: glance
         show_name: false
         entities:
@@ -67,15 +100,26 @@ cards:
     cards:
       - type: horizontal-stack
         cards:
-          - type: sensor
+          - type: custom:mini-graph-card
             name: Temperature
-            entity: sensor.master_bedroom_climate_temperature
-            graph: line
-          - type: sensor
+            font_size: 80
+            hours_to_show: 24
+            points_per_hour: 1
+            color_thresholds:
+              - value: 18
+                color: "#0080FF"
+              - color: "#00FF00"
+              - value: 22
+                color: "#FF0000"
+            entities:
+              - sensor.master_bedroom_climate_temperature
+          - type: custom:mini-graph-card
             name: Humidity
-            entity: sensor.master_bedroom_climate_humidity
-            graph: line
-            limits: []
+            font_size: 80
+            hours_to_show: 24
+            points_per_hour: 1
+            entities:
+              - sensor.master_bedroom_climate_humidity
       - type: glance
         show_name: false
         entities:
@@ -87,20 +131,50 @@ cards:
     cards:
       - type: horizontal-stack
         cards:
-          - type: sensor
+          - type: custom:mini-graph-card
             name: Temperature
-            entity: sensor.kids_bedroom_climate_temperature
-            graph: line
-          - type: sensor
+            font_size: 80
+            hours_to_show: 24
+            points_per_hour: 1
+            color_thresholds:
+              - value: 18
+                color: "#0080FF"
+              - color: "#00FF00"
+              - value: 22
+                color: "#FF0000"
+            entities:
+              - sensor.kids_bedroom_climate_temperature
+          - type: custom:mini-graph-card
             name: Humidity
-            entity: sensor.kids_bedroom_climate_humidity
-            graph: line
-            limits: []
+            font_size: 80
+            hours_to_show: 24
+            points_per_hour: 1
+            entities:
+              - sensor.kids_bedroom_climate_humidity
       - type: glance
         show_name: false
         entities:
           - sensor.kids_bedroom_climate_pressure
           - sensor.kids_bedroom_climate_battery
+
+  - type: vertical-stack
+    title: Ambient
+    cards:
+      - type: custom:mini-graph-card
+        name: Indoor air quality
+        font_size: 80
+        hours_to_show: 24
+        points_per_hour: 1
+        show:
+          labels: true
+        color_thresholds:
+          - value: 35
+            color: green
+          - color: yellow
+          - value: 85
+            color: red
+        entities:
+          - sensor.node10_ikea_vindriktning_pm25
 
   - type: vertical-stack
     title: Mold Indicators
