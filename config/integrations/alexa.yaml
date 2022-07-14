@@ -55,7 +55,6 @@ smart_home:
       - updater
       - weather
       - weblink
-      - zigbee2mqtt_networkmap
       - zone
   entity_config:
     media_player.lg_smart_tv:
