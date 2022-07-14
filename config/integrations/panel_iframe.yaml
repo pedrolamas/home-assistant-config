@@ -22,7 +22,3 @@ zigbee2mqtt:
   title: Zigbee2MQTT
   url: !secret panel_iframe_zigbee2mqtt_url
   icon: mdi:zigbee
-zigbeemap:
-  title: Zigbee Map
-  url: "/local/community/zigbee2mqtt_networkmap/map.html"
-  icon: mdi:graphql
