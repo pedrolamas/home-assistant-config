@@ -18,6 +18,9 @@ from homeassistant.components.notify import (
     SERVICE_NOTIFY,
     BaseNotificationService,
 )
+import voluptuous as vol
+
+from custom_components.alexa_media.const import NOTIFY_URL
 
 from . import (
     CONF_EMAIL,
@@ -159,17 +162,17 @@ class AlexaNotificationService(BaseNotificationService):
                             hide_email(email),
                             entity,
                             entity.extra_state_attributes.get("last_called_timestamp"),
-                        )                                           
+                        )
                         last_called_entity = entity
-                    elif (last_called_entity.extra_state_attributes.get("last_called_timestamp")
-                            < entity.extra_state_attributes.get("last_called_timestamp")
-                    ):                        
+                    elif last_called_entity.extra_state_attributes.get(
+                        "last_called_timestamp"
+                    ) < entity.extra_state_attributes.get("last_called_timestamp"):
                         _LOGGER.debug(
                             "%s: Found newer last_called %s called at %s",
                             hide_email(email),
                             entity,
                             entity.extra_state_attributes.get("last_called_timestamp"),
-                        )                   
+                        )
                         last_called_entity = entity
             if last_called_entity is not None:
                 entity_name = (last_called_entity.entity_id).split(".")[1]
@@ -181,7 +184,9 @@ class AlexaNotificationService(BaseNotificationService):
                     hide_email(email),
                     entity_name_last_called,
                     last_called_entity,
-                    last_called_entity.extra_state_attributes.get("last_called_timestamp"),
+                    last_called_entity.extra_state_attributes.get(
+                        "last_called_timestamp"
+                    ),
                 )
                 devices[entity_name_last_called] = last_called_entity.unique_id
         return devices
@@ -206,7 +211,8 @@ class AlexaNotificationService(BaseNotificationService):
         kwargs["message"] = message
         targets = kwargs.get(ATTR_TARGET)
         title = kwargs.get(ATTR_TITLE, ATTR_TITLE_DEFAULT)
-        data = kwargs.get(ATTR_DATA)
+        data = kwargs.get(ATTR_DATA, {})
+        data = data if data is not None else {}
         if isinstance(targets, str):
             try:
                 targets = json.loads(targets)
@@ -234,8 +240,9 @@ class AlexaNotificationService(BaseNotificationService):
         for account, account_dict in self.hass.data[DATA_ALEXAMEDIA][
             "accounts"
         ].items():
+            data_type = data.get("type", "tts")
             for alexa in account_dict["entities"]["media_player"].values():
-                if data["type"] == "tts":
+                if data_type == "tts":
                     targets = self.convert(
                         entities, type_="entities", filter_matches=True
                     )
@@ -250,7 +257,7 @@ class AlexaNotificationService(BaseNotificationService):
                                 ]["options"].get(CONF_QUEUE_DELAY, DEFAULT_QUEUE_DELAY),
                             )
                         )
-                elif data["type"] == "announce":
+                elif data_type == "announce":
                     targets = self.convert(
                         entities, type_="serialnumbers", filter_matches=True
                     )
@@ -279,7 +286,7 @@ class AlexaNotificationService(BaseNotificationService):
                             )
                         )
                         break
-                elif data["type"] == "push":
+                elif data_type == "push":
                     targets = self.convert(
                         entities, type_="entities", filter_matches=True
                     )
@@ -294,7 +301,7 @@ class AlexaNotificationService(BaseNotificationService):
                                 ]["options"].get(CONF_QUEUE_DELAY, DEFAULT_QUEUE_DELAY),
                             )
                         )
-                elif data["type"] == "dropin_notification":
+                elif data_type == "dropin_notification":
                     targets = self.convert(
                         entities, type_="entities", filter_matches=True
                     )
@@ -311,4 +318,11 @@ class AlexaNotificationService(BaseNotificationService):
                                 ]["options"].get(CONF_QUEUE_DELAY, DEFAULT_QUEUE_DELAY),
                             )
                         )
+                else:
+                    errormessage = (
+                        f"{account}: Data value `type={data_type}` is not implemented. "
+                        f"See {NOTIFY_URL}"
+                        )
+                    _LOGGER.debug(errormessage)
+                    raise vol.Invalid(errormessage)
         await asyncio.gather(*tasks)
