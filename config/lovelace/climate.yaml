@@ -13,10 +13,9 @@ cards:
             hours_to_show: 24
             points_per_hour: 1
             color_thresholds:
-              - value: 18
+              - value: 18.5
                 color: "#0080FF"
-              - color: "#00FF00"
-              - value: 22
+              - value: 21.5
                 color: "#FF0000"
             entities:
               - sensor.living_room_climate_temperature
@@ -44,10 +43,9 @@ cards:
             hours_to_show: 24
             points_per_hour: 1
             color_thresholds:
-              - value: 18
+              - value: 18.5
                 color: "#0080FF"
-              - color: "#00FF00"
-              - value: 22
+              - value: 21.5
                 color: "#FF0000"
             entities:
               - sensor.lower_floor_climate_temperature
@@ -75,10 +73,9 @@ cards:
             hours_to_show: 24
             points_per_hour: 1
             color_thresholds:
-              - value: 18
+              - value: 18.5
                 color: "#0080FF"
-              - color: "#00FF00"
-              - value: 22
+              - value: 21.5
                 color: "#FF0000"
             entities:
               - sensor.laundry_room_climate_temperature
@@ -106,10 +103,9 @@ cards:
             hours_to_show: 24
             points_per_hour: 1
             color_thresholds:
-              - value: 18
+              - value: 18.5
                 color: "#0080FF"
-              - color: "#00FF00"
-              - value: 22
+              - value: 21.5
                 color: "#FF0000"
             entities:
               - sensor.master_bedroom_climate_temperature
@@ -137,10 +133,9 @@ cards:
             hours_to_show: 24
             points_per_hour: 1
             color_thresholds:
-              - value: 18
+              - value: 18.5
                 color: "#0080FF"
-              - color: "#00FF00"
-              - value: 22
+              - value: 21.5
                 color: "#FF0000"
             entities:
               - sensor.kids_bedroom_climate_temperature
