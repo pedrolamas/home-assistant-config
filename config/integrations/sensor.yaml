@@ -22,8 +22,6 @@
 #  destination: zone.home
 #  travel_mode: transit
 
-- platform: moon
-
 - platform: command_line
   name: CPU Temperature
   command: "cat /sys/class/thermal/thermal_zone0/temp"
