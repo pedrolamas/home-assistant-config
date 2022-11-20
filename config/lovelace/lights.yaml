@@ -20,8 +20,8 @@ cards:
     title: Master Bedroom
     show_header_toggle: false
     entities:
-      - entity: light.master_bedroom_dimmer
-        name: Ceiling dimmer
+      - entity: light.master_bedroom_switch
+        name: Ceiling switch
       - entity: light.lamp_4
       - entity: light.lamp_8
         name: Desk lamp
@@ -30,5 +30,5 @@ cards:
     title: Kids Bedroom
     show_header_toggle: false
     entities:
-      - entity: light.kids_bedroom_dimmer
-        name: Ceiling dimmer
+      - entity: light.kids_bedroom_switch
+        name: Ceiling switch
