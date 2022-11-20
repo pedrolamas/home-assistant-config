@@ -1,0 +1,47 @@
+- platform: generic_thermostat
+  name: Living Room Thermostat
+  unique_id: b6041af9-db43-4ebe-bc0c-7476f34b177c
+  heater: switch.living_room_smart_plug
+  target_sensor: sensor.living_room_climate_temperature
+  min_temp: 16
+  max_temp: 24
+  target_temp: 20
+  min_cycle_duration:
+    minutes: 2
+  hot_tolerance: 0
+
+- platform: generic_thermostat
+  name: Lower Floor Thermostat
+  unique_id: 1140e8ef-f9e2-4e19-9433-6fd6d781df3f
+  heater: switch.lower_floor_smart_plug
+  target_sensor: sensor.lower_floor_climate_temperature
+  min_temp: 16
+  max_temp: 24
+  target_temp: 20
+  min_cycle_duration:
+    minutes: 2
+  hot_tolerance: 0
+
+- platform: generic_thermostat
+  name: Master Bedroom Thermostat
+  unique_id: b42a8486-797f-49ab-b094-4087b8b443e6
+  heater: switch.master_bedroom_smart_plug
+  target_sensor: sensor.master_bedroom_climate_temperature
+  min_temp: 16
+  max_temp: 24
+  target_temp: 20
+  min_cycle_duration:
+    minutes: 2
+  hot_tolerance: 0
+
+- platform: generic_thermostat
+  name: Kids Bedroom Thermostat
+  unique_id: 08024156-eae5-4b59-aa8c-67d255376b03
+  heater: switch.kids_bedroom_smart_plug
+  target_sensor: sensor.kids_bedroom_climate_temperature
+  min_temp: 16
+  max_temp: 24
+  target_temp: 20
+  min_cycle_duration:
+    minutes: 2
+  hot_tolerance: 0
