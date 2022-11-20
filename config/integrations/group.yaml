@@ -11,3 +11,21 @@ living_room_smart_plugs:
   entities:
     - switch.living_room_smart_plug
     - switch.kids_corner_smart_plug
+
+master_bedroom_smart_plugs:
+  name: Master Bedroom Plugs
+  icon: mdi:flash
+  entities:
+    - switch.master_bedroom_smart_plug
+
+kids_bedroom_smart_plugs:
+  name: Kids Bedroom Plugs
+  icon: mdi:flash
+  entities:
+    - switch.kids_bedroom_smart_plug
+
+lower_floor_smart_plugs:
+  name: Lower Floor Plugs
+  icon: mdi:flash
+  entities:
+    - switch.lower_floor_smart_plug

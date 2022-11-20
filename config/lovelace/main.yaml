@@ -59,7 +59,7 @@ cards:
           navigation_path: /lovelace/climate
       - entity: camera.lower_floor_camera
         name: Camera
-      - entity: switch.lower_floor_smart_plug
+      - entity: group.lower_floor_smart_plugs
         name: Smart Plugs
         tap_action:
           action: navigate
@@ -84,7 +84,7 @@ cards:
         tap_action:
           action: navigate
           navigation_path: /lovelace/climate
-      - entity: switch.master_bedroom_smart_plug
+      - entity: group.master_bedroom_smart_plugs
         name: Smart Plugs
         tap_action:
           action: navigate
@@ -109,7 +109,7 @@ cards:
         tap_action:
           action: navigate
           navigation_path: /lovelace/climate
-      - entity: switch.kids_bedroom_smart_plug
+      - entity: group.kids_bedroom_smart_plugs
         name: Smart Plugs
         tap_action:
           action: navigate
