@@ -11,6 +11,7 @@ cards:
       - entity: light.lamp_3
       - entity: light.kids_corner_group
         name: Kids Corner
+      - entity: light.kids_corner_dimmer
       - entity: light.lamp_7
         name: Desk lamp
       - entity: light.elgato_key_light_air
