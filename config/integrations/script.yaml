@@ -153,20 +153,6 @@ send_notification_with_lower_floor_camera_snapshot:
         data:
           image_file: "/config/www/snapshot2.jpg"
 
-update_reported_ip:
-  mode: queued
-  sequence:
-    - service: rest_command.cloudflare_update
-      data:
-        zone_id: !secret cloudflare_zone_id
-        dns_record_id: !secret cloudflare_dns_record_id
-        dns_record_name: !secret cloudflare_dns_record_name
-        ip_address: "{{ states('sensor.external_ip') }}"
-    - service: hangouts.reconnect
-    - service: script.send_notification_pedro
-      data:
-        message: "External IP address changed to {{ states('sensor.external_ip') }}"
-
 turn_on_lg_smart_tv:
   sequence:
     - condition: "{{ is_state('media_player.lg_smart_tv', 'off') }}"
