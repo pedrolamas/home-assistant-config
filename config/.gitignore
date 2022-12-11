@@ -7,5 +7,6 @@ home-assistant_v2.db
 www/*.jpg
 www/community
 custom_components/hacs
+tts
 **/__pycache__
 !.gitignore
