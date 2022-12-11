@@ -1,10 +1,13 @@
 - id: '1606771938461'
-  alias: Turn on the heaters at 7:30
+  alias: Turn on the heaters at 8:00
   description: ''
   trigger:
   - platform: time
-    at: '7:30'
-  condition: []
+    at: 08:00:00
+  condition:
+  - condition: state
+    entity_id: group.family
+    state: home
   action:
   - type: turn_on
     device_id: 164a26f77b3c886a6aa30d31b7bd551b
@@ -39,18 +42,128 @@
     input:
       smart_plug_power_sensor_entity_id: sensor.kids_bedroom_smart_plug_power
       smart_plug_switch_entity_id: switch.kids_bedroom_smart_plug
-- id: '1608277751596'
-  alias: Master Bedroom PIR Alarm
+- id: '1612699041370'
+  alias: Turn off Master Bedroom heater if temperature above 21
+  description: ''
+  trigger:
+  - type: temperature
+    platform: device
+    device_id: ecfeffec54224ce386848e4734799eb3
+    entity_id: sensor.master_bedroom_climate_temperature
+    domain: sensor
+    above: 21
+  condition:
+  - type: is_power
+    condition: device
+    device_id: 202bd9a9b7d702e39d79205e8e915cca
+    entity_id: sensor.master_bedroom_smart_plug_power
+    domain: sensor
+    above: 100
+  action:
+  - type: turn_off
+    device_id: 202bd9a9b7d702e39d79205e8e915cca
+    entity_id: switch.master_bedroom_smart_plug
+    domain: switch
+  mode: single
+- id: '1617924063898'
+  alias: Turn off Heaters at 0:30 and 9:00
+  description: ''
+  trigger:
+  - platform: time
+    at: 00:30:00
+  - platform: time
+    at: 09:00:00
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 164a26f77b3c886a6aa30d31b7bd551b
+    entity_id: switch.kids_bedroom_smart_plug
+    domain: switch
+  - type: turn_off
+    device_id: 202bd9a9b7d702e39d79205e8e915cca
+    entity_id: switch.master_bedroom_smart_plug
+    domain: switch
+  mode: single
+- id: '1623176271318'
+  alias: Toggle desk lamp
+  description: ''
+  trigger:
+  - platform: device
+    domain: mqtt
+    device_id: bf248aad95274ab6b0f9a63d73590fc1
+    type: action
+    subtype: single
+    discovery_id: 0x00158d0002581c83 action_single
+  condition: []
+  action:
+  - service: light.toggle
+    target:
+      device_id: 2ab02357c5c18ae2ca3527a91f6dc089
+  mode: single
+- id: '1635166128342'
+  alias: Smart PIR Sensor motion, send notification
   description: ''
   trigger:
   - type: motion
     platform: device
     device_id: 038838f1b8c6411690f00a15dfc66a6c
-    entity_id: binary_sensor.master_bedroom_pir_sensor_occupancy
+    entity_id: binary_sensor.smart_pir_sensor_occupancy
     domain: binary_sensor
   condition: []
   action:
-  - service: script.send_notification_with_lower_floor_camera_snapshot
+  - service: script.send_notification
     data:
-      message: PIR
+      recipient: Pedro
+      message: Motion detected by Smart PIR Sensor!
   mode: single
+- id: '1669639290771'
+  alias: Remote 1 actions
+  description: ''
+  use_blueprint:
+    path: tuya_ss9600zb_remote.yaml
+    input:
+      switch: sensor.remote_1_action
+      button_1_short_press:
+      - service: light.toggle
+        data: {}
+        target:
+          entity_id: light.lamp_1
+      button_2_short_press:
+      - service: light.toggle
+        data: {}
+        target:
+          entity_id: light.lamp_2
+      button_2_double_press:
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id:
+          - light.lamp_1
+          - light.lamp_2
+      button_3_short_press:
+      - service: light.toggle
+        data: {}
+        target:
+          entity_id: light.kids_corner_group
+      button_4_short_press:
+      - service: media_player.toggle
+        data: {}
+        target:
+          entity_id: media_player.lg_smart_tv
+      button_5_short_press:
+      - service: light.toggle
+        data: {}
+        target:
+          entity_id: light.lamp_7
+      button_6_short_press:
+      - service: light.toggle
+        data: {}
+        target:
+          entity_id: light.elgato_key_light_air
+      button_6_double_press:
+      - service: light.toggle
+        data: {}
+        target:
+          entity_id:
+          - light.lamp_7
+          - light.elgato_key_light_air

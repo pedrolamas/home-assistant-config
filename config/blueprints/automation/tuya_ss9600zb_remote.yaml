@@ -1,0 +1,188 @@
+blueprint:
+  name: TuYa SS9600ZB Switch
+  description: Helper blueprint for the TuYa SS9600ZB Switch via Zigbee2MQTT
+  domain: automation
+  input:
+    switch:
+      name: Tuya SS9600ZB Switch
+      description: Tuya SS9600ZB Switch to use
+      selector:
+        entity:
+          domain: sensor
+          integration: mqtt
+    button_1_short_press:
+      name: Single Press - Button 1
+      description: Action to run on button 1 single press
+      default: []
+      selector:
+        action: null
+    button_1_hold:
+      name: Hold - Button 1
+      description: Action to run on button 1 long press
+      default: []
+      selector:
+        action: null
+    button_1_double_press:
+      name: Double Press - Button 1
+      description: Action to run on button 1 double press
+      default: []
+      selector:
+        action: null
+    button_2_short_press:
+      name: Single Press - Button 2
+      description: Action to run on button 2 single press
+      default: []
+      selector:
+        action: null
+    button_2_hold:
+      name: Hold - Button 2
+      description: Action to run on button 2 long press
+      default: []
+      selector:
+        action: null
+    button_2_double_press:
+      name: Double Press - Button 2
+      description: Action to run on button 2 double press
+      default: []
+      selector:
+        action: null
+    button_3_short_press:
+      name: Single Press - Button 3
+      description: Action to run on button 3 single press
+      default: []
+      selector:
+        action: null
+    button_3_hold:
+      name: Hold - Button 3
+      description: Action to run on button 3 long press
+      default: []
+      selector:
+        action: null
+    button_3_double_press:
+      name: Double Press - Button 3
+      description: Action to run on button 3 double press
+      default: []
+      selector:
+        action: null
+    button_4_short_press:
+      name: Single Press - Button 4
+      description: Action to run on button 4 single press
+      default: []
+      selector:
+        action: null
+    button_4_hold:
+      name: Long Press - Button 4
+      description: Action to run on button 4 long press
+      default: []
+      selector:
+        action: null
+    button_4_double_press:
+      name: Double Press - Button 4
+      description: Action to run on button 4 double press
+      default: []
+      selector:
+        action: null
+    button_5_short_press:
+      name: Single Press - Button 5
+      description: Action to run on button 5 single press
+      default: []
+      selector:
+        action: null
+    button_5_hold:
+      name: Long Press - Button 5
+      description: Action to run on button 5 long press
+      default: []
+      selector:
+        action: null
+    button_5_double_press:
+      name: Double Press - Button 5
+      description: Action to run on button 5 double press
+      default: []
+      selector:
+        action: null
+    button_6_short_press:
+      name: Single Press - Button 6
+      description: Action to run on button 6 single press
+      default: []
+      selector:
+        action: null
+    button_6_hold:
+      name: Long Press - Button 6
+      description: Action to run on button 6 long press
+      default: []
+      selector:
+        action: null
+    button_6_double_press:
+      name: Double Press - Button 6
+      description: Action to run on button 6 double press
+      default: []
+      selector:
+        action: null
+
+mode: queued
+
+trigger:
+  - platform: state
+    entity_id: !input switch
+
+condition:
+  - "{{ trigger.to_state.state != '' }}"
+
+action:
+  - variables:
+      command: "{{ trigger.to_state.state }}"
+  - choose:
+      - conditions:
+          - "{{ command == '1_single' }}"
+        sequence: !input button_1_short_press
+      - conditions:
+          - "{{ command == '1_double' }}"
+        sequence: !input button_1_double_press
+      - conditions:
+          - "{{ command == '1_hold' }}"
+        sequence: !input button_1_hold
+      - conditions:
+          - "{{ command == '2_single' }}"
+        sequence: !input button_2_short_press
+      - conditions:
+          - "{{ command == '2_double' }}"
+        sequence: !input button_2_double_press
+      - conditions:
+          - "{{ command == '2_hold' }}"
+        sequence: !input button_2_hold
+      - conditions:
+          - "{{ command == '3_single' }}"
+        sequence: !input button_3_short_press
+      - conditions:
+          - "{{ command == '3_double' }}"
+        sequence: !input button_3_double_press
+      - conditions:
+          - "{{ command == '3_hold' }}"
+        sequence: !input button_3_hold
+      - conditions:
+          - "{{ command == '4_single' }}"
+        sequence: !input button_4_short_press
+      - conditions:
+          - "{{ command == '4_double' }}"
+        sequence: !input button_4_double_press
+      - conditions:
+          - "{{ command == '4_hold' }}"
+        sequence: !input button_4_hold
+      - conditions:
+          - "{{ command == '5_single' }}"
+        sequence: !input button_5_short_press
+      - conditions:
+          - "{{ command == '5_double' }}"
+        sequence: !input button_5_double_press
+      - conditions:
+          - "{{ command == '5_hold' }}"
+        sequence: !input button_5_hold
+      - conditions:
+          - "{{ command == '6_single' }}"
+        sequence: !input button_6_short_press
+      - conditions:
+          - "{{ command == '6_double' }}"
+        sequence: !input button_6_double_press
+      - conditions:
+          - "{{ command == '6_hold' }}"
+        sequence: !input button_6_hold
