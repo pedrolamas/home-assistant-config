@@ -148,6 +148,7 @@
   trigger:
     - platform: mqtt
       topic: "ender3v2/klipper/status"
+      value_template: "{{ value_json.status.print_stats.state if 'print_stats' in value_json.status else None }}"
   action:
     - service: homeassistant.update_entity
       target:

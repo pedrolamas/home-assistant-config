@@ -23,5 +23,5 @@
     - light.kids_bedroom_switch
 
 - platform: switch
-  name: Ender-3 V2
+  name: Ender-3 V2 2
   entity_id: switch.ender_3_v2_lights

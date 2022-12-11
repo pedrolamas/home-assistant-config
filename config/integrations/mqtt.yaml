@@ -2,3 +2,32 @@ sensor:
   - name: Zigbee2mqtt Bridge state
     state_topic: "zigbee2mqtt/bridge/state"
     icon: mdi:server-network
+
+light:
+  - name: Ender-3 V2
+    schema: template
+    availability_topic: "ender3v2/moonraker/status"
+    availability_template: >
+      {{ value_json.server }}
+    state_topic: "ender3v2/klipper/status"
+    state_template: >-
+      {% if value_json.status['output_pin lights'].value | float > 0 %}on{% else %}off{% endif %}
+    command_topic: "ender3v2/moonraker/api/request"
+    command_on_template: >-
+      {
+        "jsonrpc": "2.0",
+        "method": "printer.gcode.script",
+        "params": {
+          "script": "SET_PIN PIN=\"lights\" VALUE={{ brightness | default(255) | multiply(1 / 255) | round(2) }}"
+        }
+      }
+    command_off_template: >-
+      {
+        "jsonrpc": "2.0",
+        "method": "printer.gcode.script",
+        "params": {
+          "script": "SET_PIN PIN=\"lights\" VALUE=0"
+        }
+      }
+    brightness_template: >-
+      {{ value_json.status['output_pin lights'].value | float | multiply(255) | round(0) }}
