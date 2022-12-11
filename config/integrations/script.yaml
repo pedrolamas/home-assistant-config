@@ -26,6 +26,11 @@ send_notification:
       description: The notification icon color
       selector:
         text:
+    filename:
+      name: Filename
+      description: The notification attachment filename
+      selector:
+        text:
     channel:
       name: Channel
       description: The notification channel
@@ -75,7 +80,7 @@ send_notification:
         title: "{{ title }}"
         data:
           color: "{{ color }}"
-          image_file: "{{ filename }}"
+          image: "{{ filename }}"
           channel: "{{ channel }}"
           tag: "{{ tag }}"
           priority: "high"
@@ -130,28 +135,20 @@ clear_notification:
 send_notification_with_living_room_camera_snapshot:
   mode: queued
   sequence:
-    - service: camera.snapshot
+    - service: script.send_notification
       data:
-        entity_id: camera.living_room_camera
-        filename: "/config/www/snapshot.jpg"
-    - service: notify.hangouts_pedro
-      data:
+        recipient: Pedro
         message: "{{ message }}"
-        data:
-          image_file: "/config/www/snapshot.jpg"
+        filename: "/api/camera_proxy/camera.living_room_camera"
 
 send_notification_with_lower_floor_camera_snapshot:
   mode: queued
   sequence:
-    - service: camera.snapshot
+    - service: script.send_notification
       data:
-        entity_id: camera.lower_floor_camera
-        filename: "/config/www/snapshot2.jpg"
-    - service: notify.hangouts_pedro
-      data:
+        recipient: Pedro
         message: "{{ message }}"
-        data:
-          image_file: "/config/www/snapshot2.jpg"
+        filename: "/api/camera_proxy/camera.lower_floor_camera"
 
 turn_on_lg_smart_tv:
   sequence:

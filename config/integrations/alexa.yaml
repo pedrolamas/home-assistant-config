@@ -35,24 +35,28 @@ smart_home:
     exclude_domains:
       - automation
       - binary_sensor
+      - button
       - camera
       - device_tracker
       - group
-      - hangouts
       - input_boolean
       - input_number
       - input_select
       - input_text
       - light
       - media_player
+      - number
+      - persistent_notification
       - person
       - remote
       - script
+      - select
       - sensor
       - sun
       - switch
+      - text
       - timer
-      - updater
+      - update
       - weather
       - weblink
       - zone

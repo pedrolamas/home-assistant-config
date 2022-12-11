@@ -1,15 +1,3 @@
-- platform: pushbullet
-  name: pushbullet
-  api_key: !secret pushbullet_api_key
-
-- platform: hangouts
-  name: hangouts_pedro
-  default_conversations: !secret hangouts_conversations_pedro
-
-- platform: hangouts
-  name: hangouts_all
-  default_conversations: !secret hangouts_conversations_all
-
 - platform: group
   name: mobile_app_all
   unique_id: 7914eb5a-f5f2-4600-8081-d6a2ec300931

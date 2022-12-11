@@ -6,6 +6,7 @@ homeassistant:
   unit_system: metric
   currency: GBP
   time_zone: Europe/London
+  country: GB
   internal_url: !secret internal_url
 
   customize: !include customize.yaml
