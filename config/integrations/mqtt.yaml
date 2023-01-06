@@ -9,9 +9,9 @@ light:
     availability_topic: "ender3v2/moonraker/status"
     availability_template: >
       {{ value_json.server }}
-    state_topic: "ender3v2/klipper/status"
+    state_topic: "ender3v2/klipper/state/output_pin lights/value"
     state_template: >-
-      {% if value_json.status['output_pin lights'].value | float > 0 %}on{% else %}off{% endif %}
+      {% if value_json.value | float > 0 %}on{% else %}off{% endif %}
     command_topic: "ender3v2/moonraker/api/request"
     command_on_template: >-
       {
@@ -30,4 +30,4 @@ light:
         }
       }
     brightness_template: >-
-      {{ value_json.status['output_pin lights'].value | float | multiply(255) | round(0) }}
+      {{ value_json.value | float | multiply(255) | round(0) }}
