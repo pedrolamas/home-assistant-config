@@ -6,6 +6,7 @@ cards:
   - type: map
     dark_mode: true
     hours_to_show: 4
+    aspect_ratio: "4:3"
     entities:
       - person.pedro
       - person.joana
