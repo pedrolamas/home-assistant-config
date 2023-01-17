@@ -1,1 +1,6 @@
+api_version: 2
+ssl: false
 host: !secret influxdb_host
+port: 8086
+token: !secret influxdb_token
+organization: !secret influxdb_organization
