@@ -95,7 +95,7 @@ cards:
           service: media_player.play_media
           service_data:
             entity_id: media_player.lg_smart_tv
-            media_content_id: "BBC NEWS HD"
+            media_content_id: "BBC NEWS"
             media_content_type: "channel"
         hold_action:
           action: call-service
