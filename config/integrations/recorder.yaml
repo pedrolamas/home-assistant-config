@@ -34,12 +34,12 @@ include:
     - sensor.node02_power_meter
     - sensor.node02_total_energy
     - sensor.node02_total_energy_cost
-    - sensor.node08_plant_1_moisture
-    - sensor.node08_plant_1_soil_conductivity
-    - sensor.node08_plant_1_temperature
-    - sensor.node08_plant_2_moisture
-    - sensor.node08_plant_2_soil_conductivity
-    - sensor.node08_plant_2_temperature
+    - sensor.plant_sensor_f6ee_conductivity
+    - sensor.plant_sensor_f6ee_moisture
+    - sensor.plant_sensor_f6ee_temperature
+    - sensor.plant_sensor_f491_conductivity
+    - sensor.plant_sensor_f491_moisture
+    - sensor.plant_sensor_f491_temperature
     - sensor.node10_ikea_vindriktning_pm25
     - sensor.reported_ip
     - sensor.washing_machine_smart_plug_energy
