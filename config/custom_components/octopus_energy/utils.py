@@ -1,24 +1,23 @@
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from homeassistant.util.dt import (as_utc, parse_datetime)
 
 import re
 
 from .const import (
   REGEX_TARIFF_PARTS,
-  REGEX_OFFSET_PARTS,
 )
 
 def get_tariff_parts(tariff_code):
   matches = re.search(REGEX_TARIFF_PARTS, tariff_code)
   if matches == None:
-    raise Exception(f'Unable to extract product code from tariff code: {tariff_code}')
-
-  # According to https://www.guylipman.com/octopus/api_guide.html#s1b, this part should indicate if we're dealing
-  # with standard rates or day/night rates
-  energy = matches[1]
-  rate = matches[2]
-  product_code = matches[3]
-  region = matches[4]
+    return None
+  
+  # If our energy or rate isn't extracted, then assume is electricity and "single" rate as that's 
+  # where our experimental tariffs are
+  energy = matches.groupdict()["energy"] or "E"
+  rate = matches.groupdict()["rate"] or "1R"
+  product_code =matches.groupdict()["product_code"]
+  region = matches.groupdict()["region"]
 
   return {
     "energy": energy,
@@ -53,21 +52,6 @@ def get_active_tariff_code(utcnow: datetime, agreements):
   
   return None
 
-def apply_offset(date_time: datetime, offset: str, inverse = False):
-  matches = re.search(REGEX_OFFSET_PARTS, offset)
-  if matches == None:
-    raise Exception(f'Unable to extract offset: {offset}')
-
-  symbol = matches[1]
-  hours = float(matches[2])
-  minutes = float(matches[3])
-  seconds = float(matches[4])
-
-  if ((symbol == "-" and inverse == False) or (symbol != "-" and inverse == True)):
-    return date_time - timedelta(hours=hours, minutes=minutes, seconds=seconds)
-  
-  return date_time + timedelta(hours=hours, minutes=minutes, seconds=seconds)
-
 def get_valid_from(rate):
   return rate["valid_from"]
     
@@ -84,8 +68,10 @@ def rates_to_thirty_minute_increments(data, period_from: datetime, period_to: da
     for item in items:
       value_inc_vat = float(item["value_inc_vat"])
 
+      is_capped = False
       if (price_cap is not None and value_inc_vat > price_cap):
         value_inc_vat = price_cap
+        is_capped = True
 
       if "valid_from" in item and item["valid_from"] != None:
         valid_from = as_utc(parse_datetime(item["valid_from"]))
@@ -113,7 +99,8 @@ def rates_to_thirty_minute_increments(data, period_from: datetime, period_to: da
           "value_inc_vat": value_inc_vat,
           "valid_from": valid_from,
           "valid_to": valid_to,
-          "tariff_code": tariff_code
+          "tariff_code": tariff_code,
+          "is_capped": is_capped
         })
 
         valid_from = valid_to

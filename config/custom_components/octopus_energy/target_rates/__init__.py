@@ -1,12 +1,30 @@
 from datetime import datetime, timedelta
 import math
+import re
+
 from homeassistant.util.dt import (as_utc, parse_datetime)
-from .utils import (apply_offset)
+
+from ..const import REGEX_OFFSET_PARTS
 import logging
 
 _LOGGER = logging.getLogger(__name__)
 
-def __get_applicable_rates(current_date, target_start_time, target_end_time, rates, target_start_offset, is_rolling_target):
+def apply_offset(date_time: datetime, offset: str, inverse = False):
+  matches = re.search(REGEX_OFFSET_PARTS, offset)
+  if matches == None:
+    raise Exception(f'Unable to extract offset: {offset}')
+
+  symbol = matches[1]
+  hours = float(matches[2])
+  minutes = float(matches[3])
+  seconds = float(matches[4])
+
+  if ((symbol == "-" and inverse == False) or (symbol != "-" and inverse == True)):
+    return date_time - timedelta(hours=hours, minutes=minutes, seconds=seconds)
+  
+  return date_time + timedelta(hours=hours, minutes=minutes, seconds=seconds)
+
+def __get_applicable_rates(current_date: datetime, target_start_time: str, target_end_time: str, rates, is_rolling_target: bool):
   if (target_start_time is not None):
     target_start = parse_datetime(current_date.strftime(f"%Y-%m-%dT{target_start_time}:00%z"))
   else:
@@ -31,12 +49,6 @@ def __get_applicable_rates(current_date, target_start_time, target_end_time, rat
   if (is_rolling_target == True and target_start < current_date and current_date < target_end):
     _LOGGER.debug(f'Rolling target and {target_start} is in the past. Setting start to {current_date}')
     target_start = current_date
-
-  # Apply our offset so we make sure our target turns on within the specified timeframe
-  if (target_start_offset is not None):
-    _LOGGER.debug(f'Offsetting time period')
-    target_start = apply_offset(target_start, target_start_offset, True)
-    target_end = apply_offset(target_end, target_start_offset, True)
 
   # If our start and end are both in the past, then look to the next day
   if (target_start < current_date and target_end < current_date):
@@ -68,8 +80,8 @@ def __get_rate(rate):
 def __get_valid_to(rate):
   return rate["valid_to"]
 
-def calculate_continuous_times(current_date, target_start_time, target_end_time, target_hours, rates, target_start_offset = None, is_rolling_target = True, search_for_highest_rate = False):
-  applicable_rates = __get_applicable_rates(current_date, target_start_time, target_end_time, rates, target_start_offset, is_rolling_target)
+def calculate_continuous_times(current_date: datetime, target_start_time: str, target_end_time: str, target_hours: float, rates, is_rolling_target = True, search_for_highest_rate = False):
+  applicable_rates = __get_applicable_rates(current_date, target_start_time, target_end_time, rates, is_rolling_target)
   if (applicable_rates is None):
     return []
 
@@ -108,8 +120,8 @@ def calculate_continuous_times(current_date, target_start_time, target_end_time,
   
   return []
 
-def calculate_intermittent_times(current_date, target_start_time, target_end_time, target_hours, rates, target_start_offset = None, is_rolling_target = True, search_for_highest_rate = False):
-  applicable_rates = __get_applicable_rates(current_date, target_start_time, target_end_time, rates, target_start_offset, is_rolling_target)
+def calculate_intermittent_times(current_date: datetime, target_start_time: str, target_end_time: str, target_hours: float, rates, is_rolling_target = True, search_for_highest_rate = False):
+  applicable_rates = __get_applicable_rates(current_date, target_start_time, target_end_time, rates, is_rolling_target)
   if (applicable_rates is None):
     return []
   
@@ -127,36 +139,79 @@ def calculate_intermittent_times(current_date, target_start_time, target_end_tim
   applicable_rates.sort(key=__get_valid_to)
   return applicable_rates
 
-def is_target_rate_active(current_date: datetime, applicable_rates, offset: str = None):
+def get_target_rate_info(current_date: datetime, applicable_rates, offset: str = None):
   is_active = False
   next_time = None
   current_duration_in_hours = 0
   next_duration_in_hours = 0
   total_applicable_rates = len(applicable_rates)
 
+  overall_total_cost = 0
+  overall_min_cost = None
+  overall_max_cost = None
+
+  current_average_cost = None
+  current_min_cost = None
+  current_max_cost = None
+
+  next_average_cost = None
+  next_min_cost = None
+  next_max_cost = None
+
   if (total_applicable_rates > 0):
 
-    # Work our our rate blocks. This is more for intermittent target rates
+    # Find the applicable rates that when combine become a continuous block. This is more for
+    # intermittent rates.
     applicable_rates.sort(key=__get_valid_to)
     applicable_rate_blocks = list()
     block_valid_from = applicable_rates[0]["valid_from"]
+
+    total_cost = 0
+    min_cost = None
+    max_cost = None
+
     for index, rate in enumerate(applicable_rates):
       if (index > 0 and applicable_rates[index - 1]["valid_to"] != rate["valid_from"]):
         diff = applicable_rates[index - 1]["valid_to"] - block_valid_from
+        minutes = diff.total_seconds() / 60
         applicable_rate_blocks.append({
           "valid_from": block_valid_from,
           "valid_to": applicable_rates[index - 1]["valid_to"],
-          "duration_in_hours": diff.total_seconds() / 60 / 60
+          "duration_in_hours": minutes / 60,
+          "average_cost": total_cost / (minutes / 30),
+          "min_cost": min_cost,
+          "max_cost": max_cost
         })
 
         block_valid_from = rate["valid_from"]
+        total_cost = 0
+        min_cost = None
+        max_cost = None
+
+      total_cost += rate["value_inc_vat"]
+      if min_cost is None or min_cost > rate["value_inc_vat"]:
+        min_cost = rate["value_inc_vat"]
+
+      if max_cost is None or max_cost < rate["value_inc_vat"]:
+        max_cost = rate["value_inc_vat"]
+
+      overall_total_cost += rate["value_inc_vat"]
+      if overall_min_cost is None or overall_min_cost > rate["value_inc_vat"]:
+        overall_min_cost = rate["value_inc_vat"]
+
+      if overall_max_cost is None or overall_max_cost < rate["value_inc_vat"]:
+        overall_max_cost = rate["value_inc_vat"]
 
     # Make sure our final block is added
     diff = applicable_rates[-1]["valid_to"] - block_valid_from
+    minutes = diff.total_seconds() / 60
     applicable_rate_blocks.append({
       "valid_from": block_valid_from,
       "valid_to": applicable_rates[-1]["valid_to"],
-      "duration_in_hours": diff.total_seconds() / 60 / 60
+      "duration_in_hours": minutes / 60,
+      "average_cost": total_cost / (minutes / 30),
+      "min_cost": min_cost,
+      "max_cost": max_cost
     })
 
     # Find out if we're within an active block, or find the next block
@@ -170,15 +225,30 @@ def is_target_rate_active(current_date: datetime, applicable_rates, offset: str 
       
       if current_date >= valid_from and current_date < valid_to:
         current_duration_in_hours = rate["duration_in_hours"]
+        current_average_cost = rate["average_cost"]
+        current_min_cost = rate["min_cost"]
+        current_max_cost = rate["max_cost"]
         is_active = True
       elif current_date < valid_from:
         next_time = valid_from
         next_duration_in_hours = rate["duration_in_hours"]
+        next_average_cost = rate["average_cost"]
+        next_min_cost = rate["min_cost"]
+        next_max_cost = rate["max_cost"]
         break
 
   return {
     "is_active": is_active,
+    "overall_average_cost": round(overall_total_cost / total_applicable_rates, 5) if total_applicable_rates > 0  else 0,
+    "overall_min_cost": overall_min_cost,
+    "overall_max_cost": overall_max_cost,
     "current_duration_in_hours": current_duration_in_hours,
+    "current_average_cost": current_average_cost,
+    "current_min_cost": current_min_cost,
+    "current_max_cost": current_max_cost,
     "next_time": next_time,
-    "next_duration_in_hours": next_duration_in_hours
+    "next_duration_in_hours": next_duration_in_hours,
+    "next_average_cost": next_average_cost,
+    "next_min_cost": next_min_cost,
+    "next_max_cost": next_max_cost,
   }

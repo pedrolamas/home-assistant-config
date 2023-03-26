@@ -2,7 +2,6 @@ import re
 import voluptuous as vol
 import logging
 
-
 from homeassistant.util.dt import (utcnow)
 from homeassistant.config_entries import (ConfigFlow, OptionsFlow)
 from homeassistant.core import callback
@@ -115,7 +114,7 @@ class OctopusEnergyConfigFlow(ConfigFlow, domain=DOMAIN):
 
     meters = []
     now = utcnow()
-    if len(account_info["electricity_meter_points"]) > 0:
+    if account_info is not None and len(account_info["electricity_meter_points"]) > 0:
       for point in account_info["electricity_meter_points"]:
         active_tariff_code = get_active_tariff_code(now, point["agreements"])
         if active_tariff_code != None:
@@ -197,10 +196,12 @@ class OptionsFlowHandler(OptionsFlow):
   async def __async_setup_target_rate_schema(self, config, errors):
     client = self.hass.data[DOMAIN][DATA_CLIENT]
     account_info = await client.async_get_account(self.hass.data[DOMAIN][DATA_ACCOUNT_ID])
+    if account_info is None:
+      errors[CONFIG_TARGET_MPAN] = "account_not_found"
 
     meters = []
     now = utcnow()
-    if len(account_info["electricity_meter_points"]) > 0:
+    if account_info is not None and len(account_info["electricity_meter_points"]) > 0:
       for point in account_info["electricity_meter_points"]:
         active_tariff_code = get_active_tariff_code(now, point["agreements"])
         if active_tariff_code != None:
@@ -229,7 +230,12 @@ class OptionsFlowHandler(OptionsFlow):
     return self.async_show_form(
       step_id="target_rate",
       data_schema=vol.Schema({
+        vol.Required(CONFIG_TARGET_NAME, default=config[CONFIG_TARGET_NAME]): str,
         vol.Required(CONFIG_TARGET_HOURS, default=f'{config[CONFIG_TARGET_HOURS]}'): str,
+        vol.Required(CONFIG_TARGET_TYPE, default=config[CONFIG_TARGET_TYPE]): vol.In({
+          "Continuous": "Continuous",
+          "Intermittent": "Intermittent"
+        }),
         vol.Required(CONFIG_TARGET_MPAN, default=config[CONFIG_TARGET_MPAN]): vol.In(
           meters
         ),
