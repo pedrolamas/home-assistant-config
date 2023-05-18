@@ -6,13 +6,14 @@
   ],
   "config_flow": true,
   "dependencies": [
-    "repairs"
+    "repairs",
+    "recorder"
   ],
   "documentation": "https://github.com/BottlecapDave/HomeAssistant-OctopusEnergy/",
   "homekit": {},
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/BottlecapDave/HomeAssistant-OctopusEnergy/issues",
   "ssdp": [],
-  "version": "7.0.0",
+  "version": "7.2.0",
   "zeroconf": []
 }
