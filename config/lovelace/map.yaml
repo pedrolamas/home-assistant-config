@@ -48,16 +48,16 @@ cards:
         name: Location
         hold_action:
           action: call-service
-          service: notify.mobile_app_joana_oneplus9
+          service: notify.mobile_app_joana_pixel7pro
           service_data:
             message: "request_location_update"
-      - entity: device_tracker.joana_oneplus9
+      - entity: device_tracker.joana_pixel7pro
         name: GPS
         icon: mdi:crosshairs-gps
-      - entity: device_tracker.oneplus_9_joana
+      - entity: device_tracker.google_pixel_7_pro_joana
         name: WiFi
         icon: mdi:wifi
-      - entity: sensor.joana_oneplus9_battery_level
+      - entity: sensor.joana_pixel7pro_battery_level
         name: Battery
     view_layout:
       position: sidebar

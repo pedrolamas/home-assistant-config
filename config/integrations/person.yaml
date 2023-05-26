@@ -9,5 +9,5 @@
   name: Joana
   user_id: !secret joana_user_id
   device_trackers:
-    - device_tracker.joana_oneplus9
-    - device_tracker.oneplus_9_joana
+    - device_tracker.joana_pixel7pro
+    - device_tracker.google_pixel_7_pro_joana

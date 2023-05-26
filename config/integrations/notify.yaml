@@ -3,4 +3,4 @@
   unique_id: 7914eb5a-f5f2-4600-8081-d6a2ec300931
   services:
     - service: mobile_app_pedro_pixel7pro
-    - service: mobile_app_joana_oneplus9
+    - service: mobile_app_joana_pixel7pro

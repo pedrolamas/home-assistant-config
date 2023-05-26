@@ -90,8 +90,8 @@
   use_blueprint:
     path: phone_battery_state.yaml
     input:
-      battery_level_entity_id: sensor.joana_oneplus9_battery_level
-      battery_state_entity_id: sensor.joana_oneplus9_battery_state
+      battery_level_entity_id: sensor.joana_pixel7pro_battery_level
+      battery_state_entity_id: sensor.joana_pixel7pro_battery_state
       recipient: joana
 
 - alias: Front Door Mailbox movement, send notification
