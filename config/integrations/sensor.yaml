@@ -22,14 +22,6 @@
 #  destination: zone.home
 #  travel_mode: transit
 
-- platform: command_line
-  name: CPU Temperature
-  command: "cat /sys/class/thermal/thermal_zone0/temp"
-  scan_interval: 150
-  unit_of_measurement: "°C"
-  value_template: >-
-    {{ value | multiply(0.001, default=0) | round(2, default=0) }}
-
 - platform: london_underground
   line:
     - London Overground
