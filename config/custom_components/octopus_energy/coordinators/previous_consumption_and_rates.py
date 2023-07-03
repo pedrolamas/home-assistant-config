@@ -7,10 +7,13 @@ from homeassistant.helpers.update_coordinator import (
 )
 
 from ..const import (
-  DOMAIN
+  DOMAIN,
+  DATA_INTELLIGENT_DISPATCHES
 )
 
 from ..api_client import (OctopusEnergyApiClient)
+
+from ..intelligent import adjust_intelligent_rates
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,7 +35,9 @@ async def async_fetch_consumption_and_rates(
   serial_number: str,
   is_electricity: bool,
   tariff_code: str,
-  is_smart_meter: bool
+  is_smart_meter: bool,
+  intelligent_dispatches = None
+
 ):
   """Fetch the previous consumption and rates"""
 
@@ -40,24 +45,33 @@ async def async_fetch_consumption_and_rates(
       ((len(previous_data["consumption"]) < 1 or 
       previous_data["consumption"][-1]["interval_end"] < period_to) and 
       utc_now.minute % 30 == 0)):
-
-    if (is_electricity == True):
-      consumption_data = await client.async_get_electricity_consumption(identifier, serial_number, period_from, period_to)
-      rate_data = await client.async_get_electricity_rates(tariff_code, is_smart_meter, period_from, period_to)
-      standing_charge = await client.async_get_electricity_standing_charge(tariff_code, period_from, period_to)
-    else:
-      consumption_data = await client.async_get_gas_consumption(identifier, serial_number, period_from, period_to)
-      rate_data = await client.async_get_gas_rates(tariff_code, period_from, period_to)
-      standing_charge = await client.async_get_gas_standing_charge(tariff_code, period_from, period_to)
     
-    if consumption_data is not None and len(consumption_data) > 0 and rate_data is not None and len(rate_data) > 0 and standing_charge is not None:
-      consumption_data = __sort_consumption(consumption_data)
+    try:
+      if (is_electricity == True):
+        consumption_data = await client.async_get_electricity_consumption(identifier, serial_number, period_from, period_to)
+        rate_data = await client.async_get_electricity_rates(tariff_code, is_smart_meter, period_from, period_to)
+        if intelligent_dispatches is not None:
+          rate_data = adjust_intelligent_rates(rate_data,
+                                                intelligent_dispatches["planned"] if "planned" in intelligent_dispatches else [],
+                                                intelligent_dispatches["completed"] if "completed" in intelligent_dispatches else [])
+          
+          _LOGGER.debug(f"Tariff: {tariff_code}; dispatches: {intelligent_dispatches}")
+        standing_charge = await client.async_get_electricity_standing_charge(tariff_code, period_from, period_to)
+      else:
+        consumption_data = await client.async_get_gas_consumption(identifier, serial_number, period_from, period_to)
+        rate_data = await client.async_get_gas_rates(tariff_code, period_from, period_to)
+        standing_charge = await client.async_get_gas_standing_charge(tariff_code, period_from, period_to)
+      
+      if consumption_data is not None and len(consumption_data) > 0 and rate_data is not None and len(rate_data) > 0 and standing_charge is not None:
+        consumption_data = __sort_consumption(consumption_data)
 
-      return {
-        "consumption": consumption_data,
-        "rates": rate_data,
-        "standing_charge": standing_charge["value_inc_vat"]
-      }
+        return {
+          "consumption": consumption_data,
+          "rates": rate_data,
+          "standing_charge": standing_charge["value_inc_vat"]
+        }
+    except:
+      _LOGGER.debug(f"Failed to retrieve {'electricity' if is_electricity else 'gas'} previous consumption and rate data")
 
   return previous_data 
 
@@ -92,7 +106,8 @@ async def async_create_previous_consumption_and_rates_coordinator(
       serial_number,
       is_electricity,
       tariff_code,
-      is_smart_meter
+      is_smart_meter,
+      hass.data[DOMAIN][DATA_INTELLIGENT_DISPATCHES] if DATA_INTELLIGENT_DISPATCHES in hass.data[DOMAIN] else None
     )
 
     if (result is not None):

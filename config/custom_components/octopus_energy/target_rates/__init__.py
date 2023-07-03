@@ -74,17 +74,24 @@ def __get_applicable_rates(current_date: datetime, target_start_time: str, targe
 
   return applicable_rates
 
-def __get_rate(rate):
-  return rate["value_inc_vat"]
-
 def __get_valid_to(rate):
   return rate["valid_to"]
 
-def calculate_continuous_times(current_date: datetime, target_start_time: str, target_end_time: str, target_hours: float, rates, is_rolling_target = True, search_for_highest_rate = False):
+def calculate_continuous_times(
+    current_date: datetime,
+    target_start_time: str,
+    target_end_time: str,
+    target_hours: float,
+    rates,
+    is_rolling_target = True,
+    search_for_highest_rate = False,
+    find_last_rates = False
+  ):
   applicable_rates = __get_applicable_rates(current_date, target_start_time, target_end_time, rates, is_rolling_target)
   if (applicable_rates is None):
     return []
-
+  
+  applicable_rates.sort(key=__get_valid_to, reverse=find_last_rates)
   applicable_rates_count = len(applicable_rates)
   total_required_rates = math.ceil(target_hours * 2)
 
@@ -120,14 +127,33 @@ def calculate_continuous_times(current_date: datetime, target_start_time: str, t
   
   return []
 
-def calculate_intermittent_times(current_date: datetime, target_start_time: str, target_end_time: str, target_hours: float, rates, is_rolling_target = True, search_for_highest_rate = False):
+def calculate_intermittent_times(
+    current_date: datetime,
+    target_start_time: str,
+    target_end_time: str,
+    target_hours: float,
+    rates,
+    is_rolling_target = True,
+    search_for_highest_rate = False,
+    find_last_rates = False
+  ):
   applicable_rates = __get_applicable_rates(current_date, target_start_time, target_end_time, rates, is_rolling_target)
   if (applicable_rates is None):
     return []
   
   total_required_rates = math.ceil(target_hours * 2)
 
-  applicable_rates.sort(key=__get_rate, reverse=search_for_highest_rate)
+  if find_last_rates:
+    if search_for_highest_rate:
+      applicable_rates.sort(key= lambda rate: (-rate["value_inc_vat"], -rate["valid_to"].timestamp()))
+    else:
+      applicable_rates.sort(key= lambda rate: (rate["value_inc_vat"], -rate["valid_to"].timestamp()))
+  else:
+    if search_for_highest_rate:
+      applicable_rates.sort(key= lambda rate: (-rate["value_inc_vat"], rate["valid_to"]))
+    else:
+      applicable_rates.sort(key= lambda rate: (rate["value_inc_vat"], rate["valid_to"]))
+
   applicable_rates = applicable_rates[:total_required_rates]
   
   _LOGGER.debug(f'{len(applicable_rates)} applicable rates found')
@@ -246,7 +272,7 @@ def get_target_rate_info(current_date: datetime, applicable_rates, offset: str =
     "current_average_cost": current_average_cost,
     "current_min_cost": current_min_cost,
     "current_max_cost": current_max_cost,
-    "next_time": next_time,
+    "next_time": apply_offset(next_time, offset) if next_time is not None and offset is not None else next_time,
     "next_duration_in_hours": next_duration_in_hours,
     "next_average_cost": next_average_cost,
     "next_min_cost": next_min_cost,

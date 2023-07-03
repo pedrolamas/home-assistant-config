@@ -3,10 +3,9 @@ import logging
 import re
 import voluptuous as vol
 
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import generate_entity_id
 
-from homeassistant.core import callback
 from homeassistant.util.dt import (utcnow, now)
 from homeassistant.helpers.update_coordinator import (
   CoordinatorEntity
@@ -24,6 +23,7 @@ from ..const import (
   CONFIG_TARGET_END_TIME,
   CONFIG_TARGET_MPAN,
   CONFIG_TARGET_ROLLING_TARGET,
+  CONFIG_TARGET_LAST_RATES,
   
   REGEX_HOURS,
   REGEX_TIME,
@@ -46,15 +46,23 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity):
     # Pass coordinator to base class
     super().__init__(coordinator)
 
+    self._state = None
     self._config = config
     self._is_export = is_export
     self._attributes = self._config.copy()
     self._is_export = is_export
     self._attributes["is_target_export"] = is_export
+    
     is_rolling_target = True
     if CONFIG_TARGET_ROLLING_TARGET in self._config:
       is_rolling_target = self._config[CONFIG_TARGET_ROLLING_TARGET]
     self._attributes[CONFIG_TARGET_ROLLING_TARGET] = is_rolling_target
+
+    find_last_rates = False
+    if CONFIG_TARGET_LAST_RATES in self._config:
+      find_last_rates = self._config[CONFIG_TARGET_LAST_RATES]
+    self._attributes[CONFIG_TARGET_LAST_RATES] = find_last_rates
+
     self._target_rates = []
     
     self.entity_id = generate_entity_id("binary_sensor.{}", self.unique_id, hass=hass)
@@ -78,11 +86,10 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity):
   def extra_state_attributes(self):
     """Attributes of the sensor."""
     return self._attributes
-
-  @property
-  def is_on(self):
-    """The state of the sensor."""
-
+  
+  @callback
+  def _handle_coordinator_update(self) -> None:
+    """Handle updated data from the coordinator."""
     if CONFIG_TARGET_OFFSET in self._config:
       offset = self._config[CONFIG_TARGET_OFFSET]
     else:
@@ -128,7 +135,11 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity):
         # True by default for backwards compatibility
         is_rolling_target = True
         if CONFIG_TARGET_ROLLING_TARGET in self._config:
-          is_rolling_target = self._config[CONFIG_TARGET_ROLLING_TARGET]     
+          is_rolling_target = self._config[CONFIG_TARGET_ROLLING_TARGET]
+
+        find_last_rates = False
+        if CONFIG_TARGET_LAST_RATES in self._config:
+          find_last_rates = self._config[CONFIG_TARGET_LAST_RATES]     
 
         target_hours = float(self._config[CONFIG_TARGET_HOURS])
 
@@ -140,7 +151,8 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity):
             target_hours,
             all_rates,
             is_rolling_target,
-            self._is_export
+            self._is_export,
+            find_last_rates
           )
         elif (self._config[CONFIG_TARGET_TYPE] == "Intermittent"):
           self._target_rates = calculate_intermittent_times(
@@ -150,7 +162,8 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity):
             target_hours,
             all_rates,
             is_rolling_target,
-            self._is_export
+            self._is_export,
+            find_last_rates
           )
         else:
           _LOGGER.error(f"Unexpected target type: {self._config[CONFIG_TARGET_TYPE]}")
@@ -174,7 +187,14 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity):
     self._attributes["next_min_cost"] = f'{active_result["next_min_cost"]}p' if active_result["next_min_cost"] is not None else None
     self._attributes["next_max_cost"] = f'{active_result["next_max_cost"]}p' if active_result["next_max_cost"] is not None else None
 
-    return active_result["is_active"]
+    self._state = active_result["is_active"]
+
+    self.async_write_ha_state()
+
+  @property
+  def is_on(self):
+    """The state of the sensor."""
+    return self._state
 
   @callback
   def async_update_config(self, target_start_time=None, target_end_time=None, target_hours=None, target_offset=None):

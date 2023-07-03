@@ -37,6 +37,14 @@ class OctopusEnergyPreviousAccumulativeGasCost(CoordinatorEntity, OctopusEnergyG
     self._calorific_value = calorific_value
 
   @property
+  def entity_registry_enabled_default(self) -> bool:
+    """Return if the entity should be enabled when first added.
+
+    This only applies when fist added to the entity registry.
+    """
+    return self._is_smart_meter
+
+  @property
   def unique_id(self):
     """The id of the sensor."""
     return f"octopus_energy_gas_{self._serial_number}_{self._mprn}_previous_accumulative_cost"
@@ -72,10 +80,6 @@ class OctopusEnergyPreviousAccumulativeGasCost(CoordinatorEntity, OctopusEnergyG
     return self._attributes
 
   @property
-  def should_poll(self):
-    return True
-
-  @property
   def last_reset(self):
     """Return the time when the sensor was last reset, if any."""
     return self._last_reset
@@ -84,6 +88,10 @@ class OctopusEnergyPreviousAccumulativeGasCost(CoordinatorEntity, OctopusEnergyG
   def state(self):
     """Retrieve the previously calculated state"""
     return self._state
+  
+  @property
+  def should_poll(self):
+    return True
 
   async def async_update(self):
     consumption_data = self.coordinator.data["consumption"] if self.coordinator.data is not None and "consumption" in self.coordinator.data else None
