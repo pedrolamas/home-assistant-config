@@ -14,20 +14,6 @@
   name: Raspberry Pi 2 Model B
   host: !secret raspberry_pi_2_model_b_host
 
-- platform: hikvision
-  name: Living Room Camera
-  host: !secret living_room_camera_host
-  username: !secret living_room_camera_username
-  password: !secret living_room_camera_password
-  ssl: false
-
-- platform: hikvision
-  name: Lower Floor Camera
-  host: !secret lower_floor_camera_host
-  username: !secret lower_floor_camera_username
-  password: !secret lower_floor_camera_password
-  ssl: false
-
 - platform: template
   sensors:
     lg_smart_tv_is_watching_live_tv:
