@@ -6,7 +6,7 @@ smart_home:
     include_entities:
       - binary_sensor.back_door_contact
       - binary_sensor.front_door_contact
-      - light.kids_bedroom_switch
+      - light.kids_bedroom_ceiling_light
       - light.lamp_1
       - light.lamp_2
       - light.lamp_3
@@ -15,7 +15,7 @@ smart_home:
       - light.lamp_6
       - light.lamp_7
       - light.lamp_8
-      - light.master_bedroom_switch
+      - light.master_bedroom_ceiling_light
       - media_player.lg_smart_tv
       - sensor.kids_bedroom_climate_temperature
       - sensor.living_room_climate_temperature
