@@ -8,8 +8,9 @@ from homeassistant.helpers.update_coordinator import (
   CoordinatorEntity,
 )
 from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorStateClass
+  RestoreSensor,
+  SensorDeviceClass,
+  SensorStateClass
 )
 
 from .base import (OctopusEnergyGasSensor)
@@ -17,12 +18,12 @@ from ..utils.rate_information import get_next_rate_information
 
 _LOGGER = logging.getLogger(__name__)
 
-class OctopusEnergyGasNextRate(CoordinatorEntity, OctopusEnergyGasSensor):
+class OctopusEnergyGasNextRate(CoordinatorEntity, OctopusEnergyGasSensor, RestoreSensor):
   """Sensor for displaying the next rate."""
 
   def __init__(self, hass: HomeAssistant, coordinator, meter, point):
     """Init sensor."""
-    super().__init__(coordinator)
+    CoordinatorEntity.__init__(self, coordinator)
     OctopusEnergyGasSensor.__init__(self, hass, meter, point)
 
     self._state = None
@@ -77,19 +78,20 @@ class OctopusEnergyGasNextRate(CoordinatorEntity, OctopusEnergyGasSensor):
   def state(self):
     """Retrieve the next rate for the sensor."""
     current = now()
+    rates = self.coordinator.data.rates if self.coordinator is not None and self.coordinator.data is not None else None
     if (self._last_updated is None or self._last_updated < (current - timedelta(minutes=30)) or (current.minute % 30) == 0):
       _LOGGER.debug(f"Updating OctopusEnergyGasNextRate for '{self._mprn}/{self._serial_number}'")
 
-      rate_information = get_next_rate_information(self.coordinator.data[self._mprn] if self._mprn in self.coordinator.data else None, current)
+      rate_information = get_next_rate_information(rates, current)
 
       if rate_information is not None:
         self._attributes = {
           "mprn": self._mprn,
           "serial_number": self._serial_number,
           "is_smart_meter": self._is_smart_meter,
-          "applicable_rates": rate_information["applicable_rates"],
           "valid_from": rate_information["next_rate"]["valid_from"],
           "valid_to": rate_information["next_rate"]["valid_to"],
+          "applicable_rates": rate_information["applicable_rates"],
         }
 
         self._state = rate_information["next_rate"]["value_inc_vat"] / 100
@@ -98,10 +100,9 @@ class OctopusEnergyGasNextRate(CoordinatorEntity, OctopusEnergyGasSensor):
           "mprn": self._mprn,
           "serial_number": self._serial_number,
           "is_smart_meter": self._is_smart_meter,
-          "all_rates": [],
-          "applicable_rates": [],
           "valid_from": None,
           "valid_to": None,
+          "applicable_rates": [],
         }
 
         self._state = None

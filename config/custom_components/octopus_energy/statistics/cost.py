@@ -1,4 +1,5 @@
 import logging
+import datetime
 from . import (build_cost_statistics, async_get_last_sum)
 
 from homeassistant.core import HomeAssistant
@@ -11,7 +12,20 @@ from ..const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+def get_electricity_cost_statistic_unique_id(serial_number: str, mpan: str, is_export: bool):
+  return f"electricity_{serial_number}_{mpan}{'_export' if is_export == True else ''}_previous_accumulative_cost"
+
+def get_electricity_cost_statistic_name(serial_number: str, mpan: str, is_export: bool):
+  return f"Electricity {serial_number} {mpan}{' Export' if is_export == True else ''} Previous Accumulative Cost"
+
+def get_gas_cost_statistic_unique_id(serial_number: str, mpan: str):
+  return f"gas_{serial_number}_{mpan}_previous_accumulative_cost"
+
+def get_gas_cost_statistic_name(serial_number: str, mpan: str):
+  return f"Gas {serial_number} {mpan} Previous Accumulative Cost"
+
 async def async_import_external_statistics_from_cost(
+    current: datetime,
     hass: HomeAssistant,
     unique_id: str,
     name: str,
@@ -35,7 +49,7 @@ async def async_import_external_statistics_from_cost(
   off_peak_statistic_id = f'{statistic_id}_off_peak'
   off_peak_sum = await async_get_last_sum(hass, consumptions[0]["from"], off_peak_statistic_id)
 
-  statistics = build_cost_statistics(consumptions, rates, consumption_key, total_sum, peak_sum, off_peak_sum)
+  statistics = build_cost_statistics(current, consumptions, rates, consumption_key, total_sum, peak_sum, off_peak_sum)
 
   async_add_external_statistics(
     hass,

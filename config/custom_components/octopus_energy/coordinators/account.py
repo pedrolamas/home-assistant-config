@@ -12,6 +12,7 @@ from homeassistant.helpers.update_coordinator import (
 from homeassistant.helpers import issue_registry as ir
 
 from ..const import (
+  COORDINATOR_REFRESH_IN_SECONDS,
   DOMAIN,
 
   DATA_CLIENT,
@@ -24,10 +25,6 @@ from ..api_client import OctopusEnergyApiClient
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_account_info_coordinator(hass, account_id: str):
-  if DATA_ACCOUNT_COORDINATOR in hass.data[DOMAIN]:
-    _LOGGER.info("Account coordinator has already been configured, so skipping")
-    return
-  
   async def async_update_account_data():
     """Fetch data from API endpoint."""
     # Only get data every half hour or if we don't have any data
@@ -78,7 +75,8 @@ async def async_setup_account_info_coordinator(hass, account_id: str):
     update_method=async_update_account_data,
     # Because of how we're using the data, we'll update every minute, but we will only actually retrieve
     # data every 30 minutes
-    update_interval=timedelta(minutes=1),
+    update_interval=timedelta(seconds=COORDINATOR_REFRESH_IN_SECONDS),
+    always_update=True
   )
   
   await hass.data[DOMAIN][DATA_ACCOUNT_COORDINATOR].async_config_entry_first_refresh()

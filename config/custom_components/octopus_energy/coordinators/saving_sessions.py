@@ -7,6 +7,7 @@ from homeassistant.helpers.update_coordinator import (
 )
 
 from ..const import (
+  COORDINATOR_REFRESH_IN_SECONDS,
   DOMAIN,
   DATA_CLIENT,
   DATA_ACCOUNT_ID,
@@ -19,9 +20,6 @@ from ..api_client import OctopusEnergyApiClient
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_saving_sessions_coordinators(hass):
-  if DATA_SAVING_SESSIONS_COORDINATOR in hass.data[DOMAIN]:
-    return
-
   async def async_update_saving_sessions():
     """Fetch data from API endpoint."""
     # Only get data every half hour or if we don't have any data
@@ -44,7 +42,8 @@ async def async_setup_saving_sessions_coordinators(hass):
     update_method=async_update_saving_sessions,
     # Because of how we're using the data, we'll update every minute, but we will only actually retrieve
     # data every 30 minutes
-    update_interval=timedelta(minutes=1),
+    update_interval=timedelta(seconds=COORDINATOR_REFRESH_IN_SECONDS),
+    always_update=True
   )
   
   await hass.data[DOMAIN][DATA_SAVING_SESSIONS_COORDINATOR].async_config_entry_first_refresh()

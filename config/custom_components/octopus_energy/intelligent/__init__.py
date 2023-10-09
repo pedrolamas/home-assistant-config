@@ -5,9 +5,12 @@ from homeassistant.util.dt import (utcnow, parse_datetime)
 
 from homeassistant.helpers import storage
 
-from ..utils import get_tariff_parts
+from ..utils import get_active_tariff_code, get_tariff_parts
 
 from ..const import DOMAIN
+
+from ..api_client.intelligent_settings import IntelligentSettings
+from ..api_client.intelligent_dispatches import IntelligentDispatchItem, IntelligentDispatches
 
 mock_intelligent_data_key = "MOCK_INTELLIGENT_DATA"
 
@@ -23,36 +26,60 @@ async def async_mock_intelligent_data(hass):
 
   return hass.data[DOMAIN][mock_intelligent_data_key]
 
-def mock_intelligent_dispatches():
-  return {
-    "planned": [
-      {
-        "start": utcnow().replace(hour=19, minute=0, second=0, microsecond=0),
-        "end": utcnow().replace(hour=20, minute=0, second=0, microsecond=0),
-        "source": "smart-charge"
-      }
-    ],
-    "completed": [
-      {
-        "start": utcnow().replace(hour=6, minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "end": utcnow().replace(hour=7, minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "source": None
-      },
-      {
-        "start": utcnow().replace(hour=7, minute=0, second=0, microsecond=0),
-        "end": utcnow().replace(hour=8, minute=0, second=0, microsecond=0),
-        "source": None
-      }
-    ]
-  }
+def mock_intelligent_dispatches() -> IntelligentDispatches:
+  planned: list[IntelligentDispatchItem] = []
+  completed: list[IntelligentDispatchItem] = []
+
+  dispatches = [
+    IntelligentDispatchItem(
+      utcnow().replace(hour=19, minute=0, second=0, microsecond=0),
+      utcnow().replace(hour=20, minute=0, second=0, microsecond=0),
+      1,
+      "smart-charge",
+      "home"
+    ),
+    IntelligentDispatchItem(
+      utcnow().replace(hour=6, minute=0, second=0, microsecond=0),
+      utcnow().replace(hour=7, minute=0, second=0, microsecond=0),
+      1.2,
+      "smart-charge",
+      "home"
+    ),
+    IntelligentDispatchItem(
+      utcnow().replace(hour=7, minute=0, second=0, microsecond=0),
+      utcnow().replace(hour=8, minute=0, second=0, microsecond=0),
+      4.6,
+      "smart-charge",
+      "home"
+    )
+  ]
+
+  for dispatch in dispatches:
+    if (dispatch.end > utcnow()):
+      planned.append(dispatch)
+    else:
+      completed.append(dispatch)
+
+  return IntelligentDispatches(planned, completed)
 
 def mock_intelligent_settings():
+  return IntelligentSettings(
+    True,
+    90,
+    80,
+    time(7,30),
+    time(9,10),
+  )
+
+def mock_intelligent_device():
   return {
-    "smart_charge": True,
-    "charge_limit_weekday": 90,
-    "charge_limit_weekend": 80,
-    "ready_time_weekday": time(7,30),
-    "ready_time_weekend": time(9,10), 
+    "krakenflexDeviceId": "1",
+		"vehicleMake": "Tesla",
+		"vehicleModel": "Model Y",
+    "vehicleBatterySizeInKwh": 75.0,
+		"chargePointMake": "MyEnergi",
+		"chargePointModel": "Zappi",
+    "chargePointPowerInKw": 6.5 
   }
 
 def is_intelligent_tariff(tariff_code: str):
@@ -60,14 +87,23 @@ def is_intelligent_tariff(tariff_code: str):
 
   return parts is not None and "INTELLI" in parts.product_code
 
-def __get_dispatch(rate, dispatches, expected_source: str):
+def has_intelligent_tariff(current: datetime, account_info):
+  if account_info is not None and len(account_info["electricity_meter_points"]) > 0:
+    for point in account_info["electricity_meter_points"]:
+      tariff_code = get_active_tariff_code(current, point["agreements"])
+      if tariff_code is not None and is_intelligent_tariff(tariff_code):
+        return True
+
+  return False
+
+def __get_dispatch(rate, dispatches: list[IntelligentDispatchItem], expected_source: str):
   for dispatch in dispatches:
-    if (expected_source is None or dispatch["source"] == expected_source) and dispatch["start"] <= rate["valid_from"] and dispatch["end"] >= rate["valid_to"]:
+    if (expected_source is None or dispatch.source == expected_source) and dispatch.start <= rate["valid_from"] and dispatch.end >= rate["valid_to"]:
       return dispatch
     
   return None
 
-def adjust_intelligent_rates(rates, planned_dispatches, completed_dispatches):
+def adjust_intelligent_rates(rates, planned_dispatches: list[IntelligentDispatchItem], completed_dispatches: list[IntelligentDispatchItem]):
   off_peak_rate = min(rates, key = lambda x: x["value_inc_vat"])
   adjusted_rates = []
 
@@ -89,31 +125,56 @@ def adjust_intelligent_rates(rates, planned_dispatches, completed_dispatches):
     
   return adjusted_rates
 
-def is_in_planned_dispatch(current_date: datetime, dispatches) -> bool:
-  for event in dispatches:
-    if (event["start"] <= current_date and event["end"] >= current_date):
+def is_in_planned_dispatch(current_date: datetime, dispatches: list[IntelligentDispatchItem]) -> bool:
+  for dispatch in dispatches:
+    if (dispatch.start <= current_date and dispatch.end >= current_date):
       return True
   
   return False
 
-def is_in_bump_charge(current_date: datetime, dispatches) -> bool:
-  for event in dispatches:
-    if (event["source"] == "bump-charge" and event["start"] <= current_date and event["end"] >= current_date):
+def is_in_bump_charge(current_date: datetime, dispatches: list[IntelligentDispatchItem]) -> bool:
+  for dispatch in dispatches:
+    if (dispatch.source == "bump-charge" and dispatch.start <= current_date and dispatch.end >= current_date):
       return True
   
   return False
 
-def clean_previous_dispatches(time: datetime, dispatches):
+def clean_previous_dispatches(time: datetime, dispatches: list[IntelligentDispatchItem]) -> list[IntelligentDispatchItem]:
   min_time = (time - timedelta(days=2)).replace(hour=0, minute=0, second=0, microsecond=0)
 
   new_dispatches = {}
   for dispatch in dispatches:
-    # Some of our dispatches will be strings when loaded from cache, so convert
-    start = parse_datetime(dispatch["start"]) if type(dispatch["start"]) == str else dispatch["start"]
-    end = parse_datetime(dispatch["end"]) if type(dispatch["end"]) == str else dispatch["end"]
-    if (start >= min_time):
-      new_dispatches[(start, end)] = dispatch
-      new_dispatches[(start, end)]["start"] = start
-      new_dispatches[(start, end)]["end"] = end
+    if (dispatch.start >= min_time):
+      new_dispatches[(dispatch.start, dispatch.end)] = dispatch
 
   return list(new_dispatches.values())
+
+def dictionary_list_to_dispatches(dispatches: list):
+  items = []
+  if (dispatches is not None):
+    for dispatch in dispatches:
+      items.append(
+        IntelligentDispatchItem(
+          parse_datetime(dispatch["start"]),
+          parse_datetime(dispatch["end"]),
+          int(dispatch["charge_in_kwh"]),
+          dispatch["source"] if "source" in dispatch else "",
+          dispatch["location"] if "location" in dispatch else ""
+        )
+      )
+
+  return items
+
+def dispatches_to_dictionary_list(dispatches: list[IntelligentDispatchItem]):
+  items = []
+  if (dispatches is not None):
+    for dispatch in dispatches:
+      items.append({
+        "start": dispatch.start,
+        "end": dispatch.end,
+        "charge_in_kwh": dispatch.charge_in_kwh,
+        "source": dispatch.source,
+        "location": dispatch.location
+      })
+
+  return items

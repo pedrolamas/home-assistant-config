@@ -1,16 +1,14 @@
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta
 
-from ..coordinators import get_current_electricity_agreement_tariff_codes
-from ..intelligent import async_mock_intelligent_data, clean_previous_dispatches, is_intelligent_tariff, mock_intelligent_dispatches
-
-from homeassistant.util.dt import (utcnow)
+from homeassistant.util.dt import (utcnow, parse_datetime)
 from homeassistant.helpers.update_coordinator import (
   DataUpdateCoordinator
 )
 from homeassistant.helpers import storage
 
 from ..const import (
+  COORDINATOR_REFRESH_IN_SECONDS,
   DOMAIN,
 
   DATA_CLIENT,
@@ -23,27 +21,35 @@ from ..const import (
 )
 
 from ..api_client import OctopusEnergyApiClient
+from ..api_client.intelligent_dispatches import IntelligentDispatchItem, IntelligentDispatches
+
+from ..intelligent import async_mock_intelligent_data, clean_previous_dispatches, dictionary_list_to_dispatches, dispatches_to_dictionary_list, has_intelligent_tariff, mock_intelligent_dispatches
 
 _LOGGER = logging.getLogger(__name__)
+
+class IntelligentDispatchesCoordinatorResult:
+  last_retrieved: datetime
+  dispatches: IntelligentDispatches
+
+  def __init__(self, last_retrieved: datetime, dispatches: IntelligentDispatches):
+    self.last_retrieved = last_retrieved
+    self.dispatches = dispatches
 
 async def async_merge_dispatch_data(hass, account_id: str, completed_dispatches):
   storage_key = STORAGE_COMPLETED_DISPATCHES_NAME.format(account_id)
   store = storage.Store(hass, "1", storage_key)
 
-  saved_completed_dispatches = await store.async_load()
+  saved_dispatches = await store.async_load()
+  saved_completed_dispatches = dictionary_list_to_dispatches(saved_dispatches)
 
   new_data = clean_previous_dispatches(utcnow(), (saved_completed_dispatches if saved_completed_dispatches is not None else []) + completed_dispatches)
 
-  await store.async_save(new_data)
+  await store.async_save(dispatches_to_dictionary_list(new_data))
   return new_data
 
 async def async_setup_intelligent_dispatches_coordinator(hass, account_id: str):
   # Reset data rates as we might have new information
   hass.data[DOMAIN][DATA_INTELLIGENT_DISPATCHES] = None
-
-  if DATA_INTELLIGENT_DISPATCHES_COORDINATOR in hass.data[DOMAIN]:
-    _LOGGER.info("Intelligent coordinator has already been configured, so skipping")
-    return
   
   async def async_update_intelligent_dispatches_data():
     """Fetch data from API endpoint."""
@@ -57,25 +63,20 @@ async def async_setup_intelligent_dispatches_coordinator(hass, account_id: str):
     client: OctopusEnergyApiClient = hass.data[DOMAIN][DATA_CLIENT]
     if (DATA_ACCOUNT in hass.data[DOMAIN]):
 
-      tariff_codes = get_current_electricity_agreement_tariff_codes(current, hass.data[DOMAIN][DATA_ACCOUNT])
-
       dispatches = None
-      for ((meter_point), tariff_code) in tariff_codes.items():
-        if is_intelligent_tariff(tariff_code):
-          try:
-            dispatches = await client.async_get_intelligent_dispatches(account_id)
-            _LOGGER.debug(f'Intelligent dispatches retrieved for {tariff_code}')
-          except:
-            _LOGGER.debug('Failed to retrieve intelligent dispatches')
-          break
+      if has_intelligent_tariff(current, hass.data[DOMAIN][DATA_ACCOUNT]):
+        try:
+          dispatches = await client.async_get_intelligent_dispatches(account_id)
+          _LOGGER.debug(f'Intelligent dispatches retrieved for account {account_id}')
+        except:
+          _LOGGER.debug('Failed to retrieve intelligent dispatches for account {account_id}')
 
       if await async_mock_intelligent_data(hass):
         dispatches = mock_intelligent_dispatches()
 
       if dispatches is not None:
-        dispatches["completed"] = await async_merge_dispatch_data(hass, account_id, dispatches["completed"])
-        hass.data[DOMAIN][DATA_INTELLIGENT_DISPATCHES] = dispatches
-        hass.data[DOMAIN][DATA_INTELLIGENT_DISPATCHES]["last_updated"] = utcnow()
+        dispatches.completed = await async_merge_dispatch_data(hass, account_id, dispatches.completed)
+        hass.data[DOMAIN][DATA_INTELLIGENT_DISPATCHES] = IntelligentDispatchesCoordinatorResult(utcnow(), dispatches)
       elif (DATA_INTELLIGENT_DISPATCHES in hass.data[DOMAIN]):
         _LOGGER.debug(f"Failed to retrieve new dispatches, so using cached dispatches")
     
@@ -88,7 +89,8 @@ async def async_setup_intelligent_dispatches_coordinator(hass, account_id: str):
     update_method=async_update_intelligent_dispatches_data,
     # Because of how we're using the data, we'll update every minute, but we will only actually retrieve
     # data every 30 minutes
-    update_interval=timedelta(minutes=1),
+    update_interval=timedelta(seconds=COORDINATOR_REFRESH_IN_SECONDS),
+    always_update=True
   )
 
   await hass.data[DOMAIN][DATA_INTELLIGENT_DISPATCHES_COORDINATOR].async_config_entry_first_refresh()

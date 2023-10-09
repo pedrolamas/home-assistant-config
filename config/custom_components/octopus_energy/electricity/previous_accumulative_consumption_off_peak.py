@@ -7,27 +7,30 @@ from homeassistant.helpers.update_coordinator import (
   CoordinatorEntity,
 )
 from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorStateClass
+  RestoreSensor,
+  SensorDeviceClass,
+  SensorStateClass,
 )
 from homeassistant.const import (
     ENERGY_KILO_WATT_HOUR
 )
 
+from homeassistant.util.dt import (now)
+
 from . import (
-  async_calculate_electricity_consumption_and_cost,
+  calculate_electricity_consumption_and_cost,
 )
 
 from .base import (OctopusEnergyElectricitySensor)
 
 _LOGGER = logging.getLogger(__name__)
 
-class OctopusEnergyPreviousAccumulativeElectricityConsumptionOffPeak(CoordinatorEntity, OctopusEnergyElectricitySensor):
+class OctopusEnergyPreviousAccumulativeElectricityConsumptionOffPeak(CoordinatorEntity, OctopusEnergyElectricitySensor, RestoreSensor):
   """Sensor for displaying the previous days accumulative electricity reading during off peak hours."""
 
   def __init__(self, hass: HomeAssistant, coordinator, tariff_code, meter, point):
     """Init sensor."""
-    super().__init__(coordinator)
+    CoordinatorEntity.__init__(self, coordinator)
     OctopusEnergyElectricitySensor.__init__(self, hass, meter, point)
 
     self._state = None
@@ -86,18 +89,13 @@ class OctopusEnergyPreviousAccumulativeElectricityConsumptionOffPeak(Coordinator
   @property
   def state(self):
     """Retrieve the previous days accumulative consumption"""
-    return self._state
-  
-  @property
-  def should_poll(self) -> bool:
-    return True
-    
-  async def async_update(self):
-    consumption_data = self.coordinator.data["consumption"] if self.coordinator.data is not None and "consumption" in self.coordinator.data else None
-    rate_data = self.coordinator.data["rates"] if self.coordinator.data is not None and "rates" in self.coordinator.data else None
-    standing_charge = self.coordinator.data["standing_charge"] if self.coordinator.data is not None and "standing_charge" in self.coordinator.data else None
+    consumption_data = self.coordinator.data["consumption"] if self.coordinator is not None and self.coordinator.data is not None and "consumption" in self.coordinator.data else None
+    rate_data = self.coordinator.data["rates"] if self.coordinator is not None and self.coordinator.data is not None and "rates" in self.coordinator.data else None
+    standing_charge = self.coordinator.data["standing_charge"] if self.coordinator is not None and self.coordinator.data is not None and "standing_charge" in self.coordinator.data else None
+    current = consumption_data[0]["interval_start"] if consumption_data is not None and len(consumption_data) > 0 else None
 
-    consumption_and_cost = await async_calculate_electricity_consumption_and_cost(
+    consumption_and_cost = calculate_electricity_consumption_and_cost(
+      current,
       consumption_data,
       rate_data,
       standing_charge,
@@ -112,6 +110,8 @@ class OctopusEnergyPreviousAccumulativeElectricityConsumptionOffPeak(Coordinator
       self._last_reset = consumption_and_cost["last_reset"]
 
       self._attributes["last_calculated_timestamp"] = consumption_and_cost["last_calculated_timestamp"]
+
+    return self._state
 
   async def async_added_to_hass(self):
     """Call when entity about to be added to hass."""

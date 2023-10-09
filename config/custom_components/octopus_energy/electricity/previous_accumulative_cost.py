@@ -7,25 +7,29 @@ from homeassistant.helpers.update_coordinator import (
   CoordinatorEntity,
 )
 from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorStateClass
+  RestoreSensor,
+  SensorDeviceClass,
+  SensorStateClass,
 )
+
+from homeassistant.util.dt import (now)
+
 from . import (
-  async_calculate_electricity_consumption_and_cost,
+  calculate_electricity_consumption_and_cost,
 )
 
 from .base import (OctopusEnergyElectricitySensor)
 
-from ..statistics.cost import async_import_external_statistics_from_cost
+from ..statistics.cost import async_import_external_statistics_from_cost, get_electricity_cost_statistic_unique_id
 
 _LOGGER = logging.getLogger(__name__)
 
-class OctopusEnergyPreviousAccumulativeElectricityCost(CoordinatorEntity, OctopusEnergyElectricitySensor):
+class OctopusEnergyPreviousAccumulativeElectricityCost(CoordinatorEntity, OctopusEnergyElectricitySensor, RestoreSensor):
   """Sensor for displaying the previous days accumulative electricity cost."""
 
   def __init__(self, hass: HomeAssistant, coordinator, tariff_code, meter, point):
     """Init sensor."""
-    super().__init__(coordinator)
+    CoordinatorEntity.__init__(self, coordinator)
     OctopusEnergyElectricitySensor.__init__(self, hass, meter, point)
 
     self._hass = hass
@@ -92,11 +96,18 @@ class OctopusEnergyPreviousAccumulativeElectricityCost(CoordinatorEntity, Octopu
     return True
 
   async def async_update(self):
-    consumption_data = self.coordinator.data["consumption"] if self.coordinator.data is not None and "consumption" in self.coordinator.data else None
-    rate_data = self.coordinator.data["rates"] if self.coordinator.data is not None and "rates" in self.coordinator.data else None
-    standing_charge = self.coordinator.data["standing_charge"] if self.coordinator.data is not None and "standing_charge" in self.coordinator.data else None
+    await super().async_update()
 
-    consumption_and_cost = await async_calculate_electricity_consumption_and_cost(
+    if not self.enabled:
+      return
+    
+    consumption_data = self.coordinator.data["consumption"] if self.coordinator is not None and self.coordinator.data is not None and "consumption" in self.coordinator.data else None
+    rate_data = self.coordinator.data["rates"] if self.coordinator is not None and self.coordinator.data is not None and "rates" in self.coordinator.data else None
+    standing_charge = self.coordinator.data["standing_charge"] if self.coordinator is not None and self.coordinator.data is not None and "standing_charge" in self.coordinator.data else None
+    current = consumption_data[0]["interval_start"] if consumption_data is not None and len(consumption_data) > 0 else None
+
+    consumption_and_cost = calculate_electricity_consumption_and_cost(
+      current,
       consumption_data,
       rate_data,
       standing_charge,
@@ -107,8 +118,9 @@ class OctopusEnergyPreviousAccumulativeElectricityCost(CoordinatorEntity, Octopu
     if (consumption_and_cost is not None):
       _LOGGER.debug(f"Calculated previous electricity consumption cost for '{self._mpan}/{self._serial_number}'...")
       await async_import_external_statistics_from_cost(
+        current,
         self._hass,
-        f"electricity_{self._serial_number}_{self._mpan}_previous_accumulative_cost",
+        get_electricity_cost_statistic_unique_id(self._serial_number, self._mpan, self._is_export),
         self.name,
         consumption_and_cost["charges"],
         rate_data,

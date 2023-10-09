@@ -1,3 +1,5 @@
+import datetime
+
 from ..utils import get_off_peak_cost
 
 def __get_interval_end(item):
@@ -8,16 +10,16 @@ def __sort_consumption(consumption_data):
   sorted.sort(key=__get_interval_end)
   return sorted
 
-minimum_consumption_records = 2
-
-async def async_calculate_electricity_consumption_and_cost(
+def calculate_electricity_consumption_and_cost(
+    current: datetime,
     consumption_data,
     rate_data,
     standing_charge,
     last_reset,
-    tariff_code
+    tariff_code,
+    minimum_consumption_records = 0
   ):
-  if (consumption_data is not None and len(consumption_data) > minimum_consumption_records and rate_data is not None and len(rate_data) > 0 and standing_charge is not None):
+  if (consumption_data is not None and len(consumption_data) >= minimum_consumption_records and rate_data is not None and len(rate_data) > 0 and standing_charge is not None):
 
     sorted_consumption_data = __sort_consumption(consumption_data)
 
@@ -28,7 +30,7 @@ async def async_calculate_electricity_consumption_and_cost(
       total_cost_in_pence = 0
       total_consumption = 0
 
-      off_peak_cost = get_off_peak_cost(rate_data)
+      off_peak_cost = get_off_peak_cost(current, rate_data)
       total_cost_off_peak = 0
       total_cost_peak = 0
       total_consumption_off_peak = 0

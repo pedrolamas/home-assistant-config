@@ -11,6 +11,7 @@ from homeassistant.util.dt import (utcnow)
 
 from .base import OctopusEnergyIntelligentSensor
 from ..api_client import OctopusEnergyApiClient
+from ..coordinators.intelligent_settings import IntelligentCoordinatorResult
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class OctopusEnergyIntelligentSmartCharge(CoordinatorEntity, SwitchEntity, Octop
   def __init__(self, hass: HomeAssistant, coordinator, client: OctopusEnergyApiClient, device, account_id: str):
     """Init sensor."""
     # Pass coordinator to base class
-    super().__init__(coordinator)
+    CoordinatorEntity.__init__(self, coordinator)
     OctopusEnergyIntelligentSensor.__init__(self, device)
 
     self._state = False
@@ -53,10 +54,12 @@ class OctopusEnergyIntelligentSmartCharge(CoordinatorEntity, SwitchEntity, Octop
   @property
   def is_on(self):
     """Determines if smart charge is currently on."""
-    if (self.coordinator.data is None) or (self._last_updated is not None and "last_updated" in self.coordinator.data and self._last_updated > self.coordinator.data["last_updated"]):
+    settings_result: IntelligentCoordinatorResult = self.coordinator.data if self.coordinator is not None and self.coordinator.data is not None else None
+    if settings_result is None or (self._last_updated is not None and self._last_updated > settings_result.last_retrieved):
+      self._attributes["last_updated_timestamp"] = self._last_updated
       return self._state
 
-    self._state = self.coordinator.data["smart_charge"]
+    self._state = settings_result.settings.smart_charge
     
     return self._state
 

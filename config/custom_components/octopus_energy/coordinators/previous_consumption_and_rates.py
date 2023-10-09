@@ -1,5 +1,7 @@
 from datetime import timedelta
 import logging
+from typing import Callable, Any
+import asyncio
 
 from homeassistant.util.dt import (utcnow, now, as_utc)
 from homeassistant.helpers.update_coordinator import (
@@ -7,13 +9,19 @@ from homeassistant.helpers.update_coordinator import (
 )
 
 from ..const import (
+  COORDINATOR_REFRESH_IN_SECONDS,
   DOMAIN,
-  DATA_INTELLIGENT_DISPATCHES
+  DATA_INTELLIGENT_DISPATCHES,
+  EVENT_ELECTRICITY_PREVIOUS_CONSUMPTION_RATES,
+  EVENT_GAS_PREVIOUS_CONSUMPTION_RATES,
+  MINIMUM_CONSUMPTION_DATA_LENGTH
 )
 
 from ..api_client import (OctopusEnergyApiClient)
+from ..api_client.intelligent_dispatches import IntelligentDispatches
 
 from ..intelligent import adjust_intelligent_rates
+from ..coordinators.intelligent_dispatches import IntelligentDispatchesCoordinatorResult
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -36,7 +44,8 @@ async def async_fetch_consumption_and_rates(
   is_electricity: bool,
   tariff_code: str,
   is_smart_meter: bool,
-  intelligent_dispatches = None
+  fire_event: Callable[[str, "dict[str, Any]"], None],
+  intelligent_dispatches: IntelligentDispatches = None
 
 ):
   """Fetch the previous consumption and rates"""
@@ -46,36 +55,48 @@ async def async_fetch_consumption_and_rates(
       previous_data["consumption"][-1]["interval_end"] < period_to) and 
       utc_now.minute % 30 == 0)):
     
+    _LOGGER.debug(f"Retrieving previous consumption data for {'electricity' if is_electricity else 'gas'} {identifier}/{serial_number}...")
+    
     try:
       if (is_electricity == True):
-        consumption_data = await client.async_get_electricity_consumption(identifier, serial_number, period_from, period_to)
-        rate_data = await client.async_get_electricity_rates(tariff_code, is_smart_meter, period_from, period_to)
-        if intelligent_dispatches is not None:
-          rate_data = adjust_intelligent_rates(rate_data,
-                                                intelligent_dispatches["planned"] if "planned" in intelligent_dispatches else [],
-                                                intelligent_dispatches["completed"] if "completed" in intelligent_dispatches else [])
-          
-          _LOGGER.debug(f"Tariff: {tariff_code}; dispatches: {intelligent_dispatches}")
-        standing_charge = await client.async_get_electricity_standing_charge(tariff_code, period_from, period_to)
-        
-        _LOGGER.debug(f'Previous Electricity consumption, rates and standing charges retrieved for {tariff_code}')
-      else:
-        consumption_data = await client.async_get_gas_consumption(identifier, serial_number, period_from, period_to)
-        rate_data = await client.async_get_gas_rates(tariff_code, period_from, period_to)
-        standing_charge = await client.async_get_gas_standing_charge(tariff_code, period_from, period_to)
+        [consumption_data, rate_data, standing_charge] = await asyncio.gather(
+          client.async_get_electricity_consumption(identifier, serial_number, period_from, period_to),
+          client.async_get_electricity_rates(tariff_code, is_smart_meter, period_from, period_to),
+          client.async_get_electricity_standing_charge(tariff_code, period_from, period_to)
+        )
 
-        _LOGGER.debug(f'Previous Gas consumption, rates and standing charges retrieved for {tariff_code}')
+        if intelligent_dispatches is not None:
+          _LOGGER.debug(f"Adjusting rate data based on intelligent tariff; dispatches: {intelligent_dispatches}")
+          rate_data = adjust_intelligent_rates(rate_data,
+                                                intelligent_dispatches.planned,
+                                                intelligent_dispatches.completed)
+      else:
+        [consumption_data, rate_data, standing_charge] = await asyncio.gather(
+          client.async_get_gas_consumption(identifier, serial_number, period_from, period_to),
+          client.async_get_gas_rates(tariff_code, period_from, period_to),
+          client.async_get_gas_standing_charge(tariff_code, period_from, period_to)
+        )
       
-      if consumption_data is not None and len(consumption_data) > 0 and rate_data is not None and len(rate_data) > 0 and standing_charge is not None:
+      if consumption_data is not None and len(consumption_data) >= MINIMUM_CONSUMPTION_DATA_LENGTH and rate_data is not None and len(rate_data) > 0 and standing_charge is not None:
+        _LOGGER.debug(f"Discovered previous consumption data for {'electricity' if is_electricity else 'gas'} {identifier}/{serial_number}")
         consumption_data = __sort_consumption(consumption_data)
+
+        if (is_electricity == True):
+          fire_event(EVENT_ELECTRICITY_PREVIOUS_CONSUMPTION_RATES, { "mpan": identifier, "serial_number": serial_number, "tariff_code": tariff_code, "rates": rate_data })
+        else:
+          fire_event(EVENT_GAS_PREVIOUS_CONSUMPTION_RATES, { "mprn": identifier, "serial_number": serial_number, "tariff_code": tariff_code, "rates": rate_data })
+
+        _LOGGER.debug(f"Fired event for {'electricity' if is_electricity else 'gas'} {identifier}/{serial_number}")
 
         return {
           "consumption": consumption_data,
           "rates": rate_data,
           "standing_charge": standing_charge["value_inc_vat"]
         }
+      else:
+        _LOGGER.debug(f"Failed to retrieve previous consumption data for {'electricity' if is_electricity else 'gas'} {identifier}/{serial_number}; consumptions: {len(consumption_data)}; rates: {len(rate_data)}; standing_charge: {standing_charge is not None};")
     except:
-      _LOGGER.debug(f"Failed to retrieve {'electricity' if is_electricity else 'gas'} previous consumption and rate data")
+      _LOGGER.debug(f"Failed to retrieve previous consumption data for {'electricity' if is_electricity else 'gas'} {identifier}/{serial_number}")
 
   return previous_data 
 
@@ -86,15 +107,17 @@ async def async_create_previous_consumption_and_rates_coordinator(
     serial_number: str,
     is_electricity: bool,
     tariff_code: str,
-    is_smart_meter: bool):
+    is_smart_meter: bool,
+    days_offset: int):
   """Create reading coordinator"""
+  previous_consumption_key = f'{identifier}_{serial_number}_previous_consumption_and_rates'
 
   async def async_update_data():
     """Fetch data from API endpoint."""
-
-    previous_consumption_key = f'{identifier}_{serial_number}_previous_consumption_and_rates'
-    period_from = as_utc((now() - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0))
-    period_to = as_utc(now().replace(hour=0, minute=0, second=0, microsecond=0))
+    period_from = as_utc((now() - timedelta(days=days_offset)).replace(hour=0, minute=0, second=0, microsecond=0))
+    period_to = period_from + timedelta(days=1)
+    dispatches: IntelligentDispatchesCoordinatorResult = hass.data[DOMAIN][DATA_INTELLIGENT_DISPATCHES] if DATA_INTELLIGENT_DISPATCHES in hass.data[DOMAIN] else None
+    
     result = await async_fetch_consumption_and_rates(
       hass.data[DOMAIN][previous_consumption_key] 
       if previous_consumption_key in hass.data[DOMAIN] and 
@@ -111,7 +134,8 @@ async def async_create_previous_consumption_and_rates_coordinator(
       is_electricity,
       tariff_code,
       is_smart_meter,
-      hass.data[DOMAIN][DATA_INTELLIGENT_DISPATCHES] if DATA_INTELLIGENT_DISPATCHES in hass.data[DOMAIN] else None
+      hass.bus.async_fire,
+      dispatches.dispatches if dispatches is not None else None
     )
 
     if (result is not None):
@@ -125,11 +149,12 @@ async def async_create_previous_consumption_and_rates_coordinator(
   coordinator = DataUpdateCoordinator(
     hass,
     _LOGGER,
-    name=f"rates_{identifier}_{serial_number}",
+    name=previous_consumption_key,
     update_method=async_update_data,
     # Because of how we're using the data, we'll update every minute, but we will only actually retrieve
     # data every 30 minutes
-    update_interval=timedelta(minutes=1),
+    update_interval=timedelta(seconds=COORDINATOR_REFRESH_IN_SECONDS),
+    always_update=True
   )
 
   hass.data[DOMAIN][f'{identifier}_{serial_number}_previous_consumption_and_cost_coordinator'] = coordinator

@@ -8,8 +8,9 @@ from homeassistant.helpers.update_coordinator import (
   CoordinatorEntity
 )
 from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorStateClass
+  RestoreSensor,
+  SensorDeviceClass,
+  SensorStateClass,
 )
 
 from .base import (OctopusEnergyElectricitySensor)
@@ -17,13 +18,13 @@ from ..utils.rate_information import (get_previous_rate_information)
 
 _LOGGER = logging.getLogger(__name__)
 
-class OctopusEnergyElectricityPreviousRate(CoordinatorEntity, OctopusEnergyElectricitySensor):
+class OctopusEnergyElectricityPreviousRate(CoordinatorEntity, OctopusEnergyElectricitySensor, RestoreSensor):
   """Sensor for displaying the previous rate."""
 
   def __init__(self, hass: HomeAssistant, coordinator, meter, point):
     """Init sensor."""
     # Pass coordinator to base class
-    super().__init__(coordinator)
+    CoordinatorEntity.__init__(self, coordinator)
     OctopusEnergyElectricitySensor.__init__(self, hass, meter, point)
 
     self._state = None
@@ -79,11 +80,12 @@ class OctopusEnergyElectricityPreviousRate(CoordinatorEntity, OctopusEnergyElect
     """Retrieve the previous rate."""
     # Find the previous rate. We only need to do this every half an hour
     current = now()
+    rates = self.coordinator.data.rates if self.coordinator is not None and self.coordinator.data is not None else None
     if (self._last_updated is None or self._last_updated < (current - timedelta(minutes=30)) or (current.minute % 30) == 0):
       _LOGGER.debug(f"Updating OctopusEnergyElectricityPreviousRate for '{self._mpan}/{self._serial_number}'")
 
       target = current
-      rate_information = get_previous_rate_information(self.coordinator.data[self._mpan] if self._mpan in self.coordinator.data else None, target)
+      rate_information = get_previous_rate_information(rates, target)
 
       if rate_information is not None:
         self._attributes = {
@@ -91,10 +93,9 @@ class OctopusEnergyElectricityPreviousRate(CoordinatorEntity, OctopusEnergyElect
           "serial_number": self._serial_number,
           "is_export": self._is_export,
           "is_smart_meter": self._is_smart_meter,
-          "applicable_rates": rate_information["applicable_rates"],
-          "previous_rate": rate_information["previous_rate"],
           "valid_from": rate_information["previous_rate"]["valid_from"],
           "valid_to": rate_information["previous_rate"]["valid_to"],
+          "applicable_rates": rate_information["applicable_rates"],
         }
 
         self._state = rate_information["previous_rate"]["value_inc_vat"] / 100
@@ -104,9 +105,9 @@ class OctopusEnergyElectricityPreviousRate(CoordinatorEntity, OctopusEnergyElect
           "serial_number": self._serial_number,
           "is_export": self._is_export,
           "is_smart_meter": self._is_smart_meter,
-          "applicable_rates": [],
           "valid_from": None,
           "valid_to": None,
+          "applicable_rates": [],
         }
 
         self._state = None

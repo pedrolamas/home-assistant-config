@@ -25,7 +25,7 @@ class OctopusEnergySavingSessions(CoordinatorEntity, BinarySensorEntity, Restore
   def __init__(self, hass: HomeAssistant, coordinator):
     """Init sensor."""
 
-    super().__init__(coordinator)
+    CoordinatorEntity.__init__(self, coordinator)
   
     self._state = None
     self._events = []
@@ -59,7 +59,7 @@ class OctopusEnergySavingSessions(CoordinatorEntity, BinarySensorEntity, Restore
   @property
   def is_on(self):
     """Determine if the user is in a saving session."""
-    saving_session = self.coordinator.data
+    saving_session = self.coordinator.data if self.coordinator is not None else None
     if (saving_session is not None and "events" in saving_session):
       self._events = saving_session["events"]
     else:

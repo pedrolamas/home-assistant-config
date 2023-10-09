@@ -13,27 +13,36 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.helpers.restore_state import RestoreEntity
 
 from ..intelligent import (
+  dispatches_to_dictionary_list,
   is_in_planned_dispatch
 )
 
+
+from ..utils import is_off_peak
+
 from .base import OctopusEnergyIntelligentSensor
+from ..coordinators.intelligent_dispatches import IntelligentDispatchesCoordinatorResult
 
 _LOGGER = logging.getLogger(__name__)
 
 class OctopusEnergyIntelligentDispatching(CoordinatorEntity, BinarySensorEntity, OctopusEnergyIntelligentSensor, RestoreEntity):
   """Sensor for determining if an intelligent is dispatching."""
 
-  def __init__(self, hass: HomeAssistant, coordinator, device):
+  def __init__(self, hass: HomeAssistant, coordinator, rates_coordinator, mpan, device):
     """Init sensor."""
 
-    super().__init__(coordinator)
+    CoordinatorEntity.__init__(self, coordinator)
     OctopusEnergyIntelligentSensor.__init__(self, device)
   
+    self._rates_coordinator = rates_coordinator
+    self._mpan = mpan
     self._state = None
     self._attributes = {
       "planned_dispatches": [],
       "completed_dispatches": [],
-      "last_retrieved": None
+      "last_updated_timestamp": None,
+      "vehicle_battery_size_in_kwh": device["vehicleBatterySizeInKwh"],
+      "charge_point_power_in_kw": device["chargePointPowerInKw"]
     }
 
     self.entity_id = generate_entity_id("binary_sensor.{}", self.unique_id, hass=hass)
@@ -61,19 +70,18 @@ class OctopusEnergyIntelligentDispatching(CoordinatorEntity, BinarySensorEntity,
   @property
   def is_on(self):
     """Determine if OE is currently dispatching energy."""
-    dispatches = self.coordinator.data
-    if (dispatches is not None):
-      self._attributes["planned_dispatches"] = self.coordinator.data["planned"]
-      self._attributes["completed_dispatches"] = self.coordinator.data["completed"]
-
-      if "last_updated" in self.coordinator.data:
-        self._attributes["last_updated_timestamp"] = self.coordinator.data["last_updated"]
+    result: IntelligentDispatchesCoordinatorResult = self.coordinator.data if self.coordinator is not None else None
+    rates = self._rates_coordinator.data.rates if self._rates_coordinator is not None and self._rates_coordinator.data is not None else None
+    if (result is not None):
+      self._attributes["planned_dispatches"] = dispatches_to_dictionary_list(result.dispatches.planned)
+      self._attributes["completed_dispatches"] = dispatches_to_dictionary_list(result.dispatches.completed)
+      self._attributes["last_updated_timestamp"] = result.last_retrieved
     else:
       self._attributes["planned_dispatches"] = []
       self._attributes["completed_dispatches"] = []
 
     current_date = now()
-    self._state = is_in_planned_dispatch(current_date, self._attributes["planned_dispatches"])
+    self._state = is_in_planned_dispatch(current_date, result.dispatches.planned) or is_off_peak(current_date, rates)
     
     return self._state
 
