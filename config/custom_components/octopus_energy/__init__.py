@@ -1,30 +1,34 @@
 import logging
-import asyncio
 from datetime import timedelta
-from custom_components.octopus_energy.utils import get_active_tariff_code
 
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import device_registry as dr
 from homeassistant.components.recorder import get_instance
 from homeassistant.util.dt import (utcnow)
 
-from .coordinators.account import async_setup_account_info_coordinator
+from .coordinators.account import AccountCoordinatorResult, async_setup_account_info_coordinator
 from .coordinators.intelligent_dispatches import async_setup_intelligent_dispatches_coordinator
 from .coordinators.intelligent_settings import async_setup_intelligent_settings_coordinator
 from .coordinators.electricity_rates import async_setup_electricity_rates_coordinator
 from .coordinators.saving_sessions import async_setup_saving_sessions_coordinators
 from .statistics import get_statistic_ids_to_remove
 
+from .config.main import async_migrate_main_config
+from .config.target_rates import async_migrate_target_config
+from .utils import get_active_tariff_code
+
 from .const import (
+  CONFIG_KIND,
+  CONFIG_KIND_ACCOUNT,
+  CONFIG_MAIN_OLD_API_KEY,
+  CONFIG_VERSION,
+  DATA_OCTOPLUS_SUPPORTED,
   DOMAIN,
 
-  CONFIG_KIND,
   CONFIG_MAIN_API_KEY,
   CONFIG_MAIN_ACCOUNT_ID,
   CONFIG_MAIN_ELECTRICITY_PRICE_CAP,
   CONFIG_MAIN_GAS_PRICE_CAP,
-  CONFIG_MAIN_LIVE_ELECTRICITY_CONSUMPTION_REFRESH_IN_MINUTES,
-  CONFIG_MAIN_LIVE_GAS_CONSUMPTION_REFRESH_IN_MINUTES,
   
   CONFIG_TARGET_NAME,
 
@@ -45,26 +49,24 @@ SCAN_INTERVAL = timedelta(minutes=1)
 
 async def async_migrate_entry(hass, config_entry):
   """Migrate old entry."""
-  _LOGGER.debug("Migrating from version %s", config_entry.version)
+  if (config_entry.version < CONFIG_VERSION):
+    _LOGGER.debug("Migrating from version %s", config_entry.version)
 
-  if config_entry.version == 1:
-
-    new = {**config_entry.data}
-
-    if CONFIG_MAIN_ACCOUNT_ID in config_entry.data:
-      new[CONFIG_KIND] = "account"
-
-      if "live_consumption_refresh_in_minutes" in new:
-
-        new[CONFIG_MAIN_LIVE_ELECTRICITY_CONSUMPTION_REFRESH_IN_MINUTES] = new["live_consumption_refresh_in_minutes"]
-        new[CONFIG_MAIN_LIVE_GAS_CONSUMPTION_REFRESH_IN_MINUTES] = new["live_consumption_refresh_in_minutes"]
+    new_data = None
+    new_options = None
+    title = config_entry.title
+    if CONFIG_MAIN_API_KEY in config_entry.data or CONFIG_MAIN_OLD_API_KEY in config_entry.data or (CONFIG_KIND in config_entry.data and config_entry.data[CONFIG_KIND] == CONFIG_KIND_ACCOUNT):
+      new_data = await async_migrate_main_config(config_entry.version, config_entry.data)
+      new_options = await async_migrate_main_config(config_entry.version, config_entry.options)
+      title = new_data[CONFIG_MAIN_ACCOUNT_ID]
     else:
-      new[CONFIG_KIND] = "target_rate"
+      new_data = await async_migrate_target_config(config_entry.version, config_entry.data, hass.config_entries.async_entries)
+      new_options = await async_migrate_target_config(config_entry.version, config_entry.options, hass.config_entries.async_entries)
+    
+    config_entry.version = CONFIG_VERSION
+    hass.config_entries.async_update_entry(config_entry, title=title, data=new_data, options=new_options)
 
-    config_entry.version = 2
-    hass.config_entries.async_update_entry(config_entry, data=new)
-
-  _LOGGER.debug("Migration to version %s successful", config_entry.version)
+    _LOGGER.debug("Migration to version %s successful", config_entry.version)
 
   return True
 
@@ -86,7 +88,8 @@ async def async_setup_entry(hass, entry):
       raise ConfigEntryNotReady("Account has not been setup")
     
     now = utcnow()
-    account_info = hass.data[DOMAIN][DATA_ACCOUNT]
+    account_result = hass.data[DOMAIN][DATA_ACCOUNT]
+    account_info = account_result.account if account_result is not None else None
     for point in account_info["electricity_meter_points"]:
       # We only care about points that have active agreements
       electricity_tariff_code = get_active_tariff_code(now, point["agreements"])
@@ -126,7 +129,8 @@ async def async_setup_dependencies(hass, config):
   if (account_info is None):
     raise ConfigEntryNotReady(f"Failed to retrieve account information")
 
-  hass.data[DOMAIN][DATA_ACCOUNT] = account_info
+  hass.data[DOMAIN][DATA_ACCOUNT] = AccountCoordinatorResult(utcnow(), 1, account_info)
+  hass.data[DOMAIN][DATA_OCTOPLUS_SUPPORTED] = account_info["octoplus_enrolled"]
 
   # Remove gas meter devices which had incorrect identifier
   if account_info is not None and len(account_info["gas_meter_points"]) > 0:
@@ -140,7 +144,6 @@ async def async_setup_dependencies(hass, config):
           device_registry.async_remove_device(device.id)
 
   now = utcnow()
-  account_info = hass.data[DOMAIN][DATA_ACCOUNT]
   for point in account_info["electricity_meter_points"]:
     # We only care about points that have active agreements
     electricity_tariff_code = get_active_tariff_code(now, point["agreements"])
@@ -154,9 +157,9 @@ async def async_setup_dependencies(hass, config):
 
   await async_setup_account_info_coordinator(hass, config[CONFIG_MAIN_ACCOUNT_ID])
 
-  await async_setup_intelligent_dispatches_coordinator(hass, config[CONFIG_MAIN_ACCOUNT_ID])
+  await async_setup_intelligent_dispatches_coordinator(hass)
 
-  await async_setup_intelligent_settings_coordinator(hass, config[CONFIG_MAIN_ACCOUNT_ID])
+  await async_setup_intelligent_settings_coordinator(hass)
   
   await async_setup_saving_sessions_coordinators(hass)
 
@@ -181,7 +184,8 @@ def setup(hass, config):
   def purge_invalid_external_statistic_ids(call):
     """Handle the service call."""
       
-    account_info = hass.data[DOMAIN][DATA_ACCOUNT]
+    account_result = hass.data[DOMAIN][DATA_ACCOUNT]
+    account_info = account_result.account if account_result is not None else None
     
     external_statistic_ids_to_remove = get_statistic_ids_to_remove(utcnow(), account_info)
 

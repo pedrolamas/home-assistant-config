@@ -270,6 +270,7 @@ async def async_setup_entry(hass, config_entry):
                 "light": [],
                 "binary_sensor": [],
                 "temperature": [],
+                "smart_switch": [],
             },
             "entities": {
                 "media_player": {},
@@ -278,6 +279,7 @@ async def async_setup_entry(hass, config_entry):
                 "light": [],
                 "binary_sensor": [],
                 "alarm_control_panel": {},
+                "smart_switch": [],
             },
             "excluded": {},
             "new_devices": True,
@@ -693,7 +695,7 @@ async def setup_alexa(hass, config_entry, login_obj: AlexaLogin):
                 n_dev_id = notification.get("deviceSerialNumber")
                 if n_dev_id is None:
                     # skip notifications untied to a device for now
-                    # https://github.com/custom-components/alexa_media_player/issues/633#issuecomment-610705651
+                    # https://github.com/alandtse/alexa_media_player/issues/633#issuecomment-610705651
                     continue
                 n_type = notification.get("type")
                 if n_type is None:
@@ -750,7 +752,8 @@ async def setup_alexa(hass, config_entry, login_obj: AlexaLogin):
         """
         if not last_called or not (last_called and last_called.get("summary")):
             try:
-                last_called = await AlexaAPI.get_last_device_serial(login_obj)
+                async with async_timeout.timeout(10):
+                    last_called = await AlexaAPI.get_last_device_serial(login_obj)
             except TypeError:
                 _LOGGER.debug(
                     "%s: Error updating last_called: %s",
@@ -1038,11 +1041,11 @@ async def setup_alexa(hass, config_entry, login_obj: AlexaLogin):
                         )
                 elif command in [
                     "PUSH_DELETE_DOPPLER_ACTIVITIES",  # delete Alexa history
-                    "PUSH_LIST_CHANGE",  # clear a shopping list https://github.com/custom-components/alexa_media_player/issues/1190
+                    "PUSH_LIST_CHANGE",  # clear a shopping list https://github.com/alandtse/alexa_media_player/issues/1190
                     "PUSH_LIST_ITEM_CHANGE",  # update shopping list
                     "PUSH_CONTENT_FOCUS_CHANGE",  # likely prime related refocus
                     "PUSH_DEVICE_SETUP_STATE_CHANGE",  # likely device changes mid setup
-                    "PUSH_MEDIA_PREFERENCE_CHANGE",  # disliking or liking songs, https://github.com/custom-components/alexa_media_player/issues/1599
+                    "PUSH_MEDIA_PREFERENCE_CHANGE",  # disliking or liking songs, https://github.com/alandtse/alexa_media_player/issues/1599
                 ]:
                     pass
                 else:

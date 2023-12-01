@@ -1,4 +1,5 @@
 import logging
+from custom_components.octopus_energy.coordinators.current_consumption import CurrentConsumptionCoordinatorResult
 
 from homeassistant.core import HomeAssistant
 
@@ -15,6 +16,7 @@ from homeassistant.const import (
 )
 
 from .base import (OctopusEnergyGasSensor)
+from ..utils.attributes import dict_to_typed_dict
 
 from ..gas import calculate_gas_consumption_and_cost
 
@@ -58,7 +60,7 @@ class OctopusEnergyCurrentAccumulativeGasConsumption(CoordinatorEntity, OctopusE
     return SensorStateClass.TOTAL
 
   @property
-  def unit_of_measurement(self):
+  def native_unit_of_measurement(self):
     """The unit of measurement of sensor"""
     return ENERGY_KILO_WATT_HOUR
 
@@ -78,9 +80,10 @@ class OctopusEnergyCurrentAccumulativeGasConsumption(CoordinatorEntity, OctopusE
     return self._last_reset
   
   @property
-  def state(self):
+  def native_value(self):
     """Retrieve the current days accumulative consumption"""
-    consumption_data = self.coordinator.data if self.coordinator is not None and self.coordinator.data is not None else None
+    consumption_result: CurrentConsumptionCoordinatorResult = self.coordinator.data if self.coordinator is not None and self.coordinator.data is not None else None
+    consumption_data = consumption_result.data if consumption_result is not None else None
     rate_data = self._rates_coordinator.data.rates if self._rates_coordinator is not None and self._rates_coordinator.data is not None else None
     standing_charge = self._standing_charge_coordinator.data.standing_charge["value_inc_vat"] if self._standing_charge_coordinator is not None and self._standing_charge_coordinator.data is not None else None
     
@@ -104,10 +107,11 @@ class OctopusEnergyCurrentAccumulativeGasConsumption(CoordinatorEntity, OctopusE
         "mprn": self._mprn,
         "serial_number": self._serial_number,
         "total": consumption_and_cost["total_consumption_kwh"],
-        "last_calculated_timestamp": consumption_and_cost["last_calculated_timestamp"],
+        "last_evaluated": consumption_and_cost["last_evaluated"],
+        "data_last_retrieved": consumption_result.last_retrieved if consumption_result is not None else None,
         "charges": list(map(lambda charge: {
-          "from": charge["from"],
-          "to": charge["to"],
+          "start": charge["start"],
+          "end": charge["end"],
           "consumption": charge["consumption_kwh"]
         }, consumption_and_cost["charges"])),
         "calorific_value": self._calorific_value
@@ -122,6 +126,7 @@ class OctopusEnergyCurrentAccumulativeGasConsumption(CoordinatorEntity, OctopusE
     state = await self.async_get_last_state()
     
     if state is not None and self._state is None:
-      self._state = state.state
+      self._state = None if state.state == "unknown" else state.state
+      self._attributes = dict_to_typed_dict(state.attributes)
     
       _LOGGER.debug(f'Restored OctopusEnergyCurrentAccumulativeGasConsumption state: {self._state}')

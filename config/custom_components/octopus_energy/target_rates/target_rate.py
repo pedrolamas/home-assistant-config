@@ -20,10 +20,15 @@ from homeassistant.helpers import translation
 from ..const import (
   CONFIG_TARGET_NAME,
   CONFIG_TARGET_HOURS,
+  CONFIG_TARGET_OLD_END_TIME,
+  CONFIG_TARGET_OLD_HOURS,
+  CONFIG_TARGET_OLD_MPAN,
+  CONFIG_TARGET_OLD_NAME,
+  CONFIG_TARGET_OLD_START_TIME,
+  CONFIG_TARGET_OLD_TYPE,
   CONFIG_TARGET_TYPE,
   CONFIG_TARGET_START_TIME,
   CONFIG_TARGET_END_TIME,
-  CONFIG_TARGET_MPAN,
   CONFIG_TARGET_ROLLING_TARGET,
   CONFIG_TARGET_LAST_RATES,
   CONFIG_TARGET_INVERT_TARGET_RATES,
@@ -35,11 +40,13 @@ from ..const import (
 from . import (
   calculate_continuous_times,
   calculate_intermittent_times,
+  get_applicable_rates,
   get_target_rate_info
 )
 
 from ..config.target_rates import validate_target_rate_config
 from ..target_rates.repairs import check_for_errors
+from ..utils.attributes import dict_to_typed_dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -102,7 +109,10 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity, RestoreEnti
     else:
       offset = None
 
-    check_for_errors(self._hass, self._config, self._hass.data[DOMAIN][DATA_ACCOUNT], now())
+    account_result = self._hass.data[DOMAIN][DATA_ACCOUNT]
+    account_info = account_result.account if account_result is not None else None
+
+    check_for_errors(self._hass, self._config, account_info, now())
 
     # Find the current rate. Rates change a maximum of once every 30 minutes.
     current_date = utcnow()
@@ -114,7 +124,7 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity, RestoreEnti
       # If all of our target times have passed, it's time to recalculate the next set
       all_rates_in_past = True
       for rate in self._target_rates:
-        if rate["valid_to"] > current_date:
+        if rate["end"] > current_date:
           all_rates_in_past = False
           break
       
@@ -153,51 +163,52 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity, RestoreEnti
 
           find_highest_rates = (self._is_export and invert_target_rates == False) or (self._is_export == False and invert_target_rates)
 
+          applicable_rates = get_applicable_rates(
+            current_date,
+            start_time,
+            end_time,
+            all_rates,
+            is_rolling_target
+          )
+
           if (self._config[CONFIG_TARGET_TYPE] == "Continuous"):
             self._target_rates = calculate_continuous_times(
-              now(),
-              start_time,
-              end_time,
+              applicable_rates,
               target_hours,
-              all_rates,
-              is_rolling_target,
               find_highest_rates,
               find_last_rates
             )
           elif (self._config[CONFIG_TARGET_TYPE] == "Intermittent"):
             self._target_rates = calculate_intermittent_times(
-              now(),
-              start_time,
-              end_time,
+              applicable_rates,
               target_hours,
-              all_rates,
-              is_rolling_target,
               find_highest_rates,
               find_last_rates
             )
           else:
             _LOGGER.error(f"Unexpected target type: {self._config[CONFIG_TARGET_TYPE]}")
 
+          self._attributes["rates_incomplete"] = applicable_rates is None
           self._attributes["target_times"] = self._target_rates
           self._attributes["target_times_last_evaluated"] = current_date
           _LOGGER.debug(f"calculated rates: {self._target_rates}")
 
     active_result = get_target_rate_info(current_date, self._target_rates, offset)
 
-    self._attributes["overall_average_cost"] = f'{active_result["overall_average_cost"]}p' if active_result["overall_average_cost"] is not None else None
-    self._attributes["overall_min_cost"] = f'{active_result["overall_min_cost"]}p' if active_result["overall_min_cost"] is not None else None
-    self._attributes["overall_max_cost"] = f'{active_result["overall_max_cost"]}p' if active_result["overall_max_cost"] is not None else None
+    self._attributes["overall_average_cost"] = active_result["overall_average_cost"]
+    self._attributes["overall_min_cost"] = active_result["overall_min_cost"]
+    self._attributes["overall_max_cost"] = active_result["overall_max_cost"]
 
     self._attributes["current_duration_in_hours"] = active_result["current_duration_in_hours"]
-    self._attributes["current_average_cost"] = f'{active_result["current_average_cost"]}p' if active_result["current_average_cost"] is not None else None
-    self._attributes["current_min_cost"] = f'{active_result["current_min_cost"]}p' if active_result["current_min_cost"] is not None else None
-    self._attributes["current_max_cost"] = f'{active_result["current_max_cost"]}p' if active_result["current_max_cost"] is not None else None
+    self._attributes["current_average_cost"] = active_result["current_average_cost"]
+    self._attributes["current_min_cost"] = active_result["current_min_cost"]
+    self._attributes["current_max_cost"] = active_result["current_max_cost"]
 
     self._attributes["next_time"] = active_result["next_time"]
     self._attributes["next_duration_in_hours"] = active_result["next_duration_in_hours"]
-    self._attributes["next_average_cost"] = f'{active_result["next_average_cost"]}p' if active_result["next_average_cost"] is not None else None
-    self._attributes["next_min_cost"] = f'{active_result["next_min_cost"]}p' if active_result["next_min_cost"] is not None else None
-    self._attributes["next_max_cost"] = f'{active_result["next_max_cost"]}p' if active_result["next_max_cost"] is not None else None
+    self._attributes["next_average_cost"] = active_result["next_average_cost"]
+    self._attributes["next_min_cost"] = active_result["next_min_cost"]
+    self._attributes["next_max_cost"] = active_result["next_max_cost"]
     
     self._attributes["last_evaluated"] = current_date
     self._state = active_result["is_active"]
@@ -212,11 +223,11 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity, RestoreEnti
     state = await self.async_get_last_state()
     
     if state is not None and self._state is None:
-      self._state = state.state
-      self._attributes = {}
-      for x in state.attributes.keys():
-        self._attributes[x] = state.attributes[x]
-
+      self._state = None if state.state == "unknown" else state.state
+      self._attributes = dict_to_typed_dict(
+        state.attributes,
+        [CONFIG_TARGET_OLD_NAME, CONFIG_TARGET_OLD_HOURS, CONFIG_TARGET_OLD_TYPE, CONFIG_TARGET_OLD_START_TIME, CONFIG_TARGET_OLD_END_TIME, CONFIG_TARGET_OLD_MPAN]
+      )
       # Make sure our attributes don't override any changed settings
       self._attributes.update(self._config)
     
@@ -255,7 +266,10 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity, RestoreEnti
         CONFIG_TARGET_OFFSET: trimmed_target_offset
       })
 
-    errors = validate_target_rate_config(config, self._hass.data[DOMAIN][DATA_ACCOUNT], now())
+    account_result = self._hass.data[DOMAIN][DATA_ACCOUNT]
+    account_info = account_result.account if account_result is not None else None
+
+    errors = validate_target_rate_config(config, account_info, now())
     keys = list(errors.keys())
     if (len(keys)) > 0:
       translations = await translation.async_get_translations(self._hass, self._hass.config.language, "options", {DOMAIN})

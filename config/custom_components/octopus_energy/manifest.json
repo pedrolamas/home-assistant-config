@@ -9,11 +9,11 @@
     "repairs",
     "recorder"
   ],
-  "documentation": "https://github.com/BottlecapDave/HomeAssistant-OctopusEnergy/tree/develop/_docs",
+  "documentation": "https://bottlecapdave.github.io/HomeAssistant-OctopusEnergy",
   "homekit": {},
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/BottlecapDave/HomeAssistant-OctopusEnergy/issues",
   "ssdp": [],
-  "version": "8.5.2",
+  "version": "9.2.1",
   "zeroconf": []
 }

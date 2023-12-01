@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from custom_components.octopus_energy.coordinators.current_consumption import CurrentConsumptionCoordinatorResult
 
 from homeassistant.core import HomeAssistant
 
@@ -19,6 +20,7 @@ from . import (
 )
 
 from .base import (OctopusEnergyElectricitySensor)
+from ..utils.attributes import dict_to_typed_dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -67,7 +69,7 @@ class OctopusEnergyCurrentAccumulativeElectricityCost(CoordinatorEntity, Octopus
     return SensorStateClass.TOTAL
 
   @property
-  def unit_of_measurement(self):
+  def native_unit_of_measurement(self):
     """The unit of measurement of sensor"""
     return "GBP"
 
@@ -87,10 +89,11 @@ class OctopusEnergyCurrentAccumulativeElectricityCost(CoordinatorEntity, Octopus
     return self._last_reset
 
   @property
-  def state(self):
+  def native_value(self):
     """Retrieve the currently calculated state"""
     current = now()
-    consumption_data = self.coordinator.data if self.coordinator is not None and self.coordinator.data is not None else None
+    consumption_result: CurrentConsumptionCoordinatorResult = self.coordinator.data if self.coordinator is not None and self.coordinator.data is not None else None
+    consumption_data = consumption_result.data if consumption_result is not None else None
     rate_data = self._rates_coordinator.data.rates if self._rates_coordinator is not None and self._rates_coordinator.data is not None else None
     standing_charge = self._standing_charge_coordinator.data.standing_charge["value_inc_vat"] if self._standing_charge_coordinator is not None and self._standing_charge_coordinator.data is not None else None
     
@@ -114,18 +117,17 @@ class OctopusEnergyCurrentAccumulativeElectricityCost(CoordinatorEntity, Octopus
         "is_export": self._is_export,
         "is_smart_meter": self._is_smart_meter,
         "tariff_code": self._tariff_code,
-        "standing_charge": f'{consumption_and_cost["standing_charge"]}p',
-        "total_without_standing_charge": f'£{consumption_and_cost["total_cost_without_standing_charge"]}',
-        "total": f'£{consumption_and_cost["total_cost"]}',
-        "last_calculated_timestamp": consumption_and_cost["last_calculated_timestamp"],
+        "standing_charge": consumption_and_cost["standing_charge"],
+        "total_without_standing_charge": consumption_and_cost["total_cost_without_standing_charge"],
+        "total": consumption_and_cost["total_cost"],
+        "last_evaluated": consumption_and_cost["last_evaluated"],
+        "data_last_retrieved": consumption_result.last_retrieved if consumption_result is not None else None,
         "charges": list(map(lambda charge: {
-          "from": charge["from"],
-          "to": charge["to"],
-          "rate": f'{charge["rate"]}p',
-          "consumption": f'{charge["consumption"]} kWh',
-          "consumption_raw": charge["consumption"],
-          "cost": f'£{charge["cost"]}',
-          "cost_raw": charge["cost"],
+          "start": charge["start"],
+          "end": charge["end"],
+          "rate": charge["rate"],
+          "consumption": charge["consumption"],
+          "cost": charge["cost"]
         }, consumption_and_cost["charges"]))
       }
 
@@ -138,12 +140,7 @@ class OctopusEnergyCurrentAccumulativeElectricityCost(CoordinatorEntity, Octopus
     state = await self.async_get_last_state()
     
     if state is not None and self._state is None:
-      self._state = state.state
-      self._attributes = {}
-      for x in state.attributes.keys():
-        self._attributes[x] = state.attributes[x]
-
-        if x == "last_reset":
-          self._last_reset = datetime.strptime(state.attributes[x], "%Y-%m-%dT%H:%M:%S%z")
+      self._state = None if state.state == "unknown" else state.state
+      self._attributes = dict_to_typed_dict(state.attributes)
     
       _LOGGER.debug(f'Restored OctopusEnergyCurrentAccumulativeElectricityCost state: {self._state}')

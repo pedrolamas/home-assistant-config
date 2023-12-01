@@ -4,10 +4,12 @@ from homeassistant.core import HomeAssistant, callback
 
 from homeassistant.components.event import (
     EventEntity,
+    EventExtraStoredData,
 )
 from homeassistant.helpers.restore_state import RestoreEntity
 
 from .base import (OctopusEnergyElectricitySensor)
+from ..utils.attributes import dict_to_typed_dict
 from ..const import EVENT_ELECTRICITY_NEXT_DAY_RATES
 
 _LOGGER = logging.getLogger(__name__)
@@ -36,31 +38,19 @@ class OctopusEnergyElectricityNextDayRates(OctopusEnergyElectricitySensor, Event
     """Name of the sensor."""
     return f"Electricity {self._serial_number} {self._mpan}{self._export_name_addition} Next Day Rates"
 
-  @property
-  def entity_registry_enabled_default(self) -> bool:
-    """Return if the entity should be enabled when first added.
-
-    This only applies when fist added to the entity registry.
-    """
-    return False
-
   async def async_added_to_hass(self):
     """Call when entity about to be added to hass."""
     # If not None, we got an initial value.
     await super().async_added_to_hass()
-    state = await self.async_get_last_state()
     
-    if state is not None and self._state is None:
-      self._state = state.state
-      self._attributes = {}
-      for x in state.attributes.keys():
-        self._attributes[x] = state.attributes[x]
-    
-      _LOGGER.debug(f'Restored OctopusEnergyElectricityNextDayRates state: {self._state}')
-
-  async def async_added_to_hass(self) -> None:
-    """Register callbacks."""
     self._hass.bus.async_listen(self._attr_event_types[0], self._async_handle_event)
+
+  async def async_get_last_event_data(self):
+    data = await super().async_get_last_event_data()
+    return EventExtraStoredData.from_dict({
+      "last_event_type": data.last_event_type,
+      "last_event_attributes": dict_to_typed_dict(data.last_event_attributes),
+    })
 
   @callback
   def _async_handle_event(self, event) -> None:

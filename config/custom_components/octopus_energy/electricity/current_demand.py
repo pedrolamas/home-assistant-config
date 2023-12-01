@@ -1,3 +1,4 @@
+from custom_components.octopus_energy.coordinators.current_consumption import CurrentConsumptionCoordinatorResult
 from homeassistant.util.dt import (now)
 import logging
 
@@ -13,6 +14,7 @@ from homeassistant.components.sensor import (
 )
 
 from .base import (OctopusEnergyElectricitySensor)
+from ..utils.attributes import dict_to_typed_dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,7 +29,7 @@ class OctopusEnergyCurrentElectricityDemand(CoordinatorEntity, OctopusEnergyElec
     self._state = None
     self._latest_date = None
     self._attributes = {
-      "last_updated_timestamp": None
+      "last_evaluated": None
     }
 
   @property
@@ -51,7 +53,7 @@ class OctopusEnergyCurrentElectricityDemand(CoordinatorEntity, OctopusEnergyElec
     return SensorStateClass.MEASUREMENT
 
   @property
-  def unit_of_measurement(self):
+  def native_unit_of_measurement(self):
     """The unit of measurement of sensor"""
     return "W"
 
@@ -66,14 +68,16 @@ class OctopusEnergyCurrentElectricityDemand(CoordinatorEntity, OctopusEnergyElec
     return self._attributes
   
   @property
-  def state(self):
+  def native_value(self):
     """Handle updated data from the coordinator."""
     _LOGGER.debug('Updating OctopusEnergyCurrentElectricityConsumption')
-    consumption_result = self.coordinator.data if self.coordinator is not None else None
+    consumption_result: CurrentConsumptionCoordinatorResult = self.coordinator.data if self.coordinator is not None and self.coordinator.data is not None else None
+    consumption_data = consumption_result.data if consumption_result is not None else None
 
-    if (consumption_result is not None):
-      self._state = consumption_result[-1]["demand"]
-      self._attributes["last_updated_timestamp"] = now()
+    if (consumption_data is not None):
+      self._state = consumption_data[-1]["demand"]
+      self._attributes["last_evaluated"] = now()
+      self._attributes["data_last_retrieved"] = consumption_result.last_retrieved if consumption_result is not None else None
 
     return self._state
 
@@ -84,6 +88,10 @@ class OctopusEnergyCurrentElectricityDemand(CoordinatorEntity, OctopusEnergyElec
     state = await self.async_get_last_state()
     
     if state is not None and self._state is None:
-      self._state = state.state
+      self._state = None if state.state == "unknown" else state.state
+      self._attributes = dict_to_typed_dict(state.attributes)
+
+      if "last_updated_timestamp" in self._attributes:
+        del self._attributes["last_updated_timestamp"]
     
       _LOGGER.debug(f'Restored OctopusEnergyCurrentElectricityDemand state: {self._state}')

@@ -12,6 +12,7 @@ from homeassistant.components.sensor import (
 )
 
 from .base import (OctopusEnergyGasSensor)
+from ..utils.attributes import dict_to_typed_dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ class OctopusEnergyGasCurrentStandingCharge(CoordinatorEntity, OctopusEnergyGasS
     return "mdi:currency-gbp"
 
   @property
-  def unit_of_measurement(self):
+  def native_unit_of_measurement(self):
     """Unit of measurement of the sensor."""
     return "GBP"
 
@@ -64,19 +65,19 @@ class OctopusEnergyGasCurrentStandingCharge(CoordinatorEntity, OctopusEnergyGasS
     return self._attributes
 
   @property
-  def state(self):
+  def native_value(self):
     """Retrieve the latest gas standing charge"""
     _LOGGER.debug('Updating OctopusEnergyGasCurrentStandingCharge')
 
     standard_charge_result = self.coordinator.data.standing_charge if self.coordinator is not None and self.coordinator.data is not None else None
     
     if standard_charge_result is not None:
-      self._latest_date = standard_charge_result["valid_from"]
+      self._latest_date = standard_charge_result["start"]
       self._state = standard_charge_result["value_inc_vat"] / 100
 
       # Adjust our period, as our gas only changes on a daily basis
-      self._attributes["valid_from"] = standard_charge_result["valid_from"]
-      self._attributes["valid_to"] = standard_charge_result["valid_to"]
+      self._attributes["start"] = standard_charge_result["start"]
+      self._attributes["end"] = standard_charge_result["end"]
     else:
       self._state = None
 
@@ -89,9 +90,6 @@ class OctopusEnergyGasCurrentStandingCharge(CoordinatorEntity, OctopusEnergyGasS
     state = await self.async_get_last_state()
     
     if state is not None and self._state is None:
-      self._state = state.state
-      self._attributes = {}
-      for x in state.attributes.keys():
-        self._attributes[x] = state.attributes[x]
-    
+      self._state = None if state.state == "unknown" else state.state
+      self._attributes = dict_to_typed_dict(state.attributes, ['valid_from', 'valid_to'])
       _LOGGER.debug(f'Restored OctopusEnergyGasCurrentStandingCharge state: {self._state}')
