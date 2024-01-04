@@ -1,6 +1,6 @@
 # Home Assistant Configuration
 
-[![Project Maintenance](https://img.shields.io/maintenance/yes/2023.svg)](https://github.com/pedrolamas/home-assistant-config 'GitHub Repository')
+[![Project Maintenance](https://img.shields.io/maintenance/yes/2024.svg)](https://github.com/pedrolamas/home-assistant-config 'GitHub Repository')
 [![License](https://img.shields.io/github/license/pedrolamas/home-assistant-config.svg)](https://github.com/pedrolamas/home-assistant-config/blob/master/LICENSE 'License')
 
 [![Home Assistant Stable CI](https://github.com/pedrolamas/home-assistant-config/workflows/Home%20Assistant%20(Stable)/badge.svg)](https://github.com/pedrolamas/home-assistant-config/actions 'Build Status')
