@@ -6,14 +6,6 @@
   after: "01:00:00"
   before: "07:00:00"
 
-- platform: ping
-  name: Synology DS412+ NAS
-  host: !secret synology_ds412plus_nas_host
-
-- platform: ping
-  name: Raspberry Pi 2 Model B
-  host: !secret raspberry_pi_2_model_b_host
-
 - platform: template
   sensors:
     lg_smart_tv_is_watching_live_tv:
