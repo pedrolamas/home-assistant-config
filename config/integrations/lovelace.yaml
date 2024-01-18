@@ -2,7 +2,5 @@ mode: yaml
 resources:
   - url: /hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js
     type: module
-  - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js?v=0.10.0
-    type: module
-  - url: /hacsfiles/lovelace-swipe-navigation/swipe-navigation.js?v=1.0.0
+  - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
     type: module
