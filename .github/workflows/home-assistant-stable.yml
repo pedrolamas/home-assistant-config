@@ -12,18 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Create secrets.yaml file
-        run: |
-          mv ./config/secrets.template.yaml ./config/secrets.yaml
-      - name: Install HACS
-        run: |
-          wget -O - https://get.hacs.xyz | bash -
-        working-directory: config
       - name: Check configuration with Home Assistant
-        uses: "docker://homeassistant/home-assistant:latest"
+        uses: frenck/action-home-assistant@v1.4
         with:
-          args: python -m homeassistant --version
-      - name: Check configuration with Home Assistant
-        uses: "docker://homeassistant/home-assistant:latest"
-        with:
-          args: python -m homeassistant --config ./config --script check_config --info all
+          path: "./config"
+          secrets: "./secrets.template.yaml"
+          version: "stable"
