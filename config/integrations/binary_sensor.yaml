@@ -20,11 +20,11 @@
       value_template: >-
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Amazon Prime Video') }}
 
-    lg_smart_tv_is_watching_xbox_one_x:
-      friendly_name: Xbox One X
+    lg_smart_tv_is_watching_xbox_series_x:
+      friendly_name: Xbox Series X
       icon_template: mdi:microsoft-xbox
       value_template: >-
-        {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Xbox One X') }}
+        {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Xbox Series X') }}
 
     lg_smart_tv_is_watching_netflix:
       friendly_name: Netflix
@@ -60,7 +60,7 @@
       friendly_name: BBC ONE
       icon_template: mdi:television-classic
       value_template: >-
-        {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') and state_attr('media_player.lg_smart_tv', 'media_title') in ['BBC ONE Lon', 'BBC ONE HD'] }}
+        {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') and state_attr('media_player.lg_smart_tv', 'media_title') in ['BBC ONE Lon', 'BBC ONE Lon HD'] }}
 
     lg_smart_tv_is_watching_channel_4:
       friendly_name: Channel 4

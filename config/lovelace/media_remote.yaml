@@ -38,13 +38,13 @@ cards:
   - type: horizontal-stack
     cards:
       - type: button
-        entity: binary_sensor.lg_smart_tv_is_watching_xbox_one_x
+        entity: binary_sensor.lg_smart_tv_is_watching_xbox_series_x
         tap_action:
           action: call-service
           service: media_player.select_source
           service_data:
             entity_id: media_player.lg_smart_tv
-            source: "Xbox One X"
+            source: "Xbox Series X"
       - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_youtube
         tap_action:
@@ -79,7 +79,7 @@ cards:
           service: media_player.play_media
           service_data:
             entity_id: media_player.lg_smart_tv
-            media_content_id: "BBC ONE HD"
+            media_content_id: "BBC ONE Lon HD"
             media_content_type: "channel"
         hold_action:
           action: call-service

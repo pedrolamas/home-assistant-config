@@ -190,7 +190,7 @@ watch_bbc_one_on_lg_smart_tv:
     - service: media_player.play_media
       data:
         entity_id: media_player.lg_smart_tv
-        media_content_id: "BBC ONE HD"
+        media_content_id: "BBC ONE Lon HD"
         media_content_type: "channel"
 
 watch_bbc_news_on_lg_smart_tv:
