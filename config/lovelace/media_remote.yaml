@@ -6,33 +6,29 @@ cards:
         entity: binary_sensor.lg_smart_tv_is_watching_live_tv
         tap_action:
           action: call-service
-          service: media_player.select_source
+          service: script.watch_on_lg_smart_tv
           service_data:
-            entity_id: media_player.lg_smart_tv
             source: "Live TV"
       - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_netflix
         tap_action:
           action: call-service
-          service: media_player.select_source
+          service: script.watch_on_lg_smart_tv
           service_data:
-            entity_id: media_player.lg_smart_tv
             source: "Netflix"
       - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_prime_video
         tap_action:
           action: call-service
-          service: media_player.select_source
+          service: script.watch_on_lg_smart_tv
           service_data:
-            entity_id: media_player.lg_smart_tv
             source: "Amazon Prime Video"
       - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_plex
         tap_action:
           action: call-service
-          service: media_player.select_source
+          service: script.watch_on_lg_smart_tv
           service_data:
-            entity_id: media_player.lg_smart_tv
             source: "Plex"
 
   - type: horizontal-stack
@@ -41,33 +37,29 @@ cards:
         entity: binary_sensor.lg_smart_tv_is_watching_xbox_series_x
         tap_action:
           action: call-service
-          service: media_player.select_source
+          service: script.watch_on_lg_smart_tv
           service_data:
-            entity_id: media_player.lg_smart_tv
             source: "Xbox Series X"
       - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_youtube
         tap_action:
           action: call-service
-          service: media_player.select_source
+          service: script.watch_on_lg_smart_tv
           service_data:
-            entity_id: media_player.lg_smart_tv
             source: "YouTube"
       - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_bbc_iplayer
         tap_action:
           action: call-service
-          service: media_player.select_source
+          service: script.watch_on_lg_smart_tv
           service_data:
-            entity_id: media_player.lg_smart_tv
             source: "BBC iPlayer"
       - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_all_4
         tap_action:
           action: call-service
-          service: media_player.select_source
+          service: script.watch_on_lg_smart_tv
           service_data:
-            entity_id: media_player.lg_smart_tv
             source: "All 4"
 
   - type: horizontal-stack
@@ -78,64 +70,56 @@ cards:
           action: call-service
           service: media_player.play_media
           service_data:
-            entity_id: media_player.lg_smart_tv
-            media_content_id: "BBC ONE Lon HD"
-            media_content_type: "channel"
+            source: "Live TV"
+            channel: "BBC ONE Lon HD"
         hold_action:
           action: call-service
           service: media_player.play_media
           service_data:
-            entity_id: media_player.lg_smart_tv
-            media_content_id: "BBC ONE Lon"
-            media_content_type: "channel"
+            source: "Live TV"
+            channel: "BBC ONE Lon"
       - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_bbc_news
         tap_action:
           action: call-service
           service: media_player.play_media
           service_data:
-            entity_id: media_player.lg_smart_tv
-            media_content_id: "BBC NEWS"
-            media_content_type: "channel"
+            source: "Live TV"
+            channel: "BBC NEWS"
         hold_action:
           action: call-service
           service: media_player.play_media
           service_data:
-            entity_id: media_player.lg_smart_tv
-            media_content_id: "BBC NEWS"
-            media_content_type: "channel"
+            source: "Live TV"
+            channel: "BBC NEWS"
       - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_channel_4
         tap_action:
           action: call-service
           service: media_player.play_media
           service_data:
-            entity_id: media_player.lg_smart_tv
-            media_content_id: "Channel 4 HD"
-            media_content_type: "channel"
+            source: "Live TV"
+            channel: "Channel 4 HD"
         hold_action:
           action: call-service
           service: media_player.play_media
           service_data:
-            entity_id: media_player.lg_smart_tv
-            media_content_id: "Channel 4"
-            media_content_type: "channel"
+            source: "Live TV"
+            channel: "Channel 4"
       - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_cbeebies
         tap_action:
           action: call-service
           service: media_player.play_media
           service_data:
-            entity_id: media_player.lg_smart_tv
-            media_content_id: "CBeebies HD"
-            media_content_type: "channel"
+            source: "Live TV"
+            channel: "CBeebies HD"
         hold_action:
           action: call-service
           service: media_player.play_media
           service_data:
-            entity_id: media_player.lg_smart_tv
-            media_content_id: "CBeebies"
-            media_content_type: "channel"
+            source: "Live TV"
+            channel: "CBeebies"
 
   - type: horizontal-stack
     cards:

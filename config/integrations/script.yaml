@@ -160,62 +160,86 @@ turn_on_lg_smart_tv:
       timeout: "00:00:50"
       continue_on_timeout: true
 
+watch_on_lg_smart_tv:
+  fields:
+    source:
+      name: Source
+      description: The source to select
+      selector:
+        text:
+    channel:
+      name: Channel
+      description: The channel to select
+      selector:
+        text:
+  variables:
+    source: "{{ source | default }}"
+    channel: "{{ channel | default }}"
+  sequence:
+    - service: script.turn_on_lg_smart_tv
+    - if:
+        - "{{ source != '' and not is_state_attr('media_player.lg_smart_tv', 'source', source) }}"
+      then:
+        - service: media_player.select_source
+          data:
+            entity_id: media_player.lg_smart_tv
+            source: "{{ source }}"
+    - condition: "{{ channel != '' }}"
+    - service: media_player.play_media
+      data:
+        entity_id: media_player.lg_smart_tv
+        media_content_id: "{{ channel }}"
+        media_content_type: "channel"
+
 watch_netflix_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
-    - service: media_player.select_source
+    - service: script.watch_on_lg_smart_tv
       data:
-        entity_id: media_player.lg_smart_tv
         source: "Netflix"
 
 watch_plex_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
-    - service: media_player.select_source
+    - service: script.watch_on_lg_smart_tv
       data:
-        entity_id: media_player.lg_smart_tv
         source: "Plex"
 
 watch_bbc_iplayer_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
-    - service: media_player.select_source
+    - service: script.watch_on_lg_smart_tv
       data:
-        entity_id: media_player.lg_smart_tv
         source: "BBC iPlayer"
 
 watch_bbc_one_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
-    - service: media_player.play_media
+    - service: script.watch_on_lg_smart_tv
       data:
-        entity_id: media_player.lg_smart_tv
-        media_content_id: "BBC ONE Lon HD"
-        media_content_type: "channel"
+        source: "Live TV"
+        channel: "BBC ONE Lon HD"
 
 watch_bbc_news_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
-    - service: media_player.play_media
+    - service: script.watch_on_lg_smart_tv
       data:
-        entity_id: media_player.lg_smart_tv
-        media_content_id: "BBC NEWS"
-        media_content_type: "channel"
+        source: "Live TV"
+        channel: "BBC NEWS"
 
 watch_cbeebies_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
-    - service: media_player.play_media
+    - service: script.watch_on_lg_smart_tv
       data:
-        entity_id: media_player.lg_smart_tv
-        media_content_id: "CBeebies HD"
-        media_content_type: "channel"
+        source: "Live TV"
+        channel: "CBeebies HD"
 
 watch_channel_4_on_lg_smart_tv:
   sequence:
     - service: script.turn_on_lg_smart_tv
-    - service: media_player.play_media
+    - service: script.watch_on_lg_smart_tv
       data:
-        entity_id: media_player.lg_smart_tv
-        media_content_id: "Channel 4 HD"
-        media_content_type: "channel"
+        source: "Live TV"
+        channel: "Channel 4 HD"
