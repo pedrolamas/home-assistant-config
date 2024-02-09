@@ -6,6 +6,8 @@ filters:
     - "All connection attempts failed"
   homeassistant.components.rest.sensor:
     - "Empty reply found when expecting JSON data"
+  homeassistant.components.rest.util:
+    - "Empty reply found when expecting JSON data"
   homeassistant.components.rest.switch:
     - "Connect call failed"
     - "[Name does not resolve]"
