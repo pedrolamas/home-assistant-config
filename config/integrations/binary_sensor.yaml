@@ -57,7 +57,7 @@
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'All 4') }}
 
     lg_smart_tv_is_watching_bbc_one:
-      friendly_name: BBC ONE
+      friendly_name: BBC One
       icon_template: mdi:television-classic
       value_template: >-
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') and state_attr('media_player.lg_smart_tv', 'media_title') in ['BBC ONE Lon', 'BBC ONE Lon HD'] }}
@@ -69,7 +69,7 @@
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') and state_attr('media_player.lg_smart_tv', 'media_title') in ['Channel 4', 'Channel 4 HD'] }}
 
     lg_smart_tv_is_watching_bbc_news:
-      friendly_name: BBC NEWS
+      friendly_name: BBC News
       icon_template: mdi:television-classic
       value_template: >-
         {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') and state_attr('media_player.lg_smart_tv', 'media_title') in ['BBC NEWS', 'BBC NEWS HD'] }}

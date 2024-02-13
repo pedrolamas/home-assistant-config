@@ -35,6 +35,7 @@ cards:
     cards:
       - type: button
         entity: binary_sensor.lg_smart_tv_is_watching_xbox_series_x
+        name: "Xbox"
         tap_action:
           action: call-service
           service: script.watch_on_lg_smart_tv
@@ -68,13 +69,13 @@ cards:
         entity: binary_sensor.lg_smart_tv_is_watching_bbc_one
         tap_action:
           action: call-service
-          service: media_player.play_media
+          service: script.watch_on_lg_smart_tv
           service_data:
             source: "Live TV"
             channel: "BBC ONE Lon HD"
         hold_action:
           action: call-service
-          service: media_player.play_media
+          service: script.watch_on_lg_smart_tv
           service_data:
             source: "Live TV"
             channel: "BBC ONE Lon"
@@ -82,13 +83,13 @@ cards:
         entity: binary_sensor.lg_smart_tv_is_watching_bbc_news
         tap_action:
           action: call-service
-          service: media_player.play_media
+          service: script.watch_on_lg_smart_tv
           service_data:
             source: "Live TV"
             channel: "BBC NEWS"
         hold_action:
           action: call-service
-          service: media_player.play_media
+          service: script.watch_on_lg_smart_tv
           service_data:
             source: "Live TV"
             channel: "BBC NEWS"
@@ -96,13 +97,13 @@ cards:
         entity: binary_sensor.lg_smart_tv_is_watching_channel_4
         tap_action:
           action: call-service
-          service: media_player.play_media
+          service: script.watch_on_lg_smart_tv
           service_data:
             source: "Live TV"
             channel: "Channel 4 HD"
         hold_action:
           action: call-service
-          service: media_player.play_media
+          service: script.watch_on_lg_smart_tv
           service_data:
             source: "Live TV"
             channel: "Channel 4"
@@ -110,13 +111,13 @@ cards:
         entity: binary_sensor.lg_smart_tv_is_watching_cbeebies
         tap_action:
           action: call-service
-          service: media_player.play_media
+          service: script.watch_on_lg_smart_tv
           service_data:
             source: "Live TV"
             channel: "CBeebies HD"
         hold_action:
           action: call-service
-          service: media_player.play_media
+          service: script.watch_on_lg_smart_tv
           service_data:
             source: "Live TV"
             channel: "CBeebies"
