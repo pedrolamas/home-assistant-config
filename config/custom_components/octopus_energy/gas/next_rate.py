@@ -1,7 +1,11 @@
 from datetime import timedelta
 import logging
 
-from homeassistant.core import HomeAssistant
+from homeassistant.const import (
+    STATE_UNAVAILABLE,
+    STATE_UNKNOWN,
+)
+from homeassistant.core import HomeAssistant, callback
 
 from homeassistant.util.dt import (utcnow)
 from homeassistant.helpers.update_coordinator import (
@@ -76,10 +80,14 @@ class OctopusEnergyGasNextRate(CoordinatorEntity, OctopusEnergyGasSensor, Restor
 
   @property
   def native_value(self):
+    return self._state
+  
+  @callback
+  def _handle_coordinator_update(self) -> None:
     """Retrieve the next rate for the sensor."""
     current = utcnow()
     rates_result: GasRatesCoordinatorResult = self.coordinator.data if self.coordinator is not None and self.coordinator.data is not None else None
-    if (rates_result is not None and (self._last_updated is None or self._last_updated < (current - timedelta(minutes=30)) or (current.minute % 30) == 0)):
+    if (rates_result is not None):
       _LOGGER.debug(f"Updating OctopusEnergyGasNextRate for '{self._mprn}/{self._serial_number}'")
 
       rate_information = get_next_rate_information(rates_result.rates, current)
@@ -111,8 +119,7 @@ class OctopusEnergyGasNextRate(CoordinatorEntity, OctopusEnergyGasSensor, Restor
       self._attributes["data_last_retrieved"] = rates_result.last_retrieved
 
     self._attributes["last_evaluated"] = current
-
-    return self._state
+    super()._handle_coordinator_update()
 
   async def async_added_to_hass(self):
     """Call when entity about to be added to hass."""
@@ -121,7 +128,7 @@ class OctopusEnergyGasNextRate(CoordinatorEntity, OctopusEnergyGasSensor, Restor
     state = await self.async_get_last_state()
     
     if state is not None and self._state is None:
-      self._state = None if state.state == "unknown" else state.state
+      self._state = None if state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN) else state.state
       self._attributes = dict_to_typed_dict(state.attributes, ['all_rates', 'applicable_rates'])
     
       _LOGGER.debug(f'Restored OctopusEnergyGasNextRate state: {self._state}')

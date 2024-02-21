@@ -3,6 +3,10 @@ from datetime import timedelta
 
 import voluptuous as vol
 
+from homeassistant.const import (
+    STATE_UNAVAILABLE,
+    STATE_UNKNOWN,
+)
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import generate_entity_id
 
@@ -53,7 +57,7 @@ _LOGGER = logging.getLogger(__name__)
 class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity, RestoreEntity):
   """Sensor for calculating when a target should be turned on or off."""
 
-  def __init__(self, hass: HomeAssistant, coordinator, config, is_export):
+  def __init__(self, hass: HomeAssistant, account_id: str, coordinator, config, is_export):
     """Init sensor."""
     # Pass coordinator to base class
     CoordinatorEntity.__init__(self, coordinator)
@@ -65,6 +69,7 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity, RestoreEnti
     self._is_export = is_export
     self._attributes["is_target_export"] = is_export
     self._last_evaluated = None
+    self._account_id = account_id
     
     is_rolling_target = True
     if CONFIG_TARGET_ROLLING_TARGET in self._config:
@@ -103,13 +108,17 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity, RestoreEnti
   
   @property
   def is_on(self):
+    return self._state
+  
+  @callback
+  def _handle_coordinator_update(self) -> None:
     """Determines if the target rate sensor is active."""
     if CONFIG_TARGET_OFFSET in self._config:
       offset = self._config[CONFIG_TARGET_OFFSET]
     else:
       offset = None
 
-    account_result = self._hass.data[DOMAIN][DATA_ACCOUNT]
+    account_result = self._hass.data[DOMAIN][self._account_id][DATA_ACCOUNT]
     account_info = account_result.account if account_result is not None else None
 
     check_for_errors(self._hass, self._config, account_info, now())
@@ -214,7 +223,7 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity, RestoreEnti
     self._state = active_result["is_active"]
 
     _LOGGER.debug(f"calculated: {self._state}")
-    return self._state
+    super()._handle_coordinator_update()
   
   async def async_added_to_hass(self):
     """Call when entity about to be added to hass."""
@@ -223,7 +232,7 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity, RestoreEnti
     state = await self.async_get_last_state()
     
     if state is not None and self._state is None:
-      self._state = None if state.state == "unknown" else state.state
+      self._state = None if state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN) or state.state is None else state.state.lower() == 'on'
       self._attributes = dict_to_typed_dict(
         state.attributes,
         [CONFIG_TARGET_OLD_NAME, CONFIG_TARGET_OLD_HOURS, CONFIG_TARGET_OLD_TYPE, CONFIG_TARGET_OLD_START_TIME, CONFIG_TARGET_OLD_END_TIME, CONFIG_TARGET_OLD_MPAN]
@@ -266,7 +275,7 @@ class OctopusEnergyTargetRate(CoordinatorEntity, BinarySensorEntity, RestoreEnti
         CONFIG_TARGET_OFFSET: trimmed_target_offset
       })
 
-    account_result = self._hass.data[DOMAIN][DATA_ACCOUNT]
+    account_result = self._hass.data[DOMAIN][self._account_id][DATA_ACCOUNT]
     account_info = account_result.account if account_result is not None else None
 
     errors = validate_target_rate_config(config, account_info, now())

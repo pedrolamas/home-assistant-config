@@ -10,6 +10,7 @@ from homeassistant.helpers.update_coordinator import (
 
 from ..const import (
   COORDINATOR_REFRESH_IN_SECONDS,
+  DATA_ACCOUNT,
   DOMAIN,
   DATA_INTELLIGENT_DISPATCHES,
   EVENT_ELECTRICITY_PREVIOUS_CONSUMPTION_RATES,
@@ -22,9 +23,10 @@ from ..api_client import (ApiException, OctopusEnergyApiClient)
 from ..api_client.intelligent_dispatches import IntelligentDispatches
 from ..utils import private_rates_to_public_rates
 
-from ..intelligent import adjust_intelligent_rates
+from ..intelligent import adjust_intelligent_rates, is_intelligent_tariff
 from ..coordinators.intelligent_dispatches import IntelligentDispatchesCoordinatorResult
-from . import BaseCoordinatorResult
+from . import BaseCoordinatorResult, get_electricity_meter_tariff_code, get_gas_meter_tariff_code
+from ..utils.rate_information import get_min_max_average_rates
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -50,13 +52,13 @@ class PreviousConsumptionCoordinatorResult(BaseCoordinatorResult):
 async def async_fetch_consumption_and_rates(
   previous_data: PreviousConsumptionCoordinatorResult,
   current: datetime,
+  account_info,
   client: OctopusEnergyApiClient,
   period_from: datetime,
   period_to: datetime,
   identifier: str,
   serial_number: str,
   is_electricity: bool,
-  tariff_code: str,
   is_smart_meter: bool,
   fire_event: Callable[[str, "dict[str, Any]"], None],
   intelligent_dispatches: IntelligentDispatches = None
@@ -64,12 +66,24 @@ async def async_fetch_consumption_and_rates(
 ):
   """Fetch the previous consumption and rates"""
 
+  if (account_info is None):
+    return previous_data
+
   if (previous_data == None or 
       current >= previous_data.next_refresh):
     _LOGGER.debug(f"Retrieving previous consumption data for {'electricity' if is_electricity else 'gas'} {identifier}/{serial_number}...")
     
     try:
       if (is_electricity == True):
+        tariff_code = get_electricity_meter_tariff_code(period_from, account_info, identifier, serial_number)
+        if tariff_code is None:
+          _LOGGER.error(f"Could not determine tariff code for previous consumption for electricity {identifier}/{serial_number}")
+          return previous_data
+
+        # We'll calculate the wrong value if we don't have our intelligent dispatches
+        if is_intelligent_tariff(tariff_code) and intelligent_dispatches is None:
+          return previous_data
+
         [consumption_data, rate_data, standing_charge] = await asyncio.gather(
           client.async_get_electricity_consumption(identifier, serial_number, period_from, period_to),
           client.async_get_electricity_rates(tariff_code, is_smart_meter, period_from, period_to),
@@ -82,6 +96,11 @@ async def async_fetch_consumption_and_rates(
                                                 intelligent_dispatches.planned,
                                                 intelligent_dispatches.completed)
       else:
+        tariff_code = get_gas_meter_tariff_code(period_from, account_info, identifier, serial_number)
+        if tariff_code is None:
+          _LOGGER.error(f"Could not determine tariff code for previous consumption for gas {identifier}/{serial_number}")
+          return previous_data
+
         [consumption_data, rate_data, standing_charge] = await asyncio.gather(
           client.async_get_gas_consumption(identifier, serial_number, period_from, period_to),
           client.async_get_gas_rates(tariff_code, period_from, period_to),
@@ -92,10 +111,13 @@ async def async_fetch_consumption_and_rates(
         _LOGGER.debug(f"Discovered previous consumption data for {'electricity' if is_electricity else 'gas'} {identifier}/{serial_number}")
         consumption_data = __sort_consumption(consumption_data)
 
+        public_rates = private_rates_to_public_rates(rate_data)
+        min_max_average_rates = get_min_max_average_rates(public_rates)
+
         if (is_electricity == True):
-          fire_event(EVENT_ELECTRICITY_PREVIOUS_CONSUMPTION_RATES, { "mpan": identifier, "serial_number": serial_number, "tariff_code": tariff_code, "rates": private_rates_to_public_rates(rate_data) })
+          fire_event(EVENT_ELECTRICITY_PREVIOUS_CONSUMPTION_RATES, { "mpan": identifier, "serial_number": serial_number, "tariff_code": tariff_code, "rates": public_rates, "min_rate": min_max_average_rates["min"], "max_rate": min_max_average_rates["max"], "average_rate": min_max_average_rates["average"] })
         else:
-          fire_event(EVENT_GAS_PREVIOUS_CONSUMPTION_RATES, { "mprn": identifier, "serial_number": serial_number, "tariff_code": tariff_code, "rates": private_rates_to_public_rates(rate_data) })
+          fire_event(EVENT_GAS_PREVIOUS_CONSUMPTION_RATES, { "mprn": identifier, "serial_number": serial_number, "tariff_code": tariff_code, "rates": public_rates, "min_rate": min_max_average_rates["min"], "max_rate": min_max_average_rates["max"], "average_rate": min_max_average_rates["average"] })
 
         _LOGGER.debug(f"Fired event for {'electricity' if is_electricity else 'gas'} {identifier}/{serial_number}")
 
@@ -116,7 +138,6 @@ async def async_fetch_consumption_and_rates(
       )
     except Exception as e:
       if isinstance(e, ApiException) == False:
-        _LOGGER.error(e)
         raise
       
       result = None
@@ -146,11 +167,11 @@ async def async_fetch_consumption_and_rates(
 
 async def async_create_previous_consumption_and_rates_coordinator(
     hass,
+    account_id: str,
     client: OctopusEnergyApiClient,
     identifier: str,
     serial_number: str,
     is_electricity: bool,
-    tariff_code: str,
     is_smart_meter: bool,
     days_offset: int):
   """Create reading coordinator"""
@@ -160,30 +181,30 @@ async def async_create_previous_consumption_and_rates_coordinator(
     """Fetch data from API endpoint."""
     period_from = as_utc((now() - timedelta(days=days_offset)).replace(hour=0, minute=0, second=0, microsecond=0))
     period_to = period_from + timedelta(days=1)
-    dispatches: IntelligentDispatchesCoordinatorResult = hass.data[DOMAIN][DATA_INTELLIGENT_DISPATCHES] if DATA_INTELLIGENT_DISPATCHES in hass.data[DOMAIN] else None
+    account_result = hass.data[DOMAIN][account_id][DATA_ACCOUNT] if DATA_ACCOUNT in hass.data[DOMAIN][account_id] else None
+    account_info = account_result.account if account_result is not None else None
+    dispatches: IntelligentDispatchesCoordinatorResult = hass.data[DOMAIN][account_id][DATA_INTELLIGENT_DISPATCHES] if DATA_INTELLIGENT_DISPATCHES in hass.data[DOMAIN][account_id] else None
     
     result = await async_fetch_consumption_and_rates(
-      hass.data[DOMAIN][previous_consumption_key] 
-      if previous_consumption_key in hass.data[DOMAIN]
-      else None,
+      hass.data[DOMAIN][account_id][previous_consumption_key] if previous_consumption_key in hass.data[DOMAIN][account_id] else None,
       utcnow(),
+      account_info,
       client,
       period_from,
       period_to,
       identifier,
       serial_number,
       is_electricity,
-      tariff_code,
       is_smart_meter,
       hass.bus.async_fire,
       dispatches.dispatches if dispatches is not None else None
     )
 
     if (result is not None):
-      hass.data[DOMAIN][previous_consumption_key] = result
+      hass.data[DOMAIN][account_id][previous_consumption_key] = result
 
-    if previous_consumption_key in hass.data[DOMAIN]:
-      return hass.data[DOMAIN][previous_consumption_key] 
+    if previous_consumption_key in hass.data[DOMAIN][account_id]:
+      return hass.data[DOMAIN][account_id][previous_consumption_key] 
     else:
       return None
 
@@ -198,8 +219,6 @@ async def async_create_previous_consumption_and_rates_coordinator(
     always_update=True
   )
 
-  hass.data[DOMAIN][f'{identifier}_{serial_number}_previous_consumption_and_cost_coordinator'] = coordinator
-
-  await coordinator.async_config_entry_first_refresh()
+  hass.data[DOMAIN][account_id][f'{identifier}_{serial_number}_previous_consumption_and_cost_coordinator'] = coordinator
 
   return coordinator

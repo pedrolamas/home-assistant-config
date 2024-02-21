@@ -1,5 +1,9 @@
 import logging
 
+from homeassistant.const import (
+    STATE_UNAVAILABLE,
+    STATE_UNKNOWN,
+)
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.util.dt import (utcnow)
@@ -61,13 +65,17 @@ class OctopusEnergyWheelOfFortuneGasSpins(CoordinatorEntity, RestoreSensor):
 
   @property
   def state(self):
+    return self._state
+  
+  @callback
+  def _handle_coordinator_update(self) -> None:
     result: WheelOfFortuneSpinsCoordinatorResult = self.coordinator.data if self.coordinator is not None and self.coordinator.data is not None else None
     if result is not None and result.spins is not None:
       self._state = result.spins.gas
       self._attributes["data_last_retrieved"] = result.last_retrieved
 
     self._attributes["last_evaluated"] = utcnow()
-    return self._state
+    super()._handle_coordinator_update()
 
   async def async_added_to_hass(self):
     """Call when entity about to be added to hass."""
@@ -76,7 +84,7 @@ class OctopusEnergyWheelOfFortuneGasSpins(CoordinatorEntity, RestoreSensor):
     state = await self.async_get_last_state()
 
     if state is not None and self._state is None:
-      self._state = None if state.state == "unknown" else state.state
+      self._state = None if state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN) else state.state
       self._attributes = dict_to_typed_dict(state.attributes)
     
       _LOGGER.debug(f'Restored OctopusEnergyWheelOfFortuneGasSpins state: {self._state}')
