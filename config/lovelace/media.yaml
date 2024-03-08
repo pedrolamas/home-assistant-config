@@ -22,11 +22,14 @@ cards:
           icon: mdi:power
           tap_action:
             action: call-service
-            service: media_player.turn_on
-            service_data:
-              entity_id: media_player.lg_smart_tv
+            service: script.turn_on_lg_smart_tv
 
       - type: entities
         show_header_toggle: false
         entities:
           - media_player.lg_smart_tv
+
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - media_player.living_room_sonos_arc
