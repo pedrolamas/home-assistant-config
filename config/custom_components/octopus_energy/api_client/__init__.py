@@ -13,6 +13,8 @@ from ..utils import (
   get_tariff_parts,
 )
 
+
+from .octoplus import RedeemOctoplusPointsResponse
 from .intelligent_settings import IntelligentSettings
 from .intelligent_dispatches import IntelligentDispatchItem, IntelligentDispatches
 from .saving_sessions import JoinSavingSessionResponse, SavingSession, SavingSessionsResponse
@@ -56,28 +58,12 @@ account_query = '''query {{
 				agreements(includeInactive: true) {{
 					validFrom
 					validTo
-					tariff {{
-						...on StandardTariff {{
-							tariffCode
+          tariff {{
+            ... on TariffType {{
               productCode
-						}}
-						...on DayNightTariff {{
-							tariffCode
-              productCode
-						}}
-						...on ThreeRateTariff {{
-							tariffCode
-              productCode
-						}}
-						...on HalfHourlyTariff {{
-							tariffCode
-              productCode
-						}}
-            ...on PrepayTariff {{
-							tariffCode
-              productCode
-						}}
-					}}
+              tariffCode
+            }}
+          }}
 				}}
 			}}
     }}
@@ -300,6 +286,16 @@ greenness_forecast_query = '''query {
     highlightFlag
   }
 }'''
+
+redeem_octoplus_points_account_credit_mutation = '''mutation {{
+  redeemLoyaltyPointsForAccountCredit(input: {{
+    accountNumber: "{account_id}",
+    points: {points}
+  }}) {{
+    pointsRedeemed
+  }}
+}}
+'''
 
 user_agent_value = "bottlecapdave-home-assistant-octopus-energy"
 
@@ -638,7 +634,7 @@ class OctopusEnergyApiClient:
     return None
   
   async def async_join_octoplus_saving_session(self, account_id: str, event_code: str) -> JoinSavingSessionResponse:
-    """Get the user's octoplus points"""
+    """Join a saving session"""
     await self.async_refresh_token()
 
     try:
@@ -647,13 +643,33 @@ class OctopusEnergyApiClient:
       # Get account response
       payload = { "query": octoplus_saving_session_join_mutation.format(account_id=account_id, event_code=event_code) }
       headers = { "Authorization": f"JWT {self._graphql_token}" }
-      async with client.post(url, json=payload, headers=headers) as account_response:
+      async with client.post(url, json=payload, headers=headers) as join_response:
 
         try:
-          await self.__async_read_response__(account_response, url)
+          await self.__async_read_response__(join_response, url)
           return JoinSavingSessionResponse(True, [])
         except RequestException as e:
           return JoinSavingSessionResponse(False, e.errors)
+    
+    except TimeoutError:
+      _LOGGER.warning(f'Failed to connect. Timeout of {self._timeout} exceeded.')
+      raise TimeoutException()
+    
+  async def async_redeem_octoplus_points_into_account_credit(self, account_id: str, points_to_redeem: int) -> RedeemOctoplusPointsResponse:
+    """Redeem octoplus points"""
+    await self.async_refresh_token()
+
+    try:
+      client = self._create_client_session()
+      url = f'{self._base_url}/v1/graphql/'
+      payload = { "query": redeem_octoplus_points_account_credit_mutation.format(account_id=account_id, points=points_to_redeem) }
+      headers = { "Authorization": f"JWT {self._graphql_token}" }
+      async with client.post(url, json=payload, headers=headers) as redemption_response:
+        try:
+          await self.__async_read_response__(redemption_response, url)
+          return RedeemOctoplusPointsResponse(True, [])
+        except RequestException as e:
+          return RedeemOctoplusPointsResponse(False, e.errors)
     
     except TimeoutError:
       _LOGGER.warning(f'Failed to connect. Timeout of {self._timeout} exceeded.')
@@ -674,7 +690,7 @@ class OctopusEnergyApiClient:
 
         if (response_body is not None and "data" in response_body and "smartMeterTelemetry" in response_body["data"] and response_body["data"]["smartMeterTelemetry"] is not None and len(response_body["data"]["smartMeterTelemetry"]) > 0):
           return list(map(lambda mp: {
-            "consumption": float(mp["consumptionDelta"]) / 1000,
+            "consumption": float(mp["consumptionDelta"]) / 1000 if "consumptionDelta" in mp and mp["consumptionDelta"] is not None else 0,
             "demand": float(mp["demand"]) if "demand" in mp and mp["demand"] is not None else None,
             "start": parse_datetime(mp["readAt"]),
             "end": parse_datetime(mp["readAt"]) + timedelta(minutes=30)
@@ -769,13 +785,26 @@ class OctopusEnergyApiClient:
     else:
       return await self.async_get_electricity_day_night_rates(product_code, tariff_code, is_smart_meter, period_from, period_to)
 
-  async def async_get_electricity_consumption(self, mpan, serial_number, period_from, period_to):
+  async def async_get_electricity_consumption(self, mpan, serial_number, period_from, period_to, page_size: int | None = None):
     """Get the current electricity consumption"""
 
     try:
       client = self._create_client_session()
       auth = aiohttp.BasicAuth(self._api_key, '')
-      url = f'{self._base_url}/v1/electricity-meter-points/{mpan}/meters/{serial_number}/consumption?period_from={period_from.strftime("%Y-%m-%dT%H:%M:%SZ")}&period_to={period_to.strftime("%Y-%m-%dT%H:%M:%SZ")}'
+
+      query_params = []
+      if period_from is not None:
+        query_params.append(f'period_from={period_from.strftime("%Y-%m-%dT%H:%M:%SZ")}')
+      
+      if period_to is not None:
+        query_params.append(f'period_to={period_to.strftime("%Y-%m-%dT%H:%M:%SZ")}')
+
+      if page_size is not None:
+        query_params.append(f'page_size={page_size}')
+
+      query_string = '&'.join(query_params)
+      
+      url = f"{self._base_url}/v1/electricity-meter-points/{mpan}/meters/{serial_number}/consumption{f'?{query_string}' if len(query_string) > 0 else ''}"
       async with client.get(url, auth=auth) as response:
         
         data = await self.__async_read_response__(response, url)
@@ -787,7 +816,7 @@ class OctopusEnergyApiClient:
 
             # For some reason, the end point returns slightly more data than we requested, so we need to filter out
             # the results
-            if as_utc(item["start"]) >= period_from and as_utc(item["end"]) <= period_to:
+            if (period_from is None or as_utc(item["start"]) >= period_from) and (period_to is None or as_utc(item["end"]) <= period_to):
               results.append(item)
           
           results.sort(key=self.__get_interval_end)
@@ -826,13 +855,26 @@ class OctopusEnergyApiClient:
       _LOGGER.warning(f'Failed to connect. Timeout of {self._timeout} exceeded.')
       raise TimeoutException()
 
-  async def async_get_gas_consumption(self, mprn, serial_number, period_from, period_to):
+  async def async_get_gas_consumption(self, mprn, serial_number, period_from, period_to, page_size: int | None = None):
     """Get the current gas rates"""
     
     try:
       client = self._create_client_session()
       auth = aiohttp.BasicAuth(self._api_key, '')
-      url = f'{self._base_url}/v1/gas-meter-points/{mprn}/meters/{serial_number}/consumption?period_from={period_from.strftime("%Y-%m-%dT%H:%M:%SZ")}&period_to={period_to.strftime("%Y-%m-%dT%H:%M:%SZ")}'
+
+      query_params = []
+      if period_from is not None:
+        query_params.append(f'period_from={period_from.strftime("%Y-%m-%dT%H:%M:%SZ")}')
+      
+      if period_to is not None:
+        query_params.append(f'period_to={period_to.strftime("%Y-%m-%dT%H:%M:%SZ")}')
+
+      if page_size is not None:
+        query_params.append(f'page_size={page_size}')
+
+      query_string = '&'.join(query_params)
+
+      url = f"{self._base_url}/v1/gas-meter-points/{mprn}/meters/{serial_number}/consumption{f'?{query_string}' if len(query_string) > 0 else ''}"
       async with client.get(url, auth=auth) as response:
         data = await self.__async_read_response__(response, url)
         if (data is not None and "results" in data):
@@ -843,7 +885,7 @@ class OctopusEnergyApiClient:
 
             # For some reason, the end point returns slightly more data than we requested, so we need to filter out
             # the results
-            if as_utc(item["start"]) >= period_from and as_utc(item["end"]) <= period_to:
+            if (period_from is None or as_utc(item["start"]) >= period_from) and (period_to is None or as_utc(item["end"]) <= period_to):
               results.append(item)
           
           results.sort(key=self.__get_interval_end)

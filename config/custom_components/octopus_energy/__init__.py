@@ -21,6 +21,7 @@ from .intelligent import async_mock_intelligent_data, get_intelligent_features, 
 from .config.main import async_migrate_main_config
 from .config.target_rates import async_migrate_target_config
 from .utils import get_active_tariff_code
+from .utils.tariff_overrides import async_get_tariff_override
 
 from .const import (
   CONFIG_KIND,
@@ -38,8 +39,6 @@ from .const import (
   CONFIG_ACCOUNT_ID,
   CONFIG_MAIN_ELECTRICITY_PRICE_CAP,
   CONFIG_MAIN_GAS_PRICE_CAP,
-  
-  CONFIG_TARGET_NAME,
 
   DATA_CLIENT,
   DATA_ELECTRICITY_RATES_COORDINATOR_KEY,
@@ -109,6 +108,14 @@ async def async_setup_entry(hass, entry):
     entry.async_on_unload(
         hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, async_close_connection)
     )
+
+    # If the main account has been reloaded, then reload all other entries to make sure they're referencing
+    # the correct references (e.g. rate coordinators)
+    child_entries = hass.config_entries.async_entries(DOMAIN)
+    for child_entry in child_entries:
+      if child_entry.data[CONFIG_KIND] != CONFIG_KIND_ACCOUNT and child_entry.data[CONFIG_ACCOUNT_ID] == account_id:
+        await hass.config_entries.async_reload(child_entry.entry_id)
+  
   elif config[CONFIG_KIND] == CONFIG_KIND_TARGET_RATE:
     if DOMAIN not in hass.data or account_id not in hass.data[DOMAIN] or DATA_ACCOUNT not in hass.data[DOMAIN][account_id]:
       raise ConfigEntryNotReady("Account has not been setup")
@@ -260,8 +267,9 @@ async def async_setup_dependencies(hass, config):
         serial_number = meter["serial_number"]
         is_export_meter = meter["is_export"]
         is_smart_meter = meter["is_smart_meter"]
+        tariff_override = await async_get_tariff_override(hass, mpan, serial_number)
         planned_dispatches_supported = get_intelligent_features(intelligent_device["provider"]).planned_dispatches_supported if intelligent_device is not None else True
-        await async_setup_electricity_rates_coordinator(hass, account_id, mpan, serial_number, is_smart_meter, is_export_meter, planned_dispatches_supported)
+        await async_setup_electricity_rates_coordinator(hass, account_id, mpan, serial_number, is_smart_meter, is_export_meter, planned_dispatches_supported, tariff_override)
 
   await async_setup_account_info_coordinator(hass, account_id)
 
@@ -281,10 +289,12 @@ async def async_unload_entry(hass, entry):
     """Unload a config entry."""
 
     unload_ok = False
-    if CONFIG_MAIN_API_KEY in entry.data:
+    if entry.data[CONFIG_KIND] == CONFIG_KIND_ACCOUNT:
       unload_ok = await hass.config_entries.async_unload_platforms(entry, ACCOUNT_PLATFORMS)
-    elif CONFIG_TARGET_NAME in entry.data:
+    elif entry.data[CONFIG_KIND] == CONFIG_KIND_TARGET_RATE:
       unload_ok = await hass.config_entries.async_unload_platforms(entry, TARGET_RATE_PLATFORMS)
+    elif entry.data[CONFIG_KIND] == CONFIG_KIND_COST_TRACKER:
+      unload_ok = await hass.config_entries.async_unload_platforms(entry, COST_TRACKER_PLATFORMS)
 
     return unload_ok
 

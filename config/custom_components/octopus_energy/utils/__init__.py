@@ -3,7 +3,7 @@ import re
 from datetime import datetime, timedelta
 
 
-from homeassistant.util.dt import (as_utc, parse_datetime)
+from homeassistant.util.dt import (as_local, as_utc, parse_datetime)
 
 from ..const import (
   REGEX_TARIFF_PARTS,
@@ -64,7 +64,8 @@ def get_active_tariff_code(utcnow: datetime, agreements):
   return None
 
 def get_off_peak_cost(current: datetime, rates: list):
-  today_start = as_utc(current.replace(hour=0, minute=0, second=0, microsecond=0))
+  # Need to use as local to ensure we get the correct from/to periods relative to our local time
+  today_start = as_utc(as_local(current).replace(hour=0, minute=0, second=0, microsecond=0))
   today_end = today_start + timedelta(days=1)
   off_peak_cost = None
 
@@ -97,7 +98,7 @@ class OffPeakTime:
     self.start = start
     self.end = end
 
-def get_off_peak_times(current: datetime, rates: list):
+def get_off_peak_times(current: datetime, rates: list, include_intelligent_adjusted = False):
   off_peak_value = get_off_peak_cost(current, rates)
   times: list[OffPeakTime] = []
 
@@ -107,7 +108,7 @@ def get_off_peak_times(current: datetime, rates: list):
     for rate_index in range(rates_length):
       rate = rates[rate_index]
       if (rate["value_inc_vat"] == off_peak_value and 
-          ("is_intelligent_adjusted" not in rate or rate["is_intelligent_adjusted"] == False)):
+          ("is_intelligent_adjusted" not in rate or rate["is_intelligent_adjusted"] == False or include_intelligent_adjusted)):
         if start is None:
           start = rate["start"]
       elif start is not None:

@@ -41,13 +41,15 @@ def __sort_consumption(consumption_data):
 class PreviousConsumptionCoordinatorResult(BaseCoordinatorResult):
   consumption: list
   rates: list
+  latest_available_timestamp: datetime
   standing_charge: float
 
-  def __init__(self, last_retrieved: datetime, request_attempts: int, consumption: list, rates: list, standing_charge):
+  def __init__(self, last_retrieved: datetime, request_attempts: int, consumption: list, rates: list, standing_charge, latest_available_timestamp: datetime = None):
     super().__init__(last_retrieved, request_attempts, REFRESH_RATE_IN_MINUTES_PREVIOUS_CONSUMPTION)
     self.consumption = consumption
     self.rates = rates
     self.standing_charge = standing_charge
+    self.latest_available_timestamp = latest_available_timestamp
 
 async def async_fetch_consumption_and_rates(
   previous_data: PreviousConsumptionCoordinatorResult,
@@ -61,7 +63,8 @@ async def async_fetch_consumption_and_rates(
   is_electricity: bool,
   is_smart_meter: bool,
   fire_event: Callable[[str, "dict[str, Any]"], None],
-  intelligent_dispatches: IntelligentDispatches = None
+  intelligent_dispatches: IntelligentDispatches = None,
+  tariff_override = None
 
 ):
   """Fetch the previous consumption and rates"""
@@ -75,7 +78,7 @@ async def async_fetch_consumption_and_rates(
     
     try:
       if (is_electricity == True):
-        tariff_code = get_electricity_meter_tariff_code(period_from, account_info, identifier, serial_number)
+        tariff_code = get_electricity_meter_tariff_code(period_from, account_info, identifier, serial_number) if tariff_override is None else None
         if tariff_code is None:
           _LOGGER.error(f"Could not determine tariff code for previous consumption for electricity {identifier}/{serial_number}")
           return previous_data
@@ -84,8 +87,9 @@ async def async_fetch_consumption_and_rates(
         if is_intelligent_tariff(tariff_code) and intelligent_dispatches is None:
           return previous_data
 
-        [consumption_data, rate_data, standing_charge] = await asyncio.gather(
+        [consumption_data, latest_consumption_data, rate_data, standing_charge] = await asyncio.gather(
           client.async_get_electricity_consumption(identifier, serial_number, period_from, period_to),
+          client.async_get_electricity_consumption(identifier, serial_number, None, None, 1),
           client.async_get_electricity_rates(tariff_code, is_smart_meter, period_from, period_to),
           client.async_get_electricity_standing_charge(tariff_code, period_from, period_to)
         )
@@ -96,13 +100,14 @@ async def async_fetch_consumption_and_rates(
                                                 intelligent_dispatches.planned,
                                                 intelligent_dispatches.completed)
       else:
-        tariff_code = get_gas_meter_tariff_code(period_from, account_info, identifier, serial_number)
+        tariff_code = get_gas_meter_tariff_code(period_from, account_info, identifier, serial_number) if tariff_override is None else None
         if tariff_code is None:
           _LOGGER.error(f"Could not determine tariff code for previous consumption for gas {identifier}/{serial_number}")
           return previous_data
 
-        [consumption_data, rate_data, standing_charge] = await asyncio.gather(
+        [consumption_data, latest_consumption_data, rate_data, standing_charge] = await asyncio.gather(
           client.async_get_gas_consumption(identifier, serial_number, period_from, period_to),
+          client.async_get_gas_consumption(identifier, serial_number, None, None, 1),
           client.async_get_gas_rates(tariff_code, period_from, period_to),
           client.async_get_gas_standing_charge(tariff_code, period_from, period_to)
         )
@@ -126,7 +131,8 @@ async def async_fetch_consumption_and_rates(
           1,
           consumption_data,
           rate_data,
-          standing_charge["value_inc_vat"]
+          standing_charge["value_inc_vat"],
+          latest_consumption_data[-1]["end"] if latest_consumption_data is not None and len(latest_consumption_data) > 0 else None
         )
       
       return PreviousConsumptionCoordinatorResult(
@@ -134,7 +140,10 @@ async def async_fetch_consumption_and_rates(
         1,
         previous_data.consumption if previous_data is not None else None,
         previous_data.rates if previous_data is not None else None,
-        previous_data.standing_charge if previous_data is not None else None
+        previous_data.standing_charge if previous_data is not None else None,
+        latest_consumption_data[-1]["end"]
+        if latest_consumption_data is not None and len(latest_consumption_data) > 0
+        else previous_data.latest_available_timestamp if previous_data is not None else None
       )
     except Exception as e:
       if isinstance(e, ApiException) == False:
@@ -147,7 +156,8 @@ async def async_fetch_consumption_and_rates(
           previous_data.request_attempts + 1,
           previous_data.consumption,
           previous_data.rates,
-          previous_data.standing_charge
+          previous_data.standing_charge,
+          previous_data.latest_available_timestamp
         )
         _LOGGER.warning(f"Failed to retrieve previous consumption data for {'electricity' if is_electricity else 'gas'} {identifier}/{serial_number} - using cached data. Next attempt at {result.next_refresh}")
       else:
@@ -155,6 +165,7 @@ async def async_fetch_consumption_and_rates(
           # We want to force into our fallback mode
           current - timedelta(minutes=REFRESH_RATE_IN_MINUTES_PREVIOUS_CONSUMPTION),
           2,
+          None,
           None,
           None,
           None
@@ -173,9 +184,10 @@ async def async_create_previous_consumption_and_rates_coordinator(
     serial_number: str,
     is_electricity: bool,
     is_smart_meter: bool,
-    days_offset: int):
+    days_offset: int,
+    tariff_override = None):
   """Create reading coordinator"""
-  previous_consumption_key = f'{identifier}_{serial_number}_previous_consumption_and_rates'
+  previous_consumption_data_key = f'{identifier}_{serial_number}_previous_consumption_and_rates'
 
   async def async_update_data():
     """Fetch data from API endpoint."""
@@ -186,7 +198,7 @@ async def async_create_previous_consumption_and_rates_coordinator(
     dispatches: IntelligentDispatchesCoordinatorResult = hass.data[DOMAIN][account_id][DATA_INTELLIGENT_DISPATCHES] if DATA_INTELLIGENT_DISPATCHES in hass.data[DOMAIN][account_id] else None
     
     result = await async_fetch_consumption_and_rates(
-      hass.data[DOMAIN][account_id][previous_consumption_key] if previous_consumption_key in hass.data[DOMAIN][account_id] else None,
+      hass.data[DOMAIN][account_id][previous_consumption_data_key] if previous_consumption_data_key in hass.data[DOMAIN][account_id] else None,
       utcnow(),
       account_info,
       client,
@@ -201,17 +213,17 @@ async def async_create_previous_consumption_and_rates_coordinator(
     )
 
     if (result is not None):
-      hass.data[DOMAIN][account_id][previous_consumption_key] = result
+      hass.data[DOMAIN][account_id][previous_consumption_data_key] = result
 
-    if previous_consumption_key in hass.data[DOMAIN][account_id]:
-      return hass.data[DOMAIN][account_id][previous_consumption_key] 
+    if previous_consumption_data_key in hass.data[DOMAIN][account_id]:
+      return hass.data[DOMAIN][account_id][previous_consumption_data_key] 
     else:
       return None
 
   coordinator = DataUpdateCoordinator(
     hass,
     _LOGGER,
-    name=previous_consumption_key,
+    name=previous_consumption_data_key,
     update_method=async_update_data,
     # Because of how we're using the data, we'll update every minute, but we will only actually retrieve
     # data every 30 minutes
