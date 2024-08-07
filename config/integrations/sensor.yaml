@@ -7,14 +7,6 @@
 #    - 'time_utc'
 #    - 'beat'
 
-- platform: worldclock
-  name: Eastern Time Zone
-  time_zone: EST5EDT
-
-- platform: worldclock
-  name: Pacific Time Zone
-  time_zone: PST8PDT
-
 #- platform: google_travel_time
 #  name: Pedro to Home
 #  api_key: !secret google_travel_time_api_key
