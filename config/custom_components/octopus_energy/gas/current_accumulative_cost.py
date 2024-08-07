@@ -55,7 +55,7 @@ class OctopusEnergyCurrentAccumulativeGasCost(MultiCoordinatorEntity, OctopusEne
   @property
   def name(self):
     """Name of the sensor."""
-    return f"Gas {self._serial_number} {self._mprn} Current Accumulative Cost"
+    return f"Current Accumulative Cost Gas ({self._serial_number}/{self._mprn})"
 
   @property
   def device_class(self):
@@ -120,7 +120,6 @@ class OctopusEnergyCurrentAccumulativeGasCost(MultiCoordinatorEntity, OctopusEne
         "standing_charge": consumption_and_cost["standing_charge"],
         "total_without_standing_charge": consumption_and_cost["total_cost_without_standing_charge"],
         "total": consumption_and_cost["total_cost"],
-        "last_evaluated": consumption_and_cost["last_evaluated"],
         "data_last_retrieved": consumption_result.last_retrieved if consumption_result is not None else None,
         "charges": list(map(lambda charge: {
           "start": charge["start"],
@@ -132,6 +131,7 @@ class OctopusEnergyCurrentAccumulativeGasCost(MultiCoordinatorEntity, OctopusEne
         "calorific_value": self._calorific_value
       }
 
+    self._attributes = dict_to_typed_dict(self._attributes)
     super()._handle_coordinator_update()
 
   async def async_added_to_hass(self):

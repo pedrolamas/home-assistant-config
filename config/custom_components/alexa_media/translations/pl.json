@@ -12,7 +12,7 @@
       "invalid_credentials": "Nieprawidłowe dane logowania",
       "invalid_url": "URL jest nieprawidłowy: {message}",
       "unable_to_connect_hass_url": "Nie można połączyć się z adresem URL Home Assistanta. Sprawdź wewnętrzny adres URL w sekcji Konfiguracja -> Ogólne",
-      "unknown_error": "Nieznany błąd, włącz zaawansowane debugowanie i zgłoś log z tego zdarzenia"
+      "unknown_error": "Nieznany błąd: {message}"
     },
     "step": {
       "proxy_warning": {
@@ -32,12 +32,14 @@
       "user": {
         "data": {
           "debug": "Zaawansowane debugowanie",
-          "email": "Adres email",
+          "email": "Adres e-mail",
           "exclude_devices": "Wykluczone urządzenia (oddzielone przecinkami)",
+          "extended_entity_discovery": "Include devices connected via Echo",
           "hass_url": "URL dostępu do Home Assistanta",
           "include_devices": "Dodawane urządzenia (oddzielone przecinkami)",
           "otp_secret": "Wbudowana aplikacja kluczy uwierzytelniania dwuskładnikowego (automatycznie generuje kody uwierzytelniania dwuskładnikowego)",
           "password": "Hasło",
+          "queue_delay": "Sekundy oczekiwania na kolejkowanie poleceń",
           "scan_interval": "Interwał skanowania (sekundy)",
           "securitycode": "Kod uwierzytelniania dwuskładnikowego (zalecany w celu uniknięcia problemów z logowaniem)",
           "url": "Region/domena Amazon (np. amazon.co.uk)"
@@ -51,10 +53,17 @@
     "step": {
       "init": {
         "data": {
+          "debug": "Zaawansowane debugowanie",
+          "exclude_devices": "Wykluczone urządzenia (oddzielone przecinkami)",
           "extended_entity_discovery": "Uwzględnij urządzenia podłączone przez Echo",
+          "hass_url": "Publiczny URL do dostępu do Home Assistant (z końcowym '/')",
+          "include_devices": "Dodawane urządzenia (oddzielone przecinkami)",
           "public_url": "Publiczny URL do dostępu do Home Assistant (z końcowym '/')",
-          "queue_delay": "Sekundy oczekiwania na kolejkowanie poleceń"
-        }
+          "queue_delay": "Sekundy oczekiwania na kolejkowanie poleceń",
+          "scan_interval": "Interwał skanowania (sekundy)"
+        },
+        "description": "Required *",
+        "title": "Alexa Media Player - Reconfiguration"
       }
     }
   },

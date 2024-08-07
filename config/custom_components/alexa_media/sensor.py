@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 For more details about this platform, please refer to the documentation at
 https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers-needed/58639
 """
+
 import datetime
 import json
 import logging
@@ -24,7 +25,6 @@ from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt
 from packaging import version
-import pytz
 
 from . import (
     CONF_EMAIL,
@@ -430,7 +430,7 @@ class AlexaMediaNotificationSensor(SensorEntity):
             "alexa_media_notification_event",
             dt.as_local(time_date),
         )
-        self.hass.bus.async_fire(
+        self.hass.bus.fire(
             "alexa_media_notification_event",
             event_data={
                 "email": hide_email(self._account),
@@ -447,11 +447,11 @@ class AlexaMediaNotificationSensor(SensorEntity):
         ):
             return value
         naive_time = dt.parse_datetime(value[1][self._sensor_property])
-        timezone = pytz.timezone(
+        timezone = dt.get_time_zone(
             self._client._timezone  # pylint: disable=protected-access
         )
         if timezone and naive_time:
-            value[1][self._sensor_property] = timezone.localize(naive_time)
+            value[1][self._sensor_property] = naive_time.replace(tzinfo=timezone)
         elif not naive_time:
             # this is typically an older alarm
             value[1][self._sensor_property] = datetime.datetime.fromtimestamp(
@@ -610,7 +610,7 @@ class AlexaMediaNotificationSensor(SensorEntity):
             self._n_dict = None
         self._process_raw_notifications()
         try:
-            self.async_write_ha_state()
+            self.schedule_update_ha_state()
         except NoEntitySpecifiedError:
             pass  # we ignore this due to a harmless startup race condition
 
@@ -670,9 +670,11 @@ class TimerSensor(AlexaMediaNotificationSensor):
             "remainingTime",
             account,
             f"next {self._type}",
-            "mdi:timer-outline"
-            if (version.parse(HA_VERSION) >= version.parse("0.113.0"))
-            else "mdi:timer",
+            (
+                "mdi:timer-outline"
+                if (version.parse(HA_VERSION) >= version.parse("0.113.0"))
+                else "mdi:timer"
+            ),
         )
 
     def _process_state(self, value) -> Optional[datetime.datetime]:
@@ -701,6 +703,18 @@ class TimerSensor(AlexaMediaNotificationSensor):
             else "mdi:timer-off"
         )
         return self._attr_icon if not self.paused else off_icon
+
+    @property
+    def timer(self):
+        """Return the timer of the sensor."""
+        return self._next.get("timerLabel") if self._next else None
+
+    @property
+    def extra_state_attributes(self):
+        """Return the scene state attributes."""
+        attr = super().extra_state_attributes
+        attr.update({"timer": self.timer})
+        return attr
 
 
 class ReminderSensor(AlexaMediaNotificationSensor):

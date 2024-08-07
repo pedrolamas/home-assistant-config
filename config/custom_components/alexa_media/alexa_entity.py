@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 For more details about this platform, please refer to the documentation at
 https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers-needed/58639
 """
+
 from datetime import datetime
 import json
 import logging
@@ -75,7 +76,10 @@ def is_local(appliance: dict[str, Any]) -> bool:
 
     # Ledvance/Sengled bulbs connected via bluetooth are hard to detect as locally connected
     # There is probably a better way, but this works for now.
-    if appliance.get("manufacturerName") == "Ledvance" or appliance.get("manufacturerName") == "Sengled":
+    if (
+        appliance.get("manufacturerName") == "Ledvance"
+        or appliance.get("manufacturerName") == "Sengled"
+    ):
         return not is_skill(appliance)
 
     # Zigbee devices are guaranteed to be local and have a particular pattern of id
@@ -114,7 +118,13 @@ def is_light(appliance: dict[str, Any]) -> bool:
     """Is the given appliance a light controlled locally by an Echo."""
     return (
         is_local(appliance)
-        and "LIGHT" in appliance.get("applianceTypes", [])
+        and (
+            "LIGHT" in appliance.get("applianceTypes", [])
+            or (
+                "SMARTPLUG" in appliance.get("applianceTypes", [])
+                and appliance.get("customerDefinedDeviceType") == "LIGHT"
+            )
+        )
         and has_capability(appliance, "Alexa.PowerController", "powerState")
     )
 
@@ -127,12 +137,16 @@ def is_contact_sensor(appliance: dict[str, Any]) -> bool:
         and has_capability(appliance, "Alexa.ContactSensor", "detectionState")
     )
 
+
 def is_switch(appliance: dict[str, Any]) -> bool:
-    """Is the given appliance a switch controlled locally by an Echo."""
+    """Is the given appliance a switch controlled locally by an Echo, which is not redeclared as a light."""
     return (
         is_local(appliance)
-        and "SMARTPLUG" in appliance.get("applianceTypes", [])
-        and appliance["manufacturerName"] == "Amazon"
+        and (
+            "SMARTPLUG" in appliance.get("applianceTypes", [])
+            or "SWITCH" in appliance.get("applianceTypes", [])
+        )
+        and appliance.get("customerDefinedDeviceType") != "LIGHT"
         and has_capability(appliance, "Alexa.PowerController", "powerState")
     )
 

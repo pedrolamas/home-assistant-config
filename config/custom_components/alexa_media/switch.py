@@ -6,10 +6,12 @@ SPDX-License-Identifier: Apache-2.0
 For more details about this platform, please refer to the documentation at
 https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers-needed/58639
 """
+
 import datetime
 import logging
 from typing import List
 
+from alexapy import AlexaAPI
 from homeassistant.exceptions import ConfigEntryNotReady, NoEntitySpecifiedError
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import EntityCategory
@@ -24,7 +26,6 @@ from . import (
     hide_email,
     hide_serial,
 )
-from alexapy import AlexaAPI
 from .alexa_entity import parse_power_from_coordinator
 from .alexa_media import AlexaMedia
 from .const import CONF_EXTENDED_ENTITY_DISCOVERY
@@ -127,7 +128,9 @@ async def async_setup_platform(hass, config, add_devices_callback, discovery_inf
                     switch_entity["name"],
                 )
                 coordinator = account_dict["coordinator"]
-                switch = SmartSwitch(coordinator, account_dict["login_obj"], switch_entity)
+                switch = SmartSwitch(
+                    coordinator, account_dict["login_obj"], switch_entity
+                )
                 account_dict["entities"]["smart_switch"].append(switch)
                 devices.append(switch)
             else:
@@ -214,7 +217,7 @@ class AlexaMediaSwitch(SwitchDevice, AlexaMedia):
         if "queue_state" in event:
             queue_state = event["queue_state"]
             if queue_state["dopplerId"]["deviceSerialNumber"] == self._client.unique_id:
-                self.async_write_ha_state()
+                self.schedule_update_ha_state()
 
     @_catch_login_errors
     async def _set_switch(self, state, **kwargs):
@@ -233,7 +236,7 @@ class AlexaMediaSwitch(SwitchDevice, AlexaMedia):
                 self.name,
                 getattr(self._client, self._switch_property),
             )
-            self.async_write_ha_state()
+            self.schedule_update_ha_state()
         elif self.should_poll:
             # if we need to poll, refresh media_client
             _LOGGER.debug(
@@ -304,7 +307,7 @@ class AlexaMediaSwitch(SwitchDevice, AlexaMedia):
         except AttributeError:
             pass
         try:
-            self.async_write_ha_state()
+            self.schedule_update_ha_state()
         except NoEntitySpecifiedError:
             pass  # we ignore this due to a harmless startup race condition
 
@@ -368,7 +371,7 @@ class DNDSwitch(AlexaMediaSwitch):
                 if state != self.is_on:
                     _LOGGER.debug("Detected %s changed to %s", self, state)
                     setattr(self._client, self._switch_property, state)
-                    self.async_write_ha_state()
+                    self.schedule_update_ha_state()
 
 
 class ShuffleSwitch(AlexaMediaSwitch):
@@ -407,6 +410,7 @@ class RepeatSwitch(AlexaMediaSwitch):
     def entity_category(self):
         """Return the entity category of the switch."""
         return EntityCategory.CONFIG
+
 
 class SmartSwitch(CoordinatorEntity, SwitchDevice):
     def __init__(self, coordinator, login, details):
@@ -467,7 +471,7 @@ class SmartSwitch(CoordinatorEntity, SwitchDevice):
         self._requested_state_at = datetime.datetime.now(
             datetime.timezone.utc
         )  # must be set last so that previous getters work properly
-        self.async_write_ha_state()
+        self.schedule_update_ha_state()
 
     async def async_turn_on(self, **kwargs):
         """Turn on."""
