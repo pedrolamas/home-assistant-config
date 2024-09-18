@@ -2,7 +2,7 @@ import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 
 DOMAIN = "octopus_energy"
-INTEGRATION_VERSION = "12.0.1"
+INTEGRATION_VERSION = "12.2.1"
 
 REFRESH_RATE_IN_MINUTES_ACCOUNT = 60
 REFRESH_RATE_IN_MINUTES_INTELLIGENT = 5
@@ -191,6 +191,7 @@ EVENT_ALL_SAVING_SESSIONS = "octopus_energy_all_octoplus_saving_sessions"
 REPAIR_UNIQUE_RATES_CHANGED_KEY = "electricity_unique_rates_updated_{}"
 REPAIR_INVALID_API_KEY = "invalid_api_key_{}"
 REPAIR_ACCOUNT_NOT_FOUND = "account_not_found_{}"
+REPAIR_UNKNOWN_INTELLIGENT_PROVIDER = "unknown_intelligent_provider_{}"
 
 # During BST, two records are returned before the rest of the data is available
 MINIMUM_CONSUMPTION_DATA_LENGTH = 3

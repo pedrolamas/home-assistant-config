@@ -11,6 +11,7 @@ import asyncio
 from datetime import datetime, timedelta
 from json import JSONDecodeError, loads
 import logging
+import os
 import time
 from typing import Optional
 
@@ -25,6 +26,7 @@ from alexapy import (
     hide_serial,
     obfuscate,
 )
+from alexapy.helpers import delete_cookie as alexapy_delete_cookie
 import async_timeout
 from homeassistant import util
 from homeassistant.components.persistent_notification import (
@@ -1136,9 +1138,9 @@ async def setup_alexa(hass, config_entry, login_obj: AlexaLogin):
                     )
                 ):
                     _LOGGER.debug("Discovered new media_player %s", hide_serial(serial))
-                    (
-                        hass.data[DATA_ALEXAMEDIA]["accounts"][email]["new_devices"]
-                    ) = True
+                    (hass.data[DATA_ALEXAMEDIA]["accounts"][email]["new_devices"]) = (
+                        True
+                    )
                     if coordinator:
                         await coordinator.async_request_refresh()
 
@@ -1190,9 +1192,9 @@ async def setup_alexa(hass, config_entry, login_obj: AlexaLogin):
             hass.data[DATA_ALEXAMEDIA]["accounts"][email][
                 "http2_lastattempt"
             ] = time.time()
-            http2_enabled = hass.data[DATA_ALEXAMEDIA]["accounts"][email][
-                "http2"
-            ] = await http2_connect()
+            http2_enabled = hass.data[DATA_ALEXAMEDIA]["accounts"][email]["http2"] = (
+                await http2_connect()
+            )
             errors = hass.data[DATA_ALEXAMEDIA]["accounts"][email]["http2error"] = (
                 hass.data[DATA_ALEXAMEDIA]["accounts"][email]["http2error"] + 1
             )
@@ -1242,32 +1244,42 @@ async def setup_alexa(hass, config_entry, login_obj: AlexaLogin):
     _LOGGER.debug("Setting up Alexa devices for %s", hide_email(login_obj.email))
     config = config_entry.data
     email = config.get(CONF_EMAIL)
-    include = config.get(CONF_INCLUDE_DEVICES)
-    exclude = config.get(CONF_EXCLUDE_DEVICES)
+    include = (
+        cv.ensure_list_csv(config[CONF_INCLUDE_DEVICES])
+        if config[CONF_INCLUDE_DEVICES]
+        else ""
+    )
+    _LOGGER.debug("include: %s", include)
+    exclude = (
+        cv.ensure_list_csv(config[CONF_EXCLUDE_DEVICES])
+        if config[CONF_EXCLUDE_DEVICES]
+        else ""
+    )
+    _LOGGER.debug("exclude: %s", exclude)
     scan_interval: float = (
         config.get(CONF_SCAN_INTERVAL).total_seconds()
         if isinstance(config.get(CONF_SCAN_INTERVAL), timedelta)
         else config.get(CONF_SCAN_INTERVAL)
     )
     hass.data[DATA_ALEXAMEDIA]["accounts"][email]["login_obj"] = login_obj
-    http2_enabled = hass.data[DATA_ALEXAMEDIA]["accounts"][email][
-        "http2"
-    ] = await http2_connect()
+    http2_enabled = hass.data[DATA_ALEXAMEDIA]["accounts"][email]["http2"] = (
+        await http2_connect()
+    )
     coordinator = hass.data[DATA_ALEXAMEDIA]["accounts"][email].get("coordinator")
     if coordinator is None:
         _LOGGER.debug("%s: Creating coordinator", hide_email(email))
-        hass.data[DATA_ALEXAMEDIA]["accounts"][email][
-            "coordinator"
-        ] = coordinator = DataUpdateCoordinator(
-            hass,
-            _LOGGER,
-            # Name of the data. For logging purposes.
-            name="alexa_media",
-            update_method=async_update_data,
-            # Polling interval. Will only be polled if there are subscribers.
-            update_interval=timedelta(
-                seconds=scan_interval * 10 if http2_enabled else scan_interval
-            ),
+        hass.data[DATA_ALEXAMEDIA]["accounts"][email]["coordinator"] = coordinator = (
+            DataUpdateCoordinator(
+                hass,
+                _LOGGER,
+                # Name of the data. For logging purposes.
+                name="alexa_media",
+                update_method=async_update_data,
+                # Polling interval. Will only be polled if there are subscribers.
+                update_interval=timedelta(
+                    seconds=scan_interval * 10 if http2_enabled else scan_interval
+                ),
+            )
         )
     else:
         _LOGGER.debug("%s: Reusing coordinator", hide_email(email))
@@ -1286,14 +1298,19 @@ async def setup_alexa(hass, config_entry, login_obj: AlexaLogin):
 
 
 async def async_unload_entry(hass, entry) -> bool:
-    """Unload a config entry."""
+    """Unload a config entry"""
     email = entry.data["email"]
-    _LOGGER.debug("Attempting to unload entry for %s", hide_email(email))
+    login_obj = hass.data[DATA_ALEXAMEDIA]["accounts"][email]["login_obj"]
+    _LOGGER.debug("Unloading entry: %s", hide_email(email))
     for component in ALEXA_COMPONENTS + DEPENDENT_ALEXA_COMPONENTS:
-        _LOGGER.debug("Forwarding unload entry to %s", component)
-        await hass.config_entries.async_forward_entry_unload(entry, component)
-    # notify has to be handled manually as the forward does not work yet
-    await notify_async_unload_entry(hass, entry)
+        try:
+            if component == "notify":
+                await notify_async_unload_entry(hass, entry)
+            else:
+                _LOGGER.debug("Forwarding unload entry to %s", component)
+                await hass.config_entries.async_forward_entry_unload(entry, component)
+        except Exception as ex:
+            _LOGGER.error("Error unloading: %s", component)
     await close_connections(hass, email)
     for listener in hass.data[DATA_ALEXAMEDIA]["accounts"][email][DATA_LISTENER]:
         listener()
@@ -1335,6 +1352,53 @@ async def async_unload_entry(hass, entry) -> bool:
             hass.data.get(DATA_ALEXAMEDIA),
         )
     _LOGGER.debug("Unloaded entry for %s", hide_email(email))
+    return True
+
+
+async def async_remove_entry(hass, entry) -> bool:
+    """Handle removal of an entry."""
+    email = entry.data["email"]
+    obfuscated_email = hide_email(email)
+    _LOGGER.debug("Removing config entry: %s", hide_email(email))
+    login_obj = AlexaLogin(
+        url="",
+        email=email,
+        password="",
+        outputpath=hass.config.path,
+    )
+    # Delete cookiefile
+    cookiefile = hass.config.path(f".storage/{DOMAIN}.{email}.pickle")
+    obfuscated_cookiefile = hass.config.path(
+        f".storage/{DOMAIN}.{obfuscated_email}.pickle"
+    )
+    if callable(getattr(AlexaLogin, "delete_cookiefile", None)):
+        try:
+            await login_obj.delete_cookiefile()
+            _LOGGER.debug("Cookiefile %s deleted.", obfuscated_cookiefile)
+        except Exception as ex:
+            _LOGGER.error(
+                "delete_cookiefile() exception: %s;"
+                " Manually delete cookiefile before re-adding the integration: %s",
+                ex,
+                obfuscated_cookiefile,
+            )
+    else:
+        if os.path.exists(cookiefile):
+            try:
+                await alexapy_delete_cookie(cookiefile)
+                _LOGGER.debug(
+                    "Successfully deleted cookiefile: %s", obfuscated_cookiefile
+                )
+            except (OSError, EOFError, TypeError, AttributeError) as ex:
+                _LOGGER.error(
+                    "alexapy_delete_cookie() exception: %s;"
+                    " Manually delete cookiefile before re-adding the integration: %s",
+                    ex,
+                    obfuscated_cookiefile,
+                )
+        else:
+            _LOGGER.error("Cookiefile not found: %s", obfuscated_cookiefile)
+    _LOGGER.debug("Config entry %s removed.", obfuscated_email)
     return True
 
 
@@ -1389,7 +1453,9 @@ async def test_login_status(hass, config_entry, login) -> bool:
     account = config_entry.data
     _LOGGER.debug("Logging in: %s %s", obfuscate(account), in_progess_instances(hass))
     _LOGGER.debug("Login stats: %s", login.stats)
-    message: str = f"Reauthenticate {login.email} on the [Integrations](/config/integrations) page. "
+    message: str = (
+        f"Reauthenticate {login.email} on the [Integrations](/config/integrations) page. "
+    )
     if login.stats.get("login_timestamp") != datetime(1, 1, 1):
         elaspsed_time: str = str(datetime.now() - login.stats.get("login_timestamp"))
         api_calls: int = login.stats.get("api_calls")
