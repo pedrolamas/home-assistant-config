@@ -20,7 +20,9 @@
   name: Kids Bedroom Lights
   unique_id: 01df0332-ef2a-4a9c-9597-390b5bf907a0
   entities:
+    - light.daniel_bed_light
     - light.kids_bedroom_ceiling_light
+    - light.lara_bed_light
 
 - platform: switch
   name: Ender-3 V2 2

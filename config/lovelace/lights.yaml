@@ -33,3 +33,5 @@ cards:
     entities:
       - entity: light.kids_bedroom_ceiling_light
         name: Ceiling light
+      - entity: light.kids_beds_group
+        name: Bed lights
