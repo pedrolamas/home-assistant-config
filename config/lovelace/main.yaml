@@ -2,8 +2,14 @@ title: Main
 path: main
 icon: mdi:home-outline
 badges:
-  - person.pedro
-  - person.joana
+  - type: entity
+    show_name: true
+    entity: person.pedro
+    show_entity_picture: true
+  - type: entity
+    show_name: true
+    entity: person.joana
+    show_entity_picture: true
   - sensor.eastern_time_zone
   - sensor.pacific_time_zone
   - alarm_control_panel.home_alarm
@@ -143,5 +149,5 @@ cards:
         tap_action:
           action: toggle
       - entity: binary_sensor.mains_powered
-      - entity: sensor.hacs
+      - entity: update.hacs_update
         name: HACS
