@@ -90,7 +90,7 @@ async def async_refresh_electricity_rates_data(
         _LOGGER.debug(f'Electricity rates retrieved for {target_mpan}/{target_serial_number} ({tariff.code});')
         
         original_rates = new_rates.copy()
-        original_rates.sort(key=lambda rate: rate["start"])
+        original_rates.sort(key=lambda rate: (rate["start"].timestamp(), rate["start"].fold))
         
         if dispatches_result is not None and dispatches_result.dispatches is not None and is_export_meter == False:
           new_rates = adjust_intelligent_rates(new_rates,
@@ -100,7 +100,7 @@ async def async_refresh_electricity_rates_data(
           _LOGGER.debug(f"Rates adjusted: {new_rates}; dispatches: {dispatches_result.dispatches}")
 
         # Sort our rates again _just in case_
-        new_rates.sort(key=lambda rate: rate["start"])
+        new_rates.sort(key=lambda rate: (rate["start"].timestamp(), rate["start"].fold))
         
         raise_rate_events(current,
                           private_rates_to_public_rates(new_rates),
@@ -110,8 +110,8 @@ async def async_refresh_electricity_rates_data(
                           EVENT_ELECTRICITY_CURRENT_DAY_RATES,
                           EVENT_ELECTRICITY_NEXT_DAY_RATES)
         
-        current_unique_rates = len(get_unique_rates(current, new_rates))
-        previous_unique_rates = len(get_unique_rates(current, existing_rates_result.rates)) if existing_rates_result is not None and existing_rates_result.rates is not None else None
+        current_unique_rates = len(get_unique_rates(current, original_rates))
+        previous_unique_rates = len(get_unique_rates(current, existing_rates_result.original_rates)) if existing_rates_result is not None and existing_rates_result.original_rates is not None else None
 
         # Check if rates have changed
         if ((has_peak_rates(current_unique_rates) and has_peak_rates(previous_unique_rates) == False) or
@@ -160,7 +160,7 @@ async def async_refresh_electricity_rates_data(
       _LOGGER.debug(f"Rates adjusted: {new_rates}; dispatches: {dispatches_result.dispatches}")
 
       # Sort our rates again _just in case_
-      new_rates.sort(key=lambda rate: rate["start"])
+      new_rates.sort(key=lambda rate: (rate["start"].timestamp(), rate["start"].fold))
       
       raise_rate_events(current,
                         private_rates_to_public_rates(new_rates),

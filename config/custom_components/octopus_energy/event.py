@@ -14,6 +14,7 @@ from .gas.rates_next_day import OctopusEnergyGasNextDayRates
 from .gas.rates_previous_day import OctopusEnergyGasPreviousDayRates
 from .gas.rates_previous_consumption import OctopusEnergyGasPreviousConsumptionRates
 from .octoplus.saving_sessions_events import OctopusEnergyOctoplusSavingSessionEvents
+from .octoplus.free_electricity_sessions_events import OctopusEnergyOctoplusFreeElectricitySessionEvents
 
 from .const import (
   CONFIG_ACCOUNT_ID,
@@ -36,7 +37,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
   platform.async_register_entity_service(
     "join_octoplus_saving_session_event",
     vol.All(
-      vol.Schema(
+      cv.make_entity_service_schema(
         {
           vol.Required("event_code"): str,
         },
@@ -60,9 +61,14 @@ async def async_setup_main_sensors(hass, entry, async_add_entities):
   account_result = hass.data[DOMAIN][account_id][DATA_ACCOUNT]
   account_info = account_result.account if account_result is not None else None
   client = hass.data[DOMAIN][account_id][DATA_CLIENT]
+  octoplus_enrolled = account_info is not None and account_info["octoplus_enrolled"] == True
 
   now = utcnow()
   entities = [OctopusEnergyOctoplusSavingSessionEvents(hass, client, account_id)]
+
+  if octoplus_enrolled:
+    entities.append(OctopusEnergyOctoplusFreeElectricitySessionEvents(hass, account_id))
+
   if len(account_info["electricity_meter_points"]) > 0:
     for point in account_info["electricity_meter_points"]:
       # We only care about points that have active agreements
