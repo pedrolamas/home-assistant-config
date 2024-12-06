@@ -2,13 +2,12 @@
 import logging
 from datetime import timedelta
 
-
-from blueair_api import DeviceAws as BlueAirApiDeviceAws
-from asyncio import sleep
+from blueair_api import DeviceAws as BlueAirApiDeviceAws, ModelEnum
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.debounce import Debouncer
 
-from .const import DOMAIN
+from .const import DOMAIN, FILTER_EXPIRED_THRESHOLD
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,12 +22,14 @@ class BlueairAwsDataUpdateCoordinator(DataUpdateCoordinator):
         self.hass: HomeAssistant = hass
         self.blueair_api_device: BlueAirApiDeviceAws = blueair_api_device
         self._manufacturer: str = "BlueAir"
-
         super().__init__(
             hass,
             _LOGGER,
             name=f"{DOMAIN}-{self.blueair_api_device.uuid}",
             update_interval=timedelta(minutes=10),
+            request_refresh_debouncer=Debouncer(
+                hass, _LOGGER, cooldown=5.0, immediate=False,
+            ),
         )
 
     async def _async_update_data(self):
@@ -57,12 +58,25 @@ class BlueairAwsDataUpdateCoordinator(DataUpdateCoordinator):
 
     @property
     def model(self) -> str:
-        return "protect?"
+        """Return api package enum of device model."""
+        return self.blueair_api_device.model.model_name
 
     @property
     def fan_speed(self) -> int:
         """Return the current fan speed."""
         return self.blueair_api_device.fan_speed
+
+    @property
+    def speed_count(self) -> int:
+        """Return the max fan speed."""
+        if self.blueair_api_device.model == ModelEnum.HUMIDIFIER_H35I:
+            return 64
+        elif self.blueair_api_device.model in [ModelEnum.MAX_211I, ModelEnum.MAX_311I, ModelEnum.PROTECT_7470I]:
+            return 91
+        elif self.blueair_api_device.model == ModelEnum.T10I:
+            return 4
+        else:
+            return 100
 
     @property
     def is_on(self) -> False:
@@ -119,42 +133,47 @@ class BlueairAwsDataUpdateCoordinator(DataUpdateCoordinator):
         return self.blueair_api_device.fan_auto_mode
 
     @property
+    def wick_dry_mode(self) -> bool:
+        return self.blueair_api_device.wick_dry_mode
+
+    @property
+    def water_shortage(self) -> bool:
+        return self.blueair_api_device.water_shortage
+
+    @property
     def filter_expired(self) -> bool:
         """Return the current filter status."""
-        return self.blueair_api_device.filter_usage >= 95
+        if self.blueair_api_device.filter_usage is not None:
+            return (self.blueair_api_device.filter_usage >=
+                    FILTER_EXPIRED_THRESHOLD)
+        if self.blueair_api_device.wick_usage is not None:
+            return (self.blueair_api_device.wick_usage >=
+                    FILTER_EXPIRED_THRESHOLD)
 
     async def set_fan_speed(self, new_speed) -> None:
-        self.blueair_api_device.fan_speed = new_speed
         await self.blueair_api_device.set_fan_speed(new_speed)
-        await sleep(5)
-        await self.async_refresh()
+        await self.async_request_refresh()
 
     async def set_running(self, running) -> None:
-        self.blueair_api_device.running = running
         await self.blueair_api_device.set_running(running)
-        await sleep(5)
-        await self.async_refresh()
+        await self.async_request_refresh()
 
     async def set_brightness(self, brightness) -> None:
-        self.blueair_api_device.brightness = brightness
         await self.blueair_api_device.set_brightness(brightness)
-        await sleep(5)
-        await self.async_refresh()
+        await self.async_request_refresh()
 
     async def set_child_lock(self, locked) -> None:
-        self.blueair_api_device.child_lock = locked
         await self.blueair_api_device.set_child_lock(locked)
-        await sleep(5)
-        await self.async_refresh()
+        await self.async_request_refresh()
 
     async def set_night_mode(self, mode) -> None:
-        self.blueair_api_device.night_mode = mode
         await self.blueair_api_device.set_night_mode(mode)
-        await sleep(5)
-        await self.async_refresh()
+        await self.async_request_refresh()
 
     async def set_fan_auto_mode(self, value) -> None:
-        self.blueair_api_device.fan_auto_mode = value
         await self.blueair_api_device.set_fan_auto_mode(value)
-        await sleep(5)
-        await self.async_refresh()
+        await self.async_request_refresh()
+
+    async def set_wick_dry_mode(self, value) -> None:
+        await self.blueair_api_device.set_wick_dry_mode(value)
+        await self.async_request_refresh()
