@@ -7,11 +7,86 @@ cards:
     cards:
       - type: conditional
         conditions:
+          - entity: binary_sensor.trident_300_printing
+            state: "on"
+        card:
+          type: entities
+          title: Voron Trident 300
+          show_header_toggle: false
+          state_color: true
+          entities:
+            - type: custom:multiple-entity-row
+              name: State
+              entity: sensor.trident_300_current_state
+              entities:
+                - entity: sensor.trident_300_job_percentage
+                  name: " "
+            - type: custom:multiple-entity-row
+              name: Time
+              entity: sensor.trident_300_time_remaining
+              state_header: Remaining
+              format: duration
+              entities:
+                - entity: sensor.trident_300_time_elapsed
+                  name: Elapsed
+                  format: duration
+            - type: custom:multiple-entity-row
+              name: Bed temperature
+              entity: sensor.trident_300_actual_bed_temp
+              state_header: Actual
+              entities:
+                - entity: sensor.trident_300_target_bed_temp
+                  name: Target
+            - type: custom:multiple-entity-row
+              name: Extruder temperature
+              entity: sensor.trident_300_actual_extruder_temp
+              state_header: Actual
+              entities:
+                - entity: sensor.trident_300_target_extruder_temp
+                  name: Target
+            - type: divider
+            - entity: light.trident_300
+              name: Lights
+
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.trident_300_printing
+            state: "off"
+        card:
+          type: entities
+          title: Voron Trident 300
+          show_header_toggle: false
+          state_color: true
+          entities:
+            - entity: sensor.trident_300_current_state
+              name: State
+            - type: custom:multiple-entity-row
+              name: Bed temperature
+              entity: sensor.trident_300_actual_bed_temp
+              state_header: Actual
+              entities:
+                - entity: sensor.trident_300_target_bed_temp
+                  name: Target
+            - type: custom:multiple-entity-row
+              name: Extruder temperature
+              entity: sensor.trident_300_actual_extruder_temp
+              state_header: Actual
+              entities:
+                - entity: sensor.trident_300_target_extruder_temp
+                  name: Target
+            - type: divider
+            - entity: light.trident_300
+              name: Lights
+
+  - type: vertical-stack
+    cards:
+      - type: conditional
+        conditions:
           - entity: binary_sensor.ender_3_v2_printing
             state: "on"
         card:
           type: entities
-          title: Creality Ender 3 V2
+          title: Creality Ender-3 V2
           show_header_toggle: false
           state_color: true
           entities:
@@ -54,7 +129,7 @@ cards:
             state: "off"
         card:
           type: entities
-          title: Creality Ender 3 V2
+          title: Creality Ender-3 V2
           show_header_toggle: false
           state_color: true
           entities:
@@ -79,5 +154,9 @@ cards:
               name: Lights
 
   - type: picture-entity
-    name: Creality Ender 3 V2
+    name: Creality Ender-3 V2
     entity: camera.ender_3_v2
+
+  - type: picture-entity
+    name: Trident 300
+    entity: camera.trident_300

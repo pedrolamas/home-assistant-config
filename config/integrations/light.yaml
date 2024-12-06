@@ -27,3 +27,7 @@
 - platform: switch
   name: Ender-3 V2 2
   entity_id: switch.ender_3_v2_lights
+
+- platform: switch
+  name: Trident 300 2
+  entity_id: switch.trident_300_lights

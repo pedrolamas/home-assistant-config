@@ -3,7 +3,7 @@ zigbee2mqtt_log_level:
   options:
     - debug
     - info
-    - warn
+    - warning
     - error
-  initial: warn
+  initial: warning
   icon: mdi:format-list-bulleted

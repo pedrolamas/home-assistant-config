@@ -38,8 +38,8 @@ binary_sensor.raspberry_pi_2_model_b:
 sensor.cpu_temperature:
   device_class: temperature
 
-sensor.london_overground:
-  friendly_name: Overground
+sensor.windrush:
+  friendly_name: Windrush Overground
   icon: mdi:train
 
 sensor.victoria:

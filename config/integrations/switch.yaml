@@ -8,6 +8,16 @@
   is_on_template: >-
     {{ 'result' in value_json and (value_json.result.values() | list | first == "on") }}
 
+- platform: rest
+  name: Trident 300 Lights
+  resource: !secret trident_300_lights_moonraker_url
+  body_on: '{"action": "on"}'
+  body_off: '{"action": "off"}'
+  headers:
+    Content-Type: "application/json"
+  is_on_template: >-
+    {{ 'result' in value_json and (value_json.result.values() | list | first == "on") }}
+
 - platform: template
   switches:
     lg_smart_tv_volume_mute:

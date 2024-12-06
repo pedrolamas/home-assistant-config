@@ -28,17 +28,17 @@
 
 - alias: Washing Machine program finished, send notification
   id: c5948e61-ec36-42ef-a057-e9dc0e5c220f
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       id: washing_machine_program_finished
       entity_id: binary_sensor.washing_machine_program_running
       from: "on"
       to: "off"
-    - platform: state
+    - trigger: state
       id: washing_machine_program_not_finished
       entity_id: binary_sensor.washing_machine_program_running
       from: "off"
-  action:
+  actions:
     choose:
       - conditions:
           - condition: trigger
@@ -96,20 +96,17 @@
 
 - alias: Front Door Mailbox movement, send notification
   id: 5c3f86a6-9406-43fe-a7c3-c8552a69b350
-  trigger:
-    - platform: state
-      entity_id: sensor.front_door_mailbox_action
-      to:
-        - "drop"
-        - "tilt"
-        - "vibration"
-  condition:
+  triggers:
+    - trigger: state
+      entity_id: event.front_door_mailbox_action
+      not_from: "unavailable"
+  conditions:
     - condition: state
       entity_id: binary_sensor.front_door_contact
       state: "off"
       for:
         seconds: 10
-  action:
+  actions:
     - service: script.send_notification
       data:
         message: "Movement detected on Front Door Mailbox"
@@ -118,16 +115,16 @@
 
 - alias: Set alarm state
   id: 2d53ff7e-e2b2-40e6-8362-33ede62ae3f6
-  trigger:
-    - platform: homeassistant
+  triggers:
+    - trigger: homeassistant
       event: start
-    - platform: event
+    - trigger: event
       event_type: automation_reloaded
-    - platform: state
+    - trigger: state
       entity_id: binary_sensor.quiet_time
-    - platform: state
+    - trigger: state
       entity_id: group.family
-  action:
+  actions:
     choose:
       - conditions:
           - "{{ is_state('binary_sensor.quiet_time', 'on') }}"
@@ -144,32 +141,45 @@
         entity_id: alarm_control_panel.home_alarm
 
 - alias: Ender-3 V2 state changed, force full update
+  id: 5336fd2c-f999-44a9-9380-7fac547309af
   mode: single
-  trigger:
-    - platform: mqtt
+  triggers:
+    - trigger: mqtt
       topic: "ender3v2/klipper/status"
       value_template: "{{ value_json.status.print_stats.state if 'print_stats' in value_json.status else None }}"
-  action:
+  actions:
     - service: homeassistant.update_entity
       target:
         entity_id: sensor.ender_3_v2_status
 
+- alias: Trident 300 state changed, force full update
+  id: 6e7c4434-c1cf-477b-b678-855489f4826b
+  mode: single
+  triggers:
+    - trigger: mqtt
+      topic: "trident300/klipper/status"
+      value_template: "{{ value_json.status.print_stats.state if 'print_stats' in value_json.status else None }}"
+  actions:
+    - service: homeassistant.update_entity
+      target:
+        entity_id: sensor.trident_300_status
+
 - alias: Ender-3 V2 print paused or complete, send notification
   id: 5b90fea9-37e6-4692-9c3f-5fdeb2e77fab
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       id: print_is_paused_or_complete
       entity_id: sensor.ender_3_v2_current_state
       to:
         - "paused"
         - "complete"
-    - platform: state
+    - trigger: state
       id: print_was_paused_or_complete
       entity_id: sensor.ender_3_v2_current_state
       from:
         - "paused"
         - "complete"
-  action:
+  actions:
     choose:
       - conditions:
           - condition: trigger
@@ -191,13 +201,67 @@
               channel: "Automation"
               tag: "ender3v2"
 
+- alias: Trident 300 print paused or complete, send notification
+  id: 8d26a910-90d8-4712-9148-c50a3e954787
+  triggers:
+    - trigger: state
+      id: print_is_paused_or_complete
+      entity_id: sensor.trident_300_current_state
+      to:
+        - "paused"
+        - "complete"
+    - trigger: state
+      id: print_was_paused_or_complete
+      entity_id: sensor.trident_300_current_state
+      from:
+        - "paused"
+        - "complete"
+  actions:
+    choose:
+      - conditions:
+          - condition: trigger
+            id: print_is_paused_or_complete
+        sequence:
+          - service: script.send_notification
+            data:
+              recipient: "pedro"
+              message: "Trident 300 print {{ trigger.to_state.state }}!"
+              channel: "Automation"
+              tag: "trident300"
+      - conditions:
+          - condition: trigger
+            id: print_was_paused_or_complete
+        sequence:
+          - service: script.clear_notification
+            data:
+              recipient: "pedro"
+              channel: "Automation"
+              tag: "trident300"
+
+- alias: Indoor air quality poor, send notification
+  id: f494166d-f979-46b9-9364-f8cab6492da3
+  triggers:
+    - trigger: numeric_state
+      entity_id: sensor.node10_ikea_vindriktning_pm25
+      above: 50
+      for: "00:01:00"
+  actions:
+    - service: script.send_notification
+      data:
+        recipient: "pedro"
+        title: "Air quality poor"
+        message: "Better open a window!"
+        color: "red"
+        channel: "Alarm"
+        tag: "air-quality"
+
 - alias: Transmission download complete, send notification
   id: 1091a93a-be80-440b-a61d-ecd27ced6abb
   mode: queued
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: transmission_downloaded_torrent
-  action:
+  actions:
     - service: script.send_notification
       data:
         recipient: "pedro"
@@ -209,68 +273,39 @@
 - alias: Turn on TV requested, send magic packet
   id: bb2b09dd-5b40-4a94-a69a-b4808bed613f
   mode: single
-  trigger:
-    - platform: webostv.turn_on
+  triggers:
+    - trigger: webostv.turn_on
       entity_id: media_player.lg_smart_tv
-  action:
+  actions:
     - service: wake_on_lan.send_magic_packet
       data:
         mac: !secret lg_smart_tv_mac
         broadcast_address: !secret lg_smart_tv_broadcast_address
 
-- alias: Smart Vibration Sensor movement, send notification
-  id: 39b75e6e-19c9-4a60-bd72-a7616ed50645
-  trigger:
-    - platform: state
-      entity_id: sensor.smart_vibration_sensor_action
-      to:
-        - "drop"
-        - "tilt"
-        - "vibration"
-  action:
-    - service: script.send_notification_with_lower_floor_camera_snapshot
-      data:
-        message: "Movement detected on Smart Vibration Sensor"
-
-- alias: Update available, send notification
-  id: eafd8f59-39c2-434c-9b29-c1b8be3dfd52
-  trigger:
-    - platform: state
-      entity_id: binary_sensor.updater
-      from: "off"
-      to: "on"
-  action:
-    - service: script.send_notification
-      data:
-        recipient: "pedro"
-        message: "Home Assistant update available!"
-        channel: "System"
-        tag: "homeassistantupdate"
-
 - alias: AdguardHome enabled after 2 minutes
   id: 3ba3ddc1-8f62-4413-9e23-42ae60cc3ba2
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: switch.adguard_protection
       to: "off"
       for: "00:02:00"
-  action:
+  actions:
     - service: switch.turn_on
       entity_id: switch.adguard_protection
 
 - alias: OBS state changed, set Elgato Key Light Air state
   id: ad07265c-d8aa-441f-9170-b005b1a2e26b
   mode: queued
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       id: obs_virtualcam_on
       entity_id: switch.obs_virtualcam
       to: "on"
-    - platform: state
+    - trigger: state
       id: obs_virtualcam_off
       entity_id: switch.obs_virtualcam
       to: "off"
-  action:
+  actions:
     choose:
       - conditions:
           - condition: trigger
@@ -303,23 +338,30 @@
 
 - alias: Set Zigbee2mqtt log level
   id: 6eb24622-8f61-4a04-bcc4-c24113c2c639
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: input_select.zigbee2mqtt_log_level
-  action:
+  actions:
     - service: mqtt.publish
       data:
-        payload_template: "{{ trigger.to_state.state }}"
-        topic: "zigbee2mqtt/bridge/config/log_level"
+        payload: >-
+          {
+            "options": {
+              "advanced": {
+                "log_level": "{{ trigger.to_state.state }}"
+              }
+            }
+          }
+        topic: "zigbee2mqtt/bridge/request/options"
 
 - alias: Log Zigbee2mqtt errors
   id: 3f7282b9-5543-47da-966b-0751445c0273
-  trigger:
-    - platform: mqtt
+  triggers:
+    - trigger: mqtt
       topic: "zigbee2mqtt/bridge/log"
-  condition:
+  conditions:
     - "{{ 'error' in trigger.payload_json.type }}"
-  action:
+  actions:
     - service: system_log.write
       data_template:
         message: "{{ trigger.payload_json }}"

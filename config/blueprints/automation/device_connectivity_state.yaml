@@ -21,8 +21,8 @@ blueprint:
 
 mode: queued
 
-trigger:
-  - platform: state
+triggers:
+  - trigger: state
     id: device_offline
     entity_id: !input state_entity_id
     to:
@@ -30,7 +30,7 @@ trigger:
       - "offline"
     for:
       seconds: !input warning_delay
-  - platform: state
+  - trigger: state
     id: device_online
     entity_id: !input state_entity_id
     from:

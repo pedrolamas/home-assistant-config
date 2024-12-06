@@ -20,13 +20,13 @@ blueprint:
 variables:
   smart_plug_switch_entity_id: !input smart_plug_switch_entity_id
 
-trigger:
-  - platform: numeric_state
+triggers:
+  - trigger: numeric_state
     entity_id: !input smart_plug_power_sensor_entity_id
     below: 0.5
     for: "00:02:00"
 
-condition:
+conditions:
   - "{{ is_state(smart_plug_switch_entity_id, 'on') }}"
 
 action:

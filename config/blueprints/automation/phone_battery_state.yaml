@@ -26,10 +26,10 @@ variables:
   battery_state_entity_id: !input battery_state_entity_id
   battery_level_entity_id: !input battery_level_entity_id
 
-trigger:
-  - platform: state
+triggers:
+  - trigger: state
     entity_id: !input battery_state_entity_id
-  - platform: numeric_state
+  - trigger: numeric_state
     entity_id: !input battery_level_entity_id
     above: 89
 

@@ -8,7 +8,7 @@ blueprint:
       description: Tuya SS9600ZB Switch to use
       selector:
         entity:
-          domain: sensor
+          domain: event
           integration: mqtt
     button_1_short_press:
       name: Single Press - Button 1
@@ -121,16 +121,14 @@ blueprint:
 
 mode: queued
 
-trigger:
-  - platform: state
+triggers:
+  - trigger: state
     entity_id: !input switch
-
-condition:
-  - "{{ trigger.to_state.state != '' }}"
+    not_from: "unavailable"
 
 action:
   - variables:
-      command: "{{ trigger.to_state.state }}"
+      command: "{{ trigger.to_state.attributes.event_type }}"
   - choose:
       - conditions:
           - "{{ command == '1_single' }}"

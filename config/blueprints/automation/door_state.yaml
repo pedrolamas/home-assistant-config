@@ -51,23 +51,23 @@ variables:
   light_off_on_door_closed_helper_entity_id: !input light_off_on_door_closed_helper_entity_id
   door_state_friendly_name: "{{ state_attr(door_state_entity_id, 'friendly_name') }}"
 
-trigger:
-  - platform: state
+triggers:
+  - trigger: state
     id: door_opened
     entity_id: !input door_state_entity_id
     to: "on"
-  - platform: state
+  - trigger: state
     id: door_opened_delay
     entity_id: !input door_state_entity_id
     to: "on"
     for:
       seconds: !input warning_on_door_open_delay
-  - platform: state
+  - trigger: state
     id: door_closed
     entity_id: !input door_state_entity_id
     from: "on"
     to: "off"
-  - platform: state
+  - trigger: state
     id: door_closed_delay
     entity_id: !input door_state_entity_id
     from: "on"

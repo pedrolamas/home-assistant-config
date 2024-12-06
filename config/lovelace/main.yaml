@@ -126,7 +126,7 @@ cards:
     columns: 4
     entities:
       - entity: sensor.victoria
-      - entity: sensor.london_overground
+      - entity: sensor.windrush
       - entity: sensor.islington
 
   - type: weather-forecast
@@ -149,5 +149,3 @@ cards:
         tap_action:
           action: toggle
       - entity: binary_sensor.mains_powered
-      - entity: update.hacs_update
-        name: HACS

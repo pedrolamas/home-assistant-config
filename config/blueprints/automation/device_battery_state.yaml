@@ -11,8 +11,8 @@ blueprint:
 
 mode: queued
 
-trigger:
-  - platform: numeric_state
+triggers:
+  - trigger: numeric_state
     entity_id: !input battery_state_entity_id
     below: 15
 

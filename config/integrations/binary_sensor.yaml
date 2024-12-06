@@ -105,3 +105,8 @@
       friendly_name: Ender-3 V2 Printing
       value_template: >-
         {{ states('sensor.ender_3_v2_current_state') in ['printing', 'paused'] }}
+
+    trident_300_printing:
+      friendly_name: Trident 300 Printing
+      value_template: >-
+        {{ states('sensor.trident_300_current_state') in ['printing', 'paused'] }}
