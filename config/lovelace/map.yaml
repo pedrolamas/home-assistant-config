@@ -13,7 +13,7 @@ cards:
       - zone.home
       - zone.home_pt
       - zone.office_pt
-      - zone.park
+      - zone.wood_play
       - zone.paddington_station
       - zone.victoria_station
       - zone.gatwick_airport
