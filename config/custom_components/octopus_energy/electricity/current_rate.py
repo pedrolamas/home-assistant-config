@@ -1,5 +1,7 @@
-from datetime import timedelta
 import logging
+
+from custom_components.octopus_energy.storage.rate_weightings import async_save_cached_rate_weightings
+from homeassistant.exceptions import ServiceValidationError
 
 from homeassistant.const import (
     STATE_UNAVAILABLE,
@@ -20,6 +22,8 @@ from homeassistant.components.sensor import (
 from .base import (OctopusEnergyElectricitySensor)
 from ..utils.attributes import dict_to_typed_dict
 from ..coordinators.electricity_rates import ElectricityRatesCoordinatorResult
+from ..utils.weightings import merge_weightings, validate_rate_weightings
+from ..const import DATA_CUSTOM_RATE_WEIGHTINGS_KEY, DOMAIN
 
 from ..utils.rate_information import (get_current_rate_information)
 
@@ -28,7 +32,7 @@ _LOGGER = logging.getLogger(__name__)
 class OctopusEnergyElectricityCurrentRate(CoordinatorEntity, OctopusEnergyElectricitySensor, RestoreSensor):
   """Sensor for displaying the current rate."""
 
-  def __init__(self, hass: HomeAssistant, coordinator, meter, point, electricity_price_cap):
+  def __init__(self, hass: HomeAssistant, coordinator, meter, point, electricity_price_cap, account_id: str):
     """Init sensor."""
     # Pass coordinator to base class
     CoordinatorEntity.__init__(self, coordinator)
@@ -37,6 +41,7 @@ class OctopusEnergyElectricityCurrentRate(CoordinatorEntity, OctopusEnergyElectr
     self._state = None
     self._last_updated = None
     self._electricity_price_cap = electricity_price_cap
+    self._account_id = account_id
 
     self._attributes = {
       "mpan": self._mpan,
@@ -151,8 +156,36 @@ class OctopusEnergyElectricityCurrentRate(CoordinatorEntity, OctopusEnergyElectr
     # If not None, we got an initial value.
     await super().async_added_to_hass()
     state = await self.async_get_last_state()
+    last_sensor_state = await self.async_get_last_sensor_data()
     
-    if state is not None and self._state is None:
-      self._state = None if state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN) else state.state
+    if state is not None and last_sensor_state is not None and self._state is None:
+      self._state = None if state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN) else last_sensor_state.native_value
       self._attributes = dict_to_typed_dict(state.attributes, ['all_rates', 'applicable_rates'])
       _LOGGER.debug(f'Restored OctopusEnergyElectricityCurrentRate state: {self._state}')
+
+  @callback
+  async def async_register_rate_weightings(self, weightings):
+    """Apply rate weightings"""
+    result = validate_rate_weightings(weightings)
+    if result.success == False:
+      raise ServiceValidationError(
+        translation_domain=DOMAIN,
+        translation_key="invalid_rate_weightings",
+        translation_placeholders={ 
+          "error": result.error_message,
+        },
+      )
+    
+    key = DATA_CUSTOM_RATE_WEIGHTINGS_KEY.format(self._mpan)
+    weightings = result.weightings
+    weightings = merge_weightings(
+      now(),
+      weightings,
+      self._hass.data[DOMAIN][self._account_id][key] 
+      if key in self._hass.data[DOMAIN][self._account_id] 
+      else []
+    )
+
+    self._hass.data[DOMAIN][self._account_id][key] = weightings
+    
+    await async_save_cached_rate_weightings(self._hass, self._mpan, result.weightings)

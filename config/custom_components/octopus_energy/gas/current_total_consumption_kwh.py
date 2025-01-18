@@ -67,7 +67,7 @@ class OctopusEnergyCurrentTotalGasConsumptionKwh(CoordinatorEntity, OctopusEnerg
   @property
   def state_class(self):
     """The state class of sensor"""
-    return SensorStateClass.TOTAL
+    return SensorStateClass.TOTAL_INCREASING
 
   @property
   def native_unit_of_measurement(self):
@@ -100,9 +100,9 @@ class OctopusEnergyCurrentTotalGasConsumptionKwh(CoordinatorEntity, OctopusEnerg
 
       if consumption_data[-1]["total_consumption"] is not None:
         if "is_kwh" not in consumption_data[-1] or consumption_data[-1]["is_kwh"] == True:
-          self._state = consumption_data[-1]["total_consumption"]
+          self._state = consumption_data[-1]["total_consumption"] if consumption_data[-1]["total_consumption"] is not None and consumption_data[-1]["total_consumption"] != 0 else None
         else:
-          self._state = convert_m3_to_kwh(consumption_data[-1]["total_consumption"], self._calorific_value) if consumption_data[-1]["total_consumption"] is not None else None
+          self._state = convert_m3_to_kwh(consumption_data[-1]["total_consumption"], self._calorific_value) if consumption_data[-1]["total_consumption"] is not None and consumption_data[-1]["total_consumption"] != 0 else None
 
         self._attributes = {
           "mprn": self._mprn,
@@ -118,9 +118,10 @@ class OctopusEnergyCurrentTotalGasConsumptionKwh(CoordinatorEntity, OctopusEnerg
     # If not None, we got an initial value.
     await super().async_added_to_hass()
     state = await self.async_get_last_state()
+    last_sensor_state = await self.async_get_last_sensor_data()
     
-    if state is not None and self._state is None:
-      self._state = None if state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN) else state.state
+    if state is not None and last_sensor_state is not None and self._state is None:
+      self._state = None if state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN) else last_sensor_state.native_value
       self._attributes = dict_to_typed_dict(state.attributes)
     
       _LOGGER.debug(f'Restored state: {self._state}')

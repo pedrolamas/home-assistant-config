@@ -22,15 +22,21 @@ from .coordinators.greenness_forecast import async_setup_greenness_forecast_coor
 from .statistics import get_statistic_ids_to_remove
 from .intelligent import get_intelligent_features, is_intelligent_product, mock_intelligent_device
 from .config.rolling_target_rates import async_migrate_rolling_target_config
+from .coordinators.heat_pump_configuration_and_status import HeatPumpCoordinatorResult, async_setup_heat_pump_coordinator
 
 from .config.main import async_migrate_main_config
 from .config.target_rates import async_migrate_target_config
 from .config.cost_tracker import async_migrate_cost_tracker_config
 from .utils import get_active_tariff
-from .utils.debug_overrides import DebugOverride, async_get_debug_override
+from .utils.debug_overrides import MeterDebugOverride, async_get_account_debug_override, async_get_meter_debug_override
 from .utils.error import api_exception_to_string
 from .storage.account import async_load_cached_account, async_save_cached_account
 from .storage.intelligent_device import async_load_cached_intelligent_device, async_save_cached_intelligent_device
+from .storage.rate_weightings import async_load_cached_rate_weightings
+
+
+from .heat_pump import get_mock_heat_pump_id, mock_heat_pump_status_and_configuration
+from .storage.heat_pump import async_load_cached_heat_pump, async_save_cached_heat_pump
 
 from .const import (
   CONFIG_FAVOUR_DIRECT_DEBIT_RATES,
@@ -44,6 +50,8 @@ from .const import (
   CONFIG_MAIN_HOME_PRO_API_KEY,
   CONFIG_MAIN_OLD_API_KEY,
   CONFIG_VERSION,
+  DATA_HEAT_PUMP_CONFIGURATION_AND_STATUS_KEY,
+  DATA_CUSTOM_RATE_WEIGHTINGS_KEY,
   DATA_HOME_PRO_CLIENT,
   DATA_INTELLIGENT_DEVICE,
   DATA_INTELLIGENT_MPAN,
@@ -65,7 +73,7 @@ from .const import (
   REPAIR_UNKNOWN_INTELLIGENT_PROVIDER
 )
 
-ACCOUNT_PLATFORMS = ["sensor", "binary_sensor", "number", "switch", "text", "time", "event"]
+ACCOUNT_PLATFORMS = ["sensor", "binary_sensor", "number", "switch", "text", "time", "event", "select", "climate"]
 TARGET_RATE_PLATFORMS = ["binary_sensor"]
 COST_TRACKER_PLATFORMS = ["sensor"]
 TARIFF_COMPARISON_PLATFORMS = ["sensor"]
@@ -155,7 +163,12 @@ async def async_setup_entry(hass, entry):
     # the correct references (e.g. rate coordinators)
     child_entries = hass.config_entries.async_entries(DOMAIN)
     for child_entry in child_entries:
-      if child_entry.data[CONFIG_KIND] != CONFIG_KIND_ACCOUNT and child_entry.data[CONFIG_ACCOUNT_ID] == account_id:
+      child_entry_config = dict(child_entry.data)
+
+      if child_entry.options:
+        child_entry_config.update(child_entry.options)
+
+      if child_entry_config[CONFIG_KIND] != CONFIG_KIND_ACCOUNT and child_entry_config[CONFIG_ACCOUNT_ID] == account_id:
         await hass.config_entries.async_reload(child_entry.entry_id)
   
   elif config[CONFIG_KIND] == CONFIG_KIND_TARGET_RATE:
@@ -278,10 +291,8 @@ async def async_setup_dependencies(hass, config):
   hass.data[DOMAIN][account_id][DATA_CLIENT] = client
 
   if (CONFIG_MAIN_HOME_PRO_ADDRESS in config and
-      config[CONFIG_MAIN_HOME_PRO_ADDRESS] is not None and
-      CONFIG_MAIN_HOME_PRO_API_KEY in config and
-      config[CONFIG_MAIN_HOME_PRO_API_KEY] is not None):
-    home_pro_client = OctopusEnergyHomeProApiClient(config[CONFIG_MAIN_HOME_PRO_ADDRESS], config[CONFIG_MAIN_HOME_PRO_API_KEY])
+      config[CONFIG_MAIN_HOME_PRO_ADDRESS] is not None):
+    home_pro_client = OctopusEnergyHomeProApiClient(config[CONFIG_MAIN_HOME_PRO_ADDRESS], config[CONFIG_MAIN_HOME_PRO_API_KEY] if CONFIG_MAIN_HOME_PRO_API_KEY in config else None)
     hass.data[DOMAIN][account_id][DATA_HOME_PRO_CLIENT] = home_pro_client
 
   # Delete any issues that may have been previously raised
@@ -342,15 +353,18 @@ async def async_setup_dependencies(hass, config):
   has_intelligent_tariff = False
   intelligent_mpan = None
   intelligent_serial_number = None
-  debug_override: DebugOverride | None = None
+  account_debug_override = await async_get_account_debug_override(hass, account_id)
   for point in account_info["electricity_meter_points"]:
     mpan = point["mpan"]
     electricity_tariff = get_active_tariff(now, point["agreements"])
 
+    rate_weightings = await async_load_cached_rate_weightings(hass, mpan)
+    if rate_weightings is not None:
+      key = DATA_CUSTOM_RATE_WEIGHTINGS_KEY.format(mpan)
+      hass.data[DOMAIN][account_id][key] = rate_weightings
+
     for meter in point["meters"]:  
       serial_number = meter["serial_number"]
-
-      debug_override = await async_get_debug_override(hass, mpan, serial_number)
       
       if electricity_tariff is not None:
         if meter["is_export"] == False:
@@ -364,7 +378,7 @@ async def async_setup_dependencies(hass, config):
         if electricity_device is not None:
           device_registry.async_remove_device(electricity_device.id)
 
-  should_mock_intelligent_data = debug_override.mock_intelligent_controls if debug_override is not None else False
+  should_mock_intelligent_data = account_debug_override.mock_intelligent_controls if account_debug_override is not None else False
   if should_mock_intelligent_data:
     # Pick the first meter if we're mocking our intelligent data
     for point in account_info["electricity_meter_points"]:
@@ -425,16 +439,38 @@ async def async_setup_dependencies(hass, config):
         serial_number = meter["serial_number"]
         is_export_meter = meter["is_export"]
         is_smart_meter = meter["is_smart_meter"]
-        override = await async_get_debug_override(hass, mpan, serial_number)
+        override = await async_get_meter_debug_override(hass, mpan, serial_number)
         tariff_override = override.tariff if override is not None else None
         planned_dispatches_supported = intelligent_features.planned_dispatches_supported if intelligent_features is not None else True
         await async_setup_electricity_rates_coordinator(hass, account_id, mpan, serial_number, is_smart_meter, is_export_meter, planned_dispatches_supported, tariff_override)
 
+  mock_heat_pump = account_debug_override.mock_heat_pump if account_debug_override is not None else False
+  if mock_heat_pump:
+    heat_pump_id = get_mock_heat_pump_id()
+    await async_setup_heat_pump_coordinator(hass, account_id, heat_pump_id, True)
+
+    key = DATA_HEAT_PUMP_CONFIGURATION_AND_STATUS_KEY.format(heat_pump_id)
+    try:
+      hass.data[DOMAIN][account_id][key] = HeatPumpCoordinatorResult(now, 1, heat_pump_id, mock_heat_pump_status_and_configuration())
+      await async_save_cached_heat_pump(hass, account_id, heat_pump_id, hass.data[DOMAIN][account_id][key].data)
+    except:
+      hass.data[DOMAIN][account_id][key] = HeatPumpCoordinatorResult(now, 1, heat_pump_id, await async_load_cached_heat_pump(hass, account_id, heat_pump_id))
+  elif "heat_pump_ids" in account_info:
+    for heat_pump_id in account_info["heat_pump_ids"]:
+      await async_setup_heat_pump_coordinator(hass, account_id, heat_pump_id, False)
+
+      key = DATA_HEAT_PUMP_CONFIGURATION_AND_STATUS_KEY.format(heat_pump_id)
+      try:
+        hass.data[DOMAIN][account_id][key] = HeatPumpCoordinatorResult(now, 1, heat_pump_id, await client.async_get_heat_pump_configuration_and_status(account_id, heat_pump_id))
+        await async_save_cached_heat_pump(hass, account_id, heat_pump_id, hass.data[DOMAIN][account_id][key].data)
+      except:
+        hass.data[DOMAIN][account_id][key] = HeatPumpCoordinatorResult(now, 1, heat_pump_id, await async_load_cached_heat_pump(hass, account_id, heat_pump_id))
+
   await async_setup_account_info_coordinator(hass, account_id)
 
-  await async_setup_intelligent_dispatches_coordinator(hass, account_id, debug_override.mock_intelligent_controls if debug_override is not None else False)
+  await async_setup_intelligent_dispatches_coordinator(hass, account_id, account_debug_override.mock_intelligent_controls if account_debug_override is not None else False)
 
-  await async_setup_intelligent_settings_coordinator(hass, account_id, intelligent_device.id if intelligent_device is not None else None, debug_override.mock_intelligent_controls if debug_override is not None else False)
+  await async_setup_intelligent_settings_coordinator(hass, account_id, intelligent_device.id if intelligent_device is not None else None, account_debug_override.mock_intelligent_controls if account_debug_override is not None else False)
   
   await async_setup_saving_sessions_coordinators(hass, account_id)
 
@@ -446,6 +482,21 @@ async def options_update_listener(hass, entry):
   """Handle options update."""
   await hass.config_entries.async_reload(entry.entry_id)
 
+  if entry.data[CONFIG_KIND] == CONFIG_KIND_ACCOUNT:
+    account_id = entry.data[CONFIG_ACCOUNT_ID]
+
+    # If the main account has been reloaded, then reload all other entries to make sure they're referencing
+    # the correct references (e.g. rate coordinators)
+    child_entries = hass.config_entries.async_entries(DOMAIN)
+    for child_entry in child_entries:
+      child_entry_config = dict(child_entry.data)
+
+      if child_entry.options:
+        child_entry_config.update(child_entry.options)
+
+      if child_entry_config[CONFIG_KIND] != CONFIG_KIND_ACCOUNT and child_entry_config[CONFIG_ACCOUNT_ID] == account_id:
+        await hass.config_entries.async_reload(child_entry.entry_id)
+
 async def async_unload_entry(hass, entry):
     """Unload a config entry."""
 
@@ -456,6 +507,9 @@ async def async_unload_entry(hass, entry):
         account_id = entry.data[CONFIG_ACCOUNT_ID]
         await _async_close_client(hass, account_id)
         hass.data[DOMAIN].pop(account_id)
+
+    elif entry.data[CONFIG_KIND] == CONFIG_KIND_TARIFF_COMPARISON:
+      unload_ok = await hass.config_entries.async_unload_platforms(entry, TARIFF_COMPARISON_PLATFORMS)
 
     elif entry.data[CONFIG_KIND] == CONFIG_KIND_TARGET_RATE or entry.data[CONFIG_KIND] == CONFIG_KIND_ROLLING_TARGET_RATE:
       unload_ok = await hass.config_entries.async_unload_platforms(entry, TARGET_RATE_PLATFORMS)
@@ -489,23 +543,6 @@ def setup(hass, config):
       _LOGGER.debug(f'Removing the following external statistics: {external_statistic_ids_to_remove}')
 
   hass.services.register(DOMAIN, "purge_invalid_external_statistic_ids", purge_invalid_external_statistic_ids)
-
-  async def diagnose_heatpump_apis(call):
-    """Handle the service call."""
-
-    account_id = None
-    for entry in hass.config_entries.async_entries(DOMAIN):
-      if CONFIG_KIND in entry.data and entry.data[CONFIG_KIND] == CONFIG_KIND_ACCOUNT:
-        account_id = entry.data[CONFIG_ACCOUNT_ID]
-
-    if account_id is None:
-      raise Exception("Failed to find account id")
-    
-    client: OctopusEnergyApiClient = hass.data[DOMAIN][account_id][DATA_CLIENT]
-
-    return await client.async_diagnose_heatpump_apis(account_id)
-
-  hass.services.register(DOMAIN, "diagnose_heatpump_apis", diagnose_heatpump_apis, supports_response=SupportsResponse.ONLY)
 
   # Return boolean to indicate that initialization was successful.
   return True

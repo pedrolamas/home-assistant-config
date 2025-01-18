@@ -1,179 +1,156 @@
-from __future__ import annotations
-
-from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorEntityDescription,
+    SensorStateClass,
+)
 from homeassistant.const import (
     UnitOfTemperature,
     PERCENTAGE,
+    CONCENTRATION_PARTS_PER_MILLION,
+    CONCENTRATION_PARTS_PER_BILLION,
     CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
 )
-from blueair_api import FeatureEnum
 
-from .const import DOMAIN, DATA_AWS_DEVICES
-from .blueair_aws_data_update_coordinator import BlueairAwsDataUpdateCoordinator
-from .entity import BlueairEntity
-
+from .blueair_update_coordinator import BlueairUpdateCoordinator
+from .entity import BlueairEntity, async_setup_entry_helper
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the Blueair sensors from config entry."""
-    feature_class_mapping = [
-        [FeatureEnum.TEMPERATURE, BlueairTemperatureSensor],
-        [FeatureEnum.HUMIDITY, BlueairHumiditySensor],
-        [FeatureEnum.VOC, BlueairVOCSensor],
-        [FeatureEnum.PM1, BlueairPM1Sensor],
-        [FeatureEnum.PM10, BlueairPM10Sensor],
-        [FeatureEnum.PM25, BlueairPM25Sensor],
-    ]
-    aws_devices: list[BlueairAwsDataUpdateCoordinator] = hass.data[DOMAIN][
-        DATA_AWS_DEVICES
-    ]
-    entities = []
-
-    for device in aws_devices:
-        for feature_class in feature_class_mapping:
-            if device.blueair_api_device.model.supports_feature(feature_class[0]):
-                entities.append(feature_class[1](device))
-    async_add_entities(entities)
+    async_setup_entry_helper(hass, config_entry, async_add_entities,
+        entity_classes=[
+            BlueairTemperatureSensor,
+            BlueairHumiditySensor,
+            BlueairVOCSensor,
+            BlueairCO2Sensor,
+            BlueairPM1Sensor,
+            BlueairPM10Sensor,
+            BlueairPM25Sensor,
+            BlueairFilterLifeSensor,
+            BlueairWickLifeSensor,
+    ])
 
 
-class BlueairTemperatureSensor(BlueairEntity, SensorEntity):
-    """Monitors the temperature."""
+class BlueairSensor(BlueairEntity, SensorEntity):
+    """Generic Blueair Sensor, configured through EntityDescription."""
 
-    _attr_device_class = SensorDeviceClass.TEMPERATURE
-    _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+    @classmethod
+    def is_implemented(kls, coordinator):
+        return getattr(coordinator, kls(coordinator).entity_description.key) is not NotImplemented
 
-    def __init__(self, device):
+    def __init__(self, coordinator: BlueairUpdateCoordinator):
         """Initialize the temperature sensor."""
-        super().__init__("Temperature", device)
-        self._state: float | None = None
+        super().__init__(self.entity_description.name, coordinator)
 
     @property
     def native_value(self) -> float | None:
         """Return the current temperature."""
-        if self._device.temperature is None:
-            return None
-        return round(self._device.temperature, 1)
+        return getattr(self.coordinator, self.entity_description.key)
 
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        return self.native_value is not None
+        return super().available and self.native_value is not None
+
+    @property
+    def state_class(self):
+        """Return the state class of this entity, from STATE_CLASSES, if any."""
+        return SensorStateClass.MEASUREMENT
 
 
-class BlueairHumiditySensor(BlueairEntity, SensorEntity):
+class BlueairTemperatureSensor(BlueairSensor):
+    """Generic Blueair Sensor, configured through EntityDescription."""
+    entity_description = SensorEntityDescription(
+        key="temperature",
+        name="Temperature",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        suggested_display_precision=1,
+    )
+
+
+class BlueairHumiditySensor(BlueairSensor):
     """Monitors the humidity."""
-
-    _attr_device_class = SensorDeviceClass.HUMIDITY
-    _attr_native_unit_of_measurement = PERCENTAGE
-
-    def __init__(self, device):
-        """Initialize the humidity sensor."""
-        super().__init__("Humidity", device)
-        self._state: float | None = None
-
-    @property
-    def native_value(self) -> float | None:
-        """Return the current humidity."""
-        if self._device.humidity is None:
-            return None
-        return round(self._device.humidity, 0)
-
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return self.native_value is not None
+    entity_description = SensorEntityDescription(
+        key="humidity",
+        name="Humidity",
+        device_class=SensorDeviceClass.HUMIDITY,
+        native_unit_of_measurement=PERCENTAGE,
+        suggested_display_precision=0,
+    )
 
 
-class BlueairVOCSensor(BlueairEntity, SensorEntity):
+class BlueairVOCSensor(BlueairSensor):
     """Monitors the VOC."""
-
-    _attr_device_class = SensorDeviceClass.VOLATILE_ORGANIC_COMPOUNDS
-    _attr_native_unit_of_measurement = CONCENTRATION_MICROGRAMS_PER_CUBIC_METER
-
-    def __init__(self, device):
-        """Initialize the VOC sensor."""
-        super().__init__("voc", device)
-        self._state: float | None = None
-
-    @property
-    def native_value(self) -> float | None:
-        """Return the current voc."""
-        if self._device.voc is None:
-            return None
-        return round(self._device.voc, 0)
-
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return self.native_value is not None
+    entity_description = SensorEntityDescription(
+        key="voc",
+        name="VOC",
+        device_class=SensorDeviceClass.VOLATILE_ORGANIC_COMPOUNDS,
+        native_unit_of_measurement=CONCENTRATION_PARTS_PER_BILLION,
+        suggested_display_precision=0,
+    )
 
 
-class BlueairPM1Sensor(BlueairEntity, SensorEntity):
+class BlueairPM1Sensor(BlueairSensor):
     """Monitors the pm1"""
-
-    _attr_device_class = SensorDeviceClass.PM1
-    _attr_native_unit_of_measurement = "µg/m³"
-
-    def __init__(self, device):
-        """Initialize the pm1 sensor."""
-        super().__init__("pm1", device)
-        self._state: float | None = None
-
-    @property
-    def native_value(self) -> float | None:
-        """Return the current pm1."""
-        if self._device.pm1 is None:
-            return None
-        return int((self._device.pm1 * 100) // 132)
-
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return self.native_value is not None
+    entity_description = SensorEntityDescription(
+        key="pm1",
+        name="PM 1",
+        device_class=SensorDeviceClass.PM1,
+        native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+    )
 
 
-class BlueairPM10Sensor(BlueairEntity, SensorEntity):
+class BlueairPM10Sensor(BlueairSensor):
     """Monitors the pm10"""
-
-    _attr_device_class = SensorDeviceClass.PM10
-    _attr_native_unit_of_measurement = "µg/m³"
-
-    def __init__(self, device):
-        """Initialize the pm10 sensor."""
-        super().__init__("pm10", device)
-        self._state: float | None = None
-
-    @property
-    def native_value(self) -> float | None:
-        """Return the current pm10."""
-        if self._device.pm10 is None:
-            return None
-        return int((self._device.pm10 * 100) // 132)
-
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return self.native_value is not None
+    entity_description = SensorEntityDescription(
+        key="pm10",
+        name="PM 10",
+        device_class=SensorDeviceClass.PM10,
+        native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+    )
 
 
-class BlueairPM25Sensor(BlueairEntity, SensorEntity):
-    """Monitors the pm25"""
+class BlueairPM25Sensor(BlueairSensor):
+    """Monitors the pm2.5"""
+    entity_description = SensorEntityDescription(
+        key="pm25",
+        name="PM 2.5",
+        device_class=SensorDeviceClass.PM25,
+        native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+    )
 
-    _attr_device_class = SensorDeviceClass.PM25
-    _attr_native_unit_of_measurement = "µg/m³"
 
-    def __init__(self, device):
-        """Initialize the pm25 sensor."""
-        super().__init__("pm25", device)
-        self._state: float | None = None
+class BlueairCO2Sensor(BlueairSensor):
+    """Monitors the Co2"""
+    entity_description = SensorEntityDescription(
+        key="co2",
+        name="CO2",
+        device_class=SensorDeviceClass.CO2,
+        native_unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
+        suggested_display_precision=0,
+    )
 
-    @property
-    def native_value(self) -> float | None:
-        """Return the current pm25."""
-        if self._device.pm25 is None:
-            return None
-        return int((self._device.pm25 * 100) // 132)
 
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return self.native_value is not None
+class BlueairFilterLifeSensor(BlueairSensor):
+    """Monitors the filter remaining life"""
+    entity_description = SensorEntityDescription(
+        key="filter_life",
+        name="Filter Life",
+        device_class=SensorDeviceClass.BATTERY,
+        native_unit_of_measurement=PERCENTAGE,
+        suggested_display_precision=0,
+        icon="mdi:air-filter",
+    )
+
+
+class BlueairWickLifeSensor(BlueairSensor):
+    """Monitors the wick remaining life"""
+    entity_description = SensorEntityDescription(
+        key="wick_life",
+        name="Wick Life",
+        device_class=SensorDeviceClass.BATTERY,
+        native_unit_of_measurement=PERCENTAGE,
+        suggested_display_precision=0,
+        icon="mdi:air-filter",
+    )

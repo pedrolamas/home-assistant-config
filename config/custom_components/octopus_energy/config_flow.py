@@ -16,15 +16,16 @@ from .config.cost_tracker import merge_cost_tracker_config, validate_cost_tracke
 from .config.target_rates import merge_target_rate_config, validate_target_rate_config
 from .config.main import async_validate_main_config, merge_main_config
 from .const import (
+  CONFIG_COST_TRACKER_MANUAL_RESET,
   CONFIG_FAVOUR_DIRECT_DEBIT_RATES,
   CONFIG_KIND_ROLLING_TARGET_RATE,
   CONFIG_MAIN_HOME_PRO_ADDRESS,
   CONFIG_MAIN_HOME_PRO_API_KEY,
   CONFIG_ROLLING_TARGET_HOURS_LOOK_AHEAD,
-  CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE,
-  CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_FUTURE_OR_PAST,
-  CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST,
-  CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALWAYS,
+  CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE,
+  CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_FUTURE_OR_PAST,
+  CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST,
+  CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALWAYS,
   CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING,
   CONFIG_TARGET_HOURS_MODE,
   CONFIG_TARGET_HOURS_MODE_EXACT,
@@ -231,6 +232,15 @@ class OctopusEnergyConfigFlow(ConfigFlow, domain=DOMAIN):
       vol.Optional(CONFIG_TARGET_START_TIME): str,
       vol.Optional(CONFIG_TARGET_END_TIME): str,
       vol.Optional(CONFIG_TARGET_OFFSET): str,
+      vol.Required(CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE, default=CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST): selector.SelectSelector(
+          selector.SelectSelectorConfig(
+              options=[
+                selector.SelectOptionDict(value=CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST, label="All existing target rates are in the past"),
+                selector.SelectOptionDict(value=CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_FUTURE_OR_PAST, label="Existing target rates haven't started or finished"),
+              ],
+              mode=selector.SelectSelectorMode.DROPDOWN,
+          )
+      ),
       vol.Optional(CONFIG_TARGET_ROLLING_TARGET, default=False): bool,
       vol.Optional(CONFIG_TARGET_LAST_RATES, default=False): bool,
       vol.Optional(CONFIG_TARGET_INVERT_TARGET_RATES, default=False): bool,
@@ -278,22 +288,22 @@ class OctopusEnergyConfigFlow(ConfigFlow, domain=DOMAIN):
       ),
       vol.Required(CONFIG_ROLLING_TARGET_HOURS_LOOK_AHEAD): str,
       vol.Optional(CONFIG_TARGET_OFFSET): str,
+      vol.Required(CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE, default=CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST): selector.SelectSelector(
+          selector.SelectSelectorConfig(
+              options=[
+                selector.SelectOptionDict(value=CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST, label="All existing target rates are in the past"),
+                selector.SelectOptionDict(value=CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_FUTURE_OR_PAST, label="Existing target rates haven't started or finished"),
+                selector.SelectOptionDict(value=CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALWAYS, label="Always"),
+              ],
+              mode=selector.SelectSelectorMode.DROPDOWN,
+          )
+      ),
       vol.Optional(CONFIG_TARGET_LAST_RATES): bool,
       vol.Optional(CONFIG_TARGET_INVERT_TARGET_RATES): bool,
       vol.Optional(CONFIG_TARGET_MIN_RATE): str,
       vol.Optional(CONFIG_TARGET_MAX_RATE): str,
       vol.Optional(CONFIG_TARGET_WEIGHTING): str,
       vol.Required(CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING, default=1): cv.positive_float,
-      vol.Required(CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE, default=CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST): selector.SelectSelector(
-          selector.SelectSelectorConfig(
-              options=[
-                selector.SelectOptionDict(value=CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST, label="All existing target rates are in the past"),
-                selector.SelectOptionDict(value=CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_FUTURE_OR_PAST, label="Existing target rates haven't started or finished"),
-                selector.SelectOptionDict(value=CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALWAYS, label="Always"),
-              ],
-              mode=selector.SelectSelectorMode.DROPDOWN,
-          )
-      ),
     })
   
   async def __async_setup_cost_tracker_schema__(self, account_id: str):
@@ -317,6 +327,7 @@ class OctopusEnergyConfigFlow(ConfigFlow, domain=DOMAIN):
           selector.EntitySelectorConfig(domain="sensor", device_class=[SensorDeviceClass.ENERGY]),
       ),
       vol.Optional(CONFIG_COST_TRACKER_ENTITY_ACCUMULATIVE_VALUE, default=False): bool,
+      vol.Required(CONFIG_COST_TRACKER_MANUAL_RESET, default=False): bool,
       vol.Required(CONFIG_COST_TRACKER_WEEKDAY_RESET, default="0"): selector.SelectSelector(
           selector.SelectSelectorConfig(
               options=get_weekday_options(),
@@ -621,6 +632,15 @@ class OptionsFlowHandler(OptionsFlow):
             vol.Optional(CONFIG_TARGET_START_TIME): str,
             vol.Optional(CONFIG_TARGET_END_TIME): str,
             vol.Optional(CONFIG_TARGET_OFFSET): str,
+            vol.Required(CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE): selector.SelectSelector(
+              selector.SelectSelectorConfig(
+                  options=[
+                    selector.SelectOptionDict(value=CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST, label="All existing target rates are in the past"),
+                    selector.SelectOptionDict(value=CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_FUTURE_OR_PAST, label="Existing target rates haven't started or finished"),
+                  ],
+                  mode=selector.SelectSelectorMode.DROPDOWN,
+              )
+            ),
             vol.Optional(CONFIG_TARGET_ROLLING_TARGET): bool,
             vol.Optional(CONFIG_TARGET_LAST_RATES): bool,
             vol.Optional(CONFIG_TARGET_INVERT_TARGET_RATES): bool,
@@ -644,7 +664,8 @@ class OptionsFlowHandler(OptionsFlow):
             CONFIG_TARGET_MIN_RATE: f'{config[CONFIG_TARGET_MIN_RATE]}' if CONFIG_TARGET_MIN_RATE in config and config[CONFIG_TARGET_MIN_RATE] is not None else None,
             CONFIG_TARGET_MAX_RATE: f'{config[CONFIG_TARGET_MAX_RATE]}' if CONFIG_TARGET_MAX_RATE in config and config[CONFIG_TARGET_MAX_RATE] is not None else None,
             CONFIG_TARGET_WEIGHTING: config[CONFIG_TARGET_WEIGHTING] if CONFIG_TARGET_WEIGHTING in config else None,
-            CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING: config[CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING] if CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING in config else 1
+            CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING: config[CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING] if CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING in config else 1,
+            CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE: config[CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE] if CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE in config else CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST,
           }
       ),
       errors=errors
@@ -709,22 +730,22 @@ class OptionsFlowHandler(OptionsFlow):
             ),
             vol.Required(CONFIG_ROLLING_TARGET_HOURS_LOOK_AHEAD): str,
             vol.Optional(CONFIG_TARGET_OFFSET): str,
+            vol.Required(CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE, default=CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=[
+                      selector.SelectOptionDict(value=CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST, label="All existing target rates are in the past"),
+                      selector.SelectOptionDict(value=CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_FUTURE_OR_PAST, label="Existing target rates haven't started or finished"),
+                      selector.SelectOptionDict(value=CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALWAYS, label="Always"),
+                    ],
+                    mode=selector.SelectSelectorMode.DROPDOWN,
+                )
+            ),
             vol.Optional(CONFIG_TARGET_LAST_RATES): bool,
             vol.Optional(CONFIG_TARGET_INVERT_TARGET_RATES): bool,
             vol.Optional(CONFIG_TARGET_MIN_RATE): str,
             vol.Optional(CONFIG_TARGET_MAX_RATE): str,
             vol.Optional(CONFIG_TARGET_WEIGHTING): str,
             vol.Required(CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING): cv.positive_float,
-            vol.Required(CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE, default=CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST): selector.SelectSelector(
-                selector.SelectSelectorConfig(
-                    options=[
-                      selector.SelectOptionDict(value=CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST, label="All existing target rates are in the past"),
-                      selector.SelectOptionDict(value=CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_FUTURE_OR_PAST, label="Existing target rates haven't started or finished"),
-                      selector.SelectOptionDict(value=CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALWAYS, label="Always"),
-                    ],
-                    mode=selector.SelectSelectorMode.DROPDOWN,
-                )
-            ),
           }),
           {
             CONFIG_TARGET_NAME: config[CONFIG_TARGET_NAME],
@@ -740,7 +761,7 @@ class OptionsFlowHandler(OptionsFlow):
             CONFIG_TARGET_MIN_RATE: f'{config[CONFIG_TARGET_MIN_RATE]}' if CONFIG_TARGET_MIN_RATE in config and config[CONFIG_TARGET_MIN_RATE] is not None else None,
             CONFIG_TARGET_MAX_RATE: f'{config[CONFIG_TARGET_MAX_RATE]}' if CONFIG_TARGET_MAX_RATE in config and config[CONFIG_TARGET_MAX_RATE] is not None else None,
             CONFIG_TARGET_WEIGHTING: config[CONFIG_TARGET_WEIGHTING] if CONFIG_TARGET_WEIGHTING in config else None,            
-            CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE: config[CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE] if CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE in config else CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST,
+            CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE: config[CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE] if CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE in config else CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST,
             CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING: config[CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING] if CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING in config else 1
           }
       ),
@@ -820,6 +841,7 @@ class OptionsFlowHandler(OptionsFlow):
               selector.EntitySelectorConfig(domain="sensor", device_class=[SensorDeviceClass.ENERGY]),
           ),
           vol.Optional(CONFIG_COST_TRACKER_ENTITY_ACCUMULATIVE_VALUE): bool,
+          vol.Required(CONFIG_COST_TRACKER_MANUAL_RESET): bool,
           vol.Required(CONFIG_COST_TRACKER_WEEKDAY_RESET): selector.SelectSelector(
               selector.SelectSelectorConfig(
                   options=get_weekday_options(),
@@ -835,6 +857,7 @@ class OptionsFlowHandler(OptionsFlow):
           CONFIG_COST_TRACKER_ENTITY_ACCUMULATIVE_VALUE: config[CONFIG_COST_TRACKER_ENTITY_ACCUMULATIVE_VALUE],
           CONFIG_COST_TRACKER_WEEKDAY_RESET: f"{config[CONFIG_COST_TRACKER_WEEKDAY_RESET]}" if CONFIG_COST_TRACKER_WEEKDAY_RESET in config else "0",
           CONFIG_COST_TRACKER_MONTH_DAY_RESET: config[CONFIG_COST_TRACKER_MONTH_DAY_RESET] if CONFIG_COST_TRACKER_MONTH_DAY_RESET in config else 1,
+          CONFIG_COST_TRACKER_MANUAL_RESET: config[CONFIG_COST_TRACKER_MANUAL_RESET] if CONFIG_COST_TRACKER_MANUAL_RESET in config else False
         }
       ),
       errors=errors

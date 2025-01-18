@@ -1,4 +1,3 @@
-from decimal import Decimal
 import logging
 from datetime import timedelta
 import math
@@ -13,9 +12,6 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import generate_entity_id
 
 from homeassistant.util.dt import (utcnow, now)
-from homeassistant.helpers.update_coordinator import (
-  CoordinatorEntity
-)
 from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
 )
@@ -24,11 +20,13 @@ from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers import translation
 
 from ..const import (
-  CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST,
+  CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE,
+  CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST,
   CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING,
   CONFIG_TARGET_HOURS_MODE,
   CONFIG_TARGET_MAX_RATE,
   CONFIG_TARGET_MIN_RATE,
+  CONFIG_TARGET_MPAN,
   CONFIG_TARGET_NAME,
   CONFIG_TARGET_HOURS,
   CONFIG_TARGET_OLD_END_TIME,
@@ -48,6 +46,7 @@ from ..const import (
   CONFIG_TARGET_TYPE_INTERMITTENT,
   CONFIG_TARGET_WEIGHTING,
   DATA_ACCOUNT,
+  DATA_CUSTOM_RATE_WEIGHTINGS_KEY,
   DOMAIN,
 )
 
@@ -57,6 +56,7 @@ from . import (
   calculate_intermittent_times,
   compare_config,
   create_weighting,
+  extract_config,
   get_applicable_rates,
   get_target_rate_info,
   should_evaluate_target_rates
@@ -67,6 +67,7 @@ from ..target_rates.repairs import check_for_errors
 from ..utils.attributes import dict_to_typed_dict
 from ..coordinators import MultiCoordinatorEntity
 from ..coordinators.free_electricity_sessions import FreeElectricitySessionsCoordinatorResult
+from ..utils.weightings import apply_weighting
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -75,12 +76,13 @@ class OctopusEnergyTargetRate(MultiCoordinatorEntity, BinarySensorEntity, Restor
   
   _unrecorded_attributes = frozenset({"data_last_retrieved", "target_times_last_evaluated"})
 
-  def __init__(self, hass: HomeAssistant, account_id: str, config, is_export, coordinator, free_electricity_coordinator):
+  def __init__(self, hass: HomeAssistant, account_id: str, config_entry, config, is_export, coordinator, free_electricity_coordinator):
     """Init sensor."""
     # Pass coordinator to base class
     MultiCoordinatorEntity.__init__(self, coordinator, [free_electricity_coordinator])
 
     self._state = None
+    self._config_entry = config_entry
     self._config = config
     self._is_export = is_export
     self._attributes = self._config.copy()
@@ -154,7 +156,7 @@ class OctopusEnergyTargetRate(MultiCoordinatorEntity, BinarySensorEntity, Restor
       _LOGGER.debug(f'Updating OctopusEnergyTargetRate {self._config[CONFIG_TARGET_NAME]}')
       self._last_evaluated = current_date
 
-      should_evaluate = should_evaluate_target_rates(current_date, self._target_rates, CONFIG_ROLLING_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST)
+      should_evaluate = should_evaluate_target_rates(current_date, self._target_rates, self._config[CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE] if CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE in self._config else CONFIG_TARGET_TARGET_TIMES_EVALUATION_MODE_ALL_IN_PAST)
       if should_evaluate:
         if self.coordinator is not None and self.coordinator.data is not None and self.coordinator.data.rates is not None:
           all_rates = self.coordinator.data.rates
@@ -211,6 +213,14 @@ class OctopusEnergyTargetRate(MultiCoordinatorEntity, BinarySensorEntity, Restor
             applicable_rates,
             free_electricity_sessions.events if free_electricity_sessions is not None else [],
             self._config[CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING] if CONFIG_TARGET_FREE_ELECTRICITY_WEIGHTING in self._config else 1
+          )
+
+          weightings_key = DATA_CUSTOM_RATE_WEIGHTINGS_KEY.format(self._config[CONFIG_TARGET_MPAN])
+          applicable_rates = apply_weighting(
+            applicable_rates,
+            self._hass.data[DOMAIN][self._account_id][weightings_key] 
+            if weightings_key in self._hass.data[DOMAIN][self._account_id] 
+            else []
           )
 
           if applicable_rates is not None:
@@ -295,7 +305,7 @@ class OctopusEnergyTargetRate(MultiCoordinatorEntity, BinarySensorEntity, Restor
       _LOGGER.debug(f'Restored OctopusEnergyTargetRate state: {self._state}')
 
   @callback
-  async def async_update_target_rate_config(self, target_start_time=None, target_end_time=None, target_hours=None, target_offset=None, target_minimum_rate=None, target_maximum_rate=None, target_weighting=None):
+  async def async_update_target_rate_config(self, target_start_time=None, target_end_time=None, target_hours=None, target_offset=None, target_minimum_rate=None, target_maximum_rate=None, target_weighting=None, persist_changes=False):
     """Update sensors config"""
 
     config = dict(self._config)
@@ -362,3 +372,16 @@ class OctopusEnergyTargetRate(MultiCoordinatorEntity, BinarySensorEntity, Restor
     self._attributes["is_target_export"] = self._is_export
     self._target_rates = []
     self.async_write_ha_state()
+
+    if persist_changes:
+      updatable_keys = [CONFIG_TARGET_HOURS, CONFIG_TARGET_START_TIME, CONFIG_TARGET_END_TIME, CONFIG_TARGET_OFFSET, CONFIG_TARGET_MIN_RATE, CONFIG_TARGET_MAX_RATE, CONFIG_TARGET_WEIGHTING]
+      new_config_data = { **self._config_entry.data }
+      new_config_data.update(extract_config(config, updatable_keys))
+      new_config_options = { **self._config_entry.options }
+      new_config_options.update(extract_config(config, updatable_keys))
+
+      self._hass.config_entries.async_update_entry(
+        self._config_entry,
+        data = new_config_data,
+        options = new_config_options
+      )

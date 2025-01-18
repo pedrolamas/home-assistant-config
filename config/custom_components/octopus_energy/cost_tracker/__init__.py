@@ -4,6 +4,21 @@ from homeassistant.components.sensor import (
   SensorStateClass,
 )
 
+from homeassistant.helpers.entity import DeviceInfo
+
+def get_device_info_from_device_entry(device_entry):
+  if device_entry is None:
+    return None
+
+  return DeviceInfo(
+    identifiers=device_entry.identifiers,
+    name=device_entry.name,
+    connections=device_entry.connections,
+    manufacturer=device_entry.manufacturer,
+    model=device_entry.model,
+    sw_version=device_entry.sw_version
+  )
+
 class CostTrackerResult:
   tracked_consumption_data: list
   untracked_consumption_data: list
@@ -38,6 +53,7 @@ def add_consumption(current: datetime,
                     old_last_reset: datetime,
                     is_accumulative_value: bool,
                     is_tracking: bool,
+                    is_manual_reset_enabled: bool = False,
                     state_class: str = None):
   if new_value is None:
     return
@@ -70,12 +86,13 @@ def add_consumption(current: datetime,
   new_tracked_consumption_data = tracked_consumption_data.copy()
   new_untracked_consumption_data = untracked_consumption_data.copy()
   
-  # If we've gone into a new day, then reset the consumption result
-  if ((new_tracked_consumption_data is not None and len(new_tracked_consumption_data) > 0 and
-      (new_tracked_consumption_data[0]["start"].year != start_of_day.year or new_tracked_consumption_data[0]["start"].month != start_of_day.month or new_tracked_consumption_data[0]["start"].day != start_of_day.day)) or
+  # If we've gone into a new day, then reset the consumption result, unless manual reset is enabled
+  if (is_manual_reset_enabled == False and
+      ((new_tracked_consumption_data is not None and len(new_tracked_consumption_data) > 0 and
+       (new_tracked_consumption_data[0]["start"].year != start_of_day.year or new_tracked_consumption_data[0]["start"].month != start_of_day.month or new_tracked_consumption_data[0]["start"].day != start_of_day.day)) or
       
-      (new_untracked_consumption_data is not None and len(new_untracked_consumption_data) > 0 and
-      (new_untracked_consumption_data[0]["start"].year != start_of_day.year or new_untracked_consumption_data[0]["start"].month != start_of_day.month or new_untracked_consumption_data[0]["start"].day != start_of_day.day))):
+       (new_untracked_consumption_data is not None and len(new_untracked_consumption_data) > 0 and
+       (new_untracked_consumption_data[0]["start"].year != start_of_day.year or new_untracked_consumption_data[0]["start"].month != start_of_day.month or new_untracked_consumption_data[0]["start"].day != start_of_day.day)))):
     new_tracked_consumption_data = []
     new_untracked_consumption_data = []
 

@@ -18,6 +18,7 @@ from homeassistant.components.sensor import (
 from homeassistant.helpers.event import (
   EventStateChangedData,
   async_track_state_change_event,
+  async_track_entity_registry_updated_event,
 )
 
 from homeassistant.const import (
@@ -27,13 +28,14 @@ from homeassistant.const import (
 
 from ..const import (
   CONFIG_COST_TRACKER_ENTITY_ACCUMULATIVE_VALUE,
+  CONFIG_COST_TRACKER_MANUAL_RESET,
   CONFIG_COST_TRACKER_TARGET_ENTITY_ID,
   CONFIG_COST_TRACKER_NAME,
   DOMAIN,
 )
 
 from ..coordinators.electricity_rates import ElectricityRatesCoordinatorResult
-from . import add_consumption
+from . import add_consumption, get_device_info_from_device_entry
 from ..electricity import calculate_electricity_consumption_and_cost
 from ..utils.rate_information import get_rate_index, get_unique_rates
 from ..utils.attributes import dict_to_typed_dict
@@ -43,12 +45,13 @@ _LOGGER = logging.getLogger(__name__)
 class OctopusEnergyCostTrackerSensor(CoordinatorEntity, RestoreSensor):
   """Sensor for calculating the cost for a given sensor."""
 
-  def __init__(self, hass: HomeAssistant, coordinator, config, peak_type = None):
+  def __init__(self, hass: HomeAssistant, coordinator, config_entry, config, device_entry, peak_type = None):
     """Init sensor."""
     # Pass coordinator to base class
     CoordinatorEntity.__init__(self, coordinator)
 
     self._state = None
+    self._config_entry = config_entry
     self._config = config
     self._attributes = self._config.copy()
     self._attributes["is_tracking"] = True
@@ -59,6 +62,8 @@ class OctopusEnergyCostTrackerSensor(CoordinatorEntity, RestoreSensor):
     
     self._hass = hass
     self.entity_id = generate_entity_id("sensor.{}", self.unique_id, hass=hass)
+
+    self._attr_device_info = get_device_info_from_device_entry(device_entry)
 
   @property
   def entity_registry_enabled_default(self) -> bool:
@@ -129,9 +134,10 @@ class OctopusEnergyCostTrackerSensor(CoordinatorEntity, RestoreSensor):
     # If not None, we got an initial value.
     await super().async_added_to_hass()
     state = await self.async_get_last_state()
+    last_sensor_state = await self.async_get_last_sensor_data()
     
-    if state is not None and self._state is None:
-      self._state = None if state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN) else state.state
+    if state is not None and last_sensor_state is not None and self._state is None:
+      self._state = None if state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN) else last_sensor_state.native_value
       self._attributes = dict_to_typed_dict(state.attributes)
       # Make sure our attributes don't override any changed settings
       self._attributes.update(self._config)
@@ -143,6 +149,34 @@ class OctopusEnergyCostTrackerSensor(CoordinatorEntity, RestoreSensor):
             self.hass, [self._config[CONFIG_COST_TRACKER_TARGET_ENTITY_ID]], self._async_calculate_cost
         )
     )
+
+    self.async_on_remove(
+      async_track_entity_registry_updated_event(
+        self.hass, [self._config[CONFIG_COST_TRACKER_TARGET_ENTITY_ID]], self._async_update_tracked_entity
+      )
+    )
+
+  async def _async_update_tracked_entity(self, event) -> None:
+    data = event.data
+    if data["action"] != "update":
+      return
+
+    if "entity_id" in data["changes"]:
+      new_entity_id = data["entity_id"]
+      if new_entity_id != self._config[CONFIG_COST_TRACKER_TARGET_ENTITY_ID]:
+        self._hass.config_entries.async_update_entry(
+            self._config_entry,
+            data={
+              **self._config_entry.data,
+              CONFIG_COST_TRACKER_TARGET_ENTITY_ID: new_entity_id,
+            },
+            options = {
+              **self._config_entry.options,
+              CONFIG_COST_TRACKER_TARGET_ENTITY_ID: new_entity_id,
+            }
+        )
+        _LOGGER.debug(f"Tracked entity for '{self.entity_id}' updated from '{self._config[CONFIG_COST_TRACKER_TARGET_ENTITY_ID]}' to '{new_entity_id}'. Reloading...")
+        await self._hass.config_entries.async_reload(self._config_entry.entry_id)
 
   async def _async_calculate_cost(self, event: Event[EventStateChangedData]):
     new_state = event.data["new_state"]
@@ -179,6 +213,7 @@ class OctopusEnergyCostTrackerSensor(CoordinatorEntity, RestoreSensor):
                                        old_last_reset,
                                        self._config[CONFIG_COST_TRACKER_ENTITY_ACCUMULATIVE_VALUE],
                                        self._attributes["is_tracking"] if "is_tracking" in self._attributes else True,
+                                       CONFIG_COST_TRACKER_MANUAL_RESET in self._config and self._config[CONFIG_COST_TRACKER_MANUAL_RESET] == True,
                                        new_state.attributes["state_class"] if "state_class" in new_state.attributes else None)
     
     
@@ -289,7 +324,7 @@ class OctopusEnergyCostTrackerSensor(CoordinatorEntity, RestoreSensor):
       self._last_reset = start_of_day
       return True
     
-    if self._last_reset.date() != current.date():
+    if self._last_reset.date() != current.date() and (CONFIG_COST_TRACKER_MANUAL_RESET not in self._config or self._config[CONFIG_COST_TRACKER_MANUAL_RESET] == False):
       self._state = 0
       self._attributes["tracked_charges"] = []
       self._attributes["untracked_charges"] = []

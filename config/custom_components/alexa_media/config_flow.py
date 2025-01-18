@@ -26,12 +26,19 @@ from alexapy import (
     hide_email,
     obfuscate,
 )
+from awesomeversion import AwesomeVersion
 from homeassistant import config_entries
 from homeassistant.components.http.view import HomeAssistantView
 from homeassistant.components.persistent_notification import (
     async_dismiss as async_dismiss_persistent_notification,
 )
-from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_SCAN_INTERVAL, CONF_URL
+from homeassistant.const import (
+    CONF_EMAIL,
+    CONF_PASSWORD,
+    CONF_SCAN_INTERVAL,
+    CONF_URL,
+    __version__ as HAVERSION,
+)
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult, UnknownFlow
 from homeassistant.exceptions import Unauthorized
@@ -871,7 +878,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize options flow."""
         self.config = OrderedDict()
-        self.config_entry = config_entry
+        if AwesomeVersion(HAVERSION) < "2024.12":
+            self.config_entry = config_entry
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -959,6 +967,15 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             if CONF_PUBLIC_URL in self.config_entry.data:
                 if not user_input[CONF_PUBLIC_URL].endswith("/"):
                     user_input[CONF_PUBLIC_URL] = user_input[CONF_PUBLIC_URL] + "/"
+            """Remove leading/trailing spaces in device strings"""
+            if CONF_INCLUDE_DEVICES in self.config_entry.data:
+                user_input[CONF_INCLUDE_DEVICES] = user_input[
+                    CONF_INCLUDE_DEVICES
+                ].strip()
+            if CONF_EXCLUDE_DEVICES in self.config_entry.data:
+                user_input[CONF_EXCLUDE_DEVICES] = user_input[
+                    CONF_EXCLUDE_DEVICES
+                ].strip()
 
             self.hass.config_entries.async_update_entry(
                 self.config_entry, data=user_input, options=self.config_entry.options
