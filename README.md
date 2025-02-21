@@ -1,12 +1,12 @@
 # Home Assistant Configuration
 
-[![Project Maintenance](https://img.shields.io/maintenance/yes/2024.svg)](https://github.com/pedrolamas/home-assistant-config 'GitHub Repository')
+[![Project Maintenance](https://img.shields.io/maintenance/yes/2025.svg)](https://github.com/pedrolamas/home-assistant-config 'GitHub Repository')
 [![License](https://img.shields.io/github/license/pedrolamas/home-assistant-config.svg)](https://github.com/pedrolamas/home-assistant-config/blob/master/LICENSE 'License')
 
 [![Home Assistant Stable CI](https://github.com/pedrolamas/home-assistant-config/workflows/Home%20Assistant%20(Stable)/badge.svg)](https://github.com/pedrolamas/home-assistant-config/actions 'Build Status')
 [![Home Assistant Beta CI](https://github.com/pedrolamas/home-assistant-config/workflows/Home%20Assistant%20(Beta)/badge.svg)](https://github.com/pedrolamas/home-assistant-config/actions 'Build Status')
 
-[![Follow pedrolamas on Twitter](https://img.shields.io/twitter/follow/pedrolamas?label=Follow%20@pedrolamas%20on%20Twitter&style=social)](https://twitter.com/pedrolamas)
+[![Follow pedrolamas.com on Bluesky](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpublic.api.bsky.app%2Fxrpc%2Fapp.bsky.actor.getProfile%2F%3Factor%3Dpedrolamas.com&query=%24.followersCount&style=social&logo=bluesky&label=Follow%20%40pedrolamas.com)](https://bsky.app/profile/pedrolamas.com)
 [![Follow pedrolamas on Mastodon](https://img.shields.io/mastodon/follow/109365776481898704?label=Follow%20@pedrolamas%20on%20Mastodon&domain=https%3A%2F%2Fhachyderm.io&style=social)](https://hachyderm.io/@pedrolamas)
 
 **My personal Home Assistant configuration!**
