@@ -84,6 +84,7 @@ send_notification:
           channel: "{{ channel }}"
           tag: "{{ tag }}"
           priority: "high"
+          ttl: 0
           actions: >-
             {{ actions }}
 
