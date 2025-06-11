@@ -136,6 +136,7 @@ async def async_get_diagnostics(client: OctopusEnergyApiClient, account_id: str,
 
   return {
     "account": account_info,
+    "using_cached_account_data": existing_account_info is not None,
     "entities": get_entity_info(redacted_mappings),
     "intelligent_device": intelligent_device.to_dict() if intelligent_device is not None else None,
     "intelligent_settings": intelligent_settings.to_dict() if intelligent_settings is not None else None,
@@ -175,6 +176,7 @@ async def async_get_device_diagnostics(hass, entry, device):
             unique_id = unique_id.lower().replace(key.lower(), f"{redacted_mappings[key]}")
           
           entity_info[unique_id] = {
+            "state": state.state if state is not None else None,
             "last_updated": state.last_updated if state is not None else None,
             "last_changed": state.last_changed if state is not None else None
           }

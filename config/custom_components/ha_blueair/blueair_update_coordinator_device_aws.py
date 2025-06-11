@@ -14,7 +14,7 @@ class BlueairUpdateCoordinatorDeviceAws(BlueairUpdateCoordinator):
     @property
     def model(self) -> str:
         """Return api package enum of device model."""
-        return self.blueair_api_device.model.model_name
+        return self.blueair_api_device.model
 
     @property
     def fan_speed(self) -> int | None | NotImplemented:
@@ -29,6 +29,7 @@ class BlueairUpdateCoordinatorDeviceAws(BlueairUpdateCoordinator):
         elif self.blueair_api_device.model in [
             ModelEnum.MAX_211I,
             ModelEnum.MAX_311I,
+            ModelEnum.MAX_311I_PLUS,
             ModelEnum.PROTECT_7440I,
             ModelEnum.PROTECT_7470I
         ]:
