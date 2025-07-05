@@ -68,9 +68,9 @@ send_notification:
         recipient_lower: "{{ recipient | lower }}"
     - service: >-
         {% if recipient_lower == 'pedro' %}
-          notify.mobile_app_pedro_pixel7pro
+          notify.mobile_app_pedro_pixel9pro
         {% elif recipient_lower == 'joana' %}
-          notify.mobile_app_joana_pixel7pro
+          notify.mobile_app_joana_pixel9pro
         {% else %}
           notify.mobile_app_all
         {% endif %}
@@ -120,9 +120,9 @@ clear_notification:
         recipient_lower: "{{ recipient | lower }}"
     - service: >-
         {% if recipient_lower == 'pedro' %}
-          notify.mobile_app_pedro_pixel7pro
+          notify.mobile_app_pedro_pixel9pro
         {% elif recipient_lower == 'joana' %}
-          notify.mobile_app_joana_pixel7pro
+          notify.mobile_app_joana_pixel9pro
         {% else %}
           notify.mobile_app_all
         {% endif %}

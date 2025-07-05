@@ -4,19 +4,19 @@ person.pedro:
 person.joana:
   entity_picture: /local/joana.jpg
 
-device_tracker.pedro_pixel7pro:
-  friendly_name: Pedro Google Pixel 7 Pro GPS
+device_tracker.pedro_pixel9pro:
+  friendly_name: Pedro Google Pixel 9 Pro GPS
   icon: mdi:cellphone
 
-device_tracker.joana_pixel7pro:
+device_tracker.joana_pixel9pro:
   friendly_name: Joana Google Pixel 7 Pro GPS
   icon: mdi:cellphone
 
-device_tracker.google_pixel_7_pro_pedro:
-  friendly_name: Pedro Google Pixel 7 Pro WiFi
+device_tracker.google_pixel_9_pro_pedro:
+  friendly_name: Pedro Google Pixel 9 Pro WiFi
   icon: mdi:cellphone
 
-device_tracker.google_pixel_7_pro_joana:
+device_tracker.google_pixel_9_pro_joana:
   friendly_name: Joana Google Pixel 7 Pro WiFi
   icon: mdi:cellphone
 

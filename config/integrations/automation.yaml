@@ -81,8 +81,8 @@
   use_blueprint:
     path: phone_battery_state.yaml
     input:
-      battery_level_entity_id: sensor.pedro_pixel7pro_battery_level
-      battery_state_entity_id: sensor.pedro_pixel7pro_battery_state
+      battery_level_entity_id: sensor.pedro_pixel9pro_battery_level
+      battery_state_entity_id: sensor.pedro_pixel9pro_battery_state
       recipient: pedro
 
 - alias: Set phone battery state (Joana)
@@ -90,8 +90,8 @@
   use_blueprint:
     path: phone_battery_state.yaml
     input:
-      battery_level_entity_id: sensor.joana_pixel7pro_battery_level
-      battery_state_entity_id: sensor.joana_pixel7pro_battery_state
+      battery_level_entity_id: sensor.joana_pixel9pro_battery_level
+      battery_state_entity_id: sensor.joana_pixel9pro_battery_state
       recipient: joana
 
 - alias: Front Door Mailbox movement, send notification
@@ -280,7 +280,6 @@
     - service: wake_on_lan.send_magic_packet
       data:
         mac: !secret lg_smart_tv_mac
-        broadcast_address: !secret lg_smart_tv_broadcast_address
 
 - alias: AdguardHome enabled after 2 minutes
   id: 3ba3ddc1-8f62-4413-9e23-42ae60cc3ba2
