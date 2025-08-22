@@ -28,6 +28,16 @@ _LOGGER = logging.getLogger(__name__)
 api_token_query = '''mutation {{
 	obtainKrakenToken(input: {{ APIKey: "{api_key}" }}) {{
 		token
+    refreshToken
+    refreshExpiresIn
+	}}
+}}'''
+
+api_token_refresh_query = '''mutation {{
+	obtainKrakenToken(input: {{ refreshToken: "{refresh_token}" }}) {{
+		token
+    refreshToken
+    refreshExpiresIn
 	}}
 }}'''
 
@@ -113,6 +123,7 @@ live_consumption_query = '''query {{
     consumption
 		consumptionDelta
     demand
+    export
 	}}
 }}'''
 
@@ -123,15 +134,12 @@ intelligent_dispatches_query = '''query {{
       currentState
     }}
   }}
-	plannedDispatches(accountNumber: "{account_id}") {{
-		start
-		end
-    delta
-    meta {{
-			source
-      location
-		}}
-	}}
+  flexPlannedDispatches(deviceId:"{device_id}") {{
+    start
+    end
+    type
+    energyAddedKwh
+  }}
 	completedDispatches(accountNumber: "{account_id}") {{
 		start
 		end
@@ -305,20 +313,18 @@ octoplus_saving_session_query = '''query {{
 }}'''
 
 wheel_of_fortune_query = '''query {{
-  wheelOfFortuneSpins(accountNumber: "{account_id}") {{
-    electricity {{
-      remainingSpinsThisMonth
-    }}
-    gas {{
-      remainingSpinsThisMonth
-    }}
+  electricity: wheelOfFortuneSpinsAllowed(fuelType:ELECTRICITY, accountNumber: "{account_id}") {{
+    spinsAllowed
+  }}
+  gas: wheelOfFortuneSpinsAllowed(fuelType:GAS, accountNumber: "{account_id}") {{
+    spinsAllowed
   }}
 }}'''
 
 wheel_of_fortune_mutation = '''mutation {{
-  spinWheelOfFortune(input: {{ accountNumber: "{account_id}", supplyType: {supply_type}, termsAccepted: true }}) {{
-    spinResult {{
-      prizeAmount
+  spinWheelOfFortune(input: {{ accountNumber: "{account_id}", fuelType: {fuel_type} }}) {{
+    prize {{
+      value
     }}
   }}
 }}'''
@@ -647,9 +653,12 @@ class OctopusEnergyApiClient:
 
     self._api_key = api_key
     self._base_url = 'https://api.octopus.energy'
+    self._backend_base_url = 'https://api.backend.octopus.energy'
 
     self._graphql_token = None
     self._graphql_expiration = None
+    self._graphql_refresh_token = None
+    self._graphql_refresh_expiration = None
 
     self._product_tracker_cache = dict()
 
@@ -679,7 +688,7 @@ class OctopusEnergyApiClient:
       return self._session
 
   async def async_refresh_token(self):
-    """Get the user's refresh token"""
+    """Refresh user token"""
     if (self._graphql_expiration is not None and (self._graphql_expiration - timedelta(minutes=5)) > now()):
       return
 
@@ -688,26 +697,51 @@ class OctopusEnergyApiClient:
       if (self._graphql_expiration is not None and (self._graphql_expiration - timedelta(minutes=5)) > now()):
         return
 
+      if (self._graphql_refresh_expiration is not None and self._graphql_refresh_expiration >= now()):
+        _LOGGER.debug("Refresh token expired - clearing")
+        self._graphql_refresh_token = None
+        self._graphql_expiration = None
+
       try:
-        client = self._create_client_session()
-        url = f'{self._base_url}/v1/graphql/'
-        payload = { "query": api_token_query.format(api_key=self._api_key) }
-        headers = { integration_context_header: "refresh-token" }
-        async with client.post(url, headers=headers, json=payload) as token_response:
-          token_response_body = await self.__async_read_response__(token_response, url)
-          if (token_response_body is not None and 
-              "data" in token_response_body and
-              "obtainKrakenToken" in token_response_body["data"] and 
-              token_response_body["data"]["obtainKrakenToken"] is not None and
-              "token" in token_response_body["data"]["obtainKrakenToken"]):
+        try:
+          await self.__async_fetch_token()
+        except AuthenticationException:
+          if (self._graphql_refresh_token is not None):
+            _LOGGER.debug("Failed to refresh auth token using refresh token, attempting to use original API key")
+            self._graphql_refresh_token = None
+            self._graphql_expiration = None
             
-            self._graphql_token = token_response_body["data"]["obtainKrakenToken"]["token"]
-            self._graphql_expiration = now() + timedelta(hours=1)
+            await self.__async_fetch_token()
           else:
-            _LOGGER.error("Failed to retrieve auth token")
+            raise
+
       except TimeoutError:
         _LOGGER.warning(f'Failed to connect. Timeout of {self._timeout} exceeded.')
         raise TimeoutException()
+
+  async def __async_fetch_token(self):
+    client = self._create_client_session()
+    url = f'{self._base_url}/v1/graphql/'
+    payload = { "query": api_token_query.format(api_key=self._api_key) if self._graphql_refresh_token is None else api_token_refresh_query.format(refresh_token=self._graphql_refresh_token) }
+    headers = { integration_context_header: "refresh-token" }
+    async with client.post(url, headers=headers, json=payload) as token_response:
+      token_response_body = await self.__async_read_response__(token_response, url)
+      if (token_response_body is not None and 
+          "data" in token_response_body and
+          "obtainKrakenToken" in token_response_body["data"] and 
+          token_response_body["data"]["obtainKrakenToken"] is not None and
+          "token" in token_response_body["data"]["obtainKrakenToken"] and
+          "refreshToken" in token_response_body["data"]["obtainKrakenToken"] and
+          "refreshExpiresIn" in token_response_body["data"]["obtainKrakenToken"]):
+        
+        self._graphql_token = token_response_body["data"]["obtainKrakenToken"]["token"]
+        self._graphql_refresh_token = token_response_body["data"]["obtainKrakenToken"]["refreshToken"]
+        self._graphql_refresh_expiration = datetime.fromtimestamp(token_response_body["data"]["obtainKrakenToken"]["refreshExpiresIn"], tz=timezone.utc)
+        self._graphql_expiration = now() + timedelta(hours=1)
+      elif (self._graphql_expiration is None or self._graphql_expiration > now()):
+        raise AuthenticationException("Failed to retrieve auth token and current token is expired")
+      else:
+        _LOGGER.error("Failed to retrieve auth token")
       
   def map_electricity_meters(self, meter_point):
     meters = list(
@@ -1138,6 +1172,7 @@ class OctopusEnergyApiClient:
         if (response_body is not None and "data" in response_body and "smartMeterTelemetry" in response_body["data"] and response_body["data"]["smartMeterTelemetry"] is not None and len(response_body["data"]["smartMeterTelemetry"]) > 0):
           return list(map(lambda mp: {
             "total_consumption": float(mp["consumption"]) / 1000 if "consumption" in mp and mp["consumption"] is not None else None,
+            "total_export": float(mp["export"]) / 1000 if "export" in mp and mp["export"] is not None else None,
             "consumption": float(mp["consumptionDelta"]) / 1000 if "consumptionDelta" in mp and mp["consumptionDelta"] is not None else 0,
             "demand": float(mp["demand"]) if "demand" in mp and mp["demand"] is not None else None,
             "start": parse_datetime(mp["readAt"]),
@@ -1417,11 +1452,10 @@ class OctopusEnergyApiClient:
       request_context = "intelligent-dispatches"
       client = self._create_client_session()
       url = f'{self._base_url}/v1/graphql/'
-      # Get account response
       payload = { "query": intelligent_dispatches_query.format(account_id=account_id, device_id=device_id) }
       headers = { "Authorization": f"JWT {self._graphql_token}", integration_context_header: request_context }
       async with client.post(url, json=payload, headers=headers) as response:
-        response_body = await self.__async_read_response__(response, url)
+        response_body = await self.__async_read_response__(response, url, accepted_error_codes=['KT-CT-4340'])
         _LOGGER.debug(f'async_get_intelligent_dispatches: {response_body}')
 
         current_state = None
@@ -1434,11 +1468,11 @@ class OctopusEnergyApiClient:
           planned_dispatches = list(map(lambda ev: IntelligentDispatchItem(
               as_utc(parse_datetime(ev["start"])),
               as_utc(parse_datetime(ev["end"])),
-              float(ev["delta"]) if "delta" in ev and ev["delta"] is not None else None,
-              ev["meta"]["source"] if "meta" in ev and "source" in ev["meta"] else None,
-              ev["meta"]["location"] if "meta" in ev and "location" in ev["meta"] else None,
-            ), response_body["data"]["plannedDispatches"]
-            if "plannedDispatches" in response_body["data"] and response_body["data"]["plannedDispatches"] is not None
+              float(ev["energyAddedKwh"]) if "energyAddedKwh" in ev and ev["energyAddedKwh"] is not None else None,
+              ev["type"] if "type" in ev else None,
+              None
+            ), response_body["data"]["flexPlannedDispatches"]
+            if "flexPlannedDispatches" in response_body["data"] and response_body["data"]["flexPlannedDispatches"] is not None
             else [])
           )
 
@@ -1756,20 +1790,21 @@ class OctopusEnergyApiClient:
     try:
       request_context = "wheel-of-fortune"
       client = self._create_client_session()
-      url = f'{self._base_url}/v1/graphql/'
+      url = f'{self._backend_base_url}/v1/graphql/'
       payload = { "query": wheel_of_fortune_query.format(account_id=account_id) }
-      headers = { "Authorization": f"JWT {self._graphql_token}", integration_context_header: request_context }
+      headers = { "Authorization": f"{self._graphql_token}", integration_context_header: request_context }
       async with client.post(url, json=payload, headers=headers) as response:
         response_body = await self.__async_read_response__(response, url)
         _LOGGER.debug(f'async_get_wheel_of_fortune_spins: {response_body}')
 
         if (response_body is not None and "data" in response_body and
-            "wheelOfFortuneSpins" in response_body["data"]):
+            "electricity" in response_body["data"] and
+            "gas" in response_body["data"]):
           
-          spins = response_body["data"]["wheelOfFortuneSpins"]
+          spins = response_body["data"]
           return WheelOfFortuneSpinsResponse(
-            int(spins["electricity"]["remainingSpinsThisMonth"]) if "electricity" in spins and "remainingSpinsThisMonth" in spins["electricity"] else 0,
-            int(spins["gas"]["remainingSpinsThisMonth"]) if "gas" in spins and "remainingSpinsThisMonth" in spins["gas"] else 0
+            int(spins["electricity"]["spinsAllowed"]) if "electricity" in spins and "spinsAllowed" in spins["electricity"] else 0,
+            int(spins["gas"]["spinsAllowed"]) if "gas" in spins and "spinsAllowed" in spins["gas"] else 0
           )
         else:
           _LOGGER.error("Failed to retrieve wheel of fortune spins")
@@ -1787,9 +1822,9 @@ class OctopusEnergyApiClient:
     try:
       request_context = "spin-wheel-of-fortune"
       client = self._create_client_session()
-      url = f'{self._base_url}/v1/graphql/'
-      payload = { "query": wheel_of_fortune_mutation.format(account_id=account_id, supply_type="ELECTRICITY" if is_electricity == True else "GAS") }
-      headers = { "Authorization": f"JWT {self._graphql_token}", integration_context_header: request_context }
+      url = f'{self._backend_base_url}/v1/graphql/'
+      payload = { "query": wheel_of_fortune_mutation.format(account_id=account_id, fuel_type="ELECTRICITY" if is_electricity == True else "GAS") }
+      headers = { "Authorization": f"{self._graphql_token}", integration_context_header: request_context }
       async with client.post(url, json=payload, headers=headers) as response:
         response_body = await self.__async_read_response__(response, url)
         _LOGGER.debug(f'async_spin_wheel_of_fortune: {response_body}')
@@ -1797,10 +1832,10 @@ class OctopusEnergyApiClient:
         if (response_body is not None and 
             "data" in response_body and
             "spinWheelOfFortune" in response_body["data"] and
-            "spinResult" in response_body["data"]["spinWheelOfFortune"] and
-            "prizeAmount" in response_body["data"]["spinWheelOfFortune"]["spinResult"]):
+            "prize" in response_body["data"]["spinWheelOfFortune"] and
+            "value" in response_body["data"]["spinWheelOfFortune"]["prize"]):
           
-          return int(response_body["data"]["spinWheelOfFortune"]["spinResult"]["prizeAmount"])
+          return int(response_body["data"]["spinWheelOfFortune"]["prize"]["value"])
         else:
           _LOGGER.error("Failed to spin wheel of fortune")
       
@@ -1850,7 +1885,7 @@ class OctopusEnergyApiClient:
       "end": as_utc(parse_datetime(item["interval_end"]))
     }
 
-  async def __async_read_response__(self, response, url, ignore_errors = False):
+  async def __async_read_response__(self, response, url, ignore_errors = False, accepted_error_codes = []):
     """Reads the response, logging any json errors"""
 
     request_context = response.request_info.headers[integration_context_header] if integration_context_header in response.request_info.headers else "Unknown"
@@ -1890,8 +1925,13 @@ class OctopusEnergyApiClient:
       for error in data_as_json["errors"]:
         if ("extensions" in error and
             "errorCode" in error["extensions"] and
-            error["extensions"]["errorCode"] in ("KT-CT-1139", "KT-CT-1111", "KT-CT-1143")):
+            error["extensions"]["errorCode"] in ("KT-CT-1139", "KT-CT-1111", "KT-CT-1143", "KT-CT-1134", "KT-CT-1135")):
           raise AuthenticationException(msg, errors)
+
+        if ("extensions" in error and
+            "errorCode" in error["extensions"] and
+            error["extensions"]["errorCode"] in accepted_error_codes):
+          return None
 
       raise RequestException(msg, errors)
     
