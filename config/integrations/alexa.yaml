@@ -8,7 +8,7 @@ smart_home:
       - binary_sensor.front_door_contact
       - light.daniel_bed_light
       - light.kids_bedroom_ceiling_light
-      - light.kids_bedroom_leds
+      - light.kids_bedroom_lights
       - light.lamp_1
       - light.lamp_2
       - light.lamp_3
