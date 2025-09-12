@@ -131,7 +131,7 @@ cards:
 
   - type: weather-forecast
     title: Weather
-    entity: weather.home
+    entity: weather.met_office_islington
     forecast_type: daily
     show_current: true
     show_forecast: true
