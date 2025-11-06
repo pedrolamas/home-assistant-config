@@ -125,8 +125,8 @@ cards:
     title: Local
     columns: 4
     entities:
-      - entity: sensor.victoria
-      - entity: sensor.windrush
+      - entity: sensor.london_underground_victoria
+      - entity: sensor.london_underground_windrush
       - entity: sensor.islington
 
   - type: weather-forecast

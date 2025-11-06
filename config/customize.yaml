@@ -38,11 +38,11 @@ binary_sensor.raspberry_pi_2_model_b:
 sensor.cpu_temperature:
   device_class: temperature
 
-sensor.windrush:
+sensor.london_underground_windrush:
   friendly_name: Windrush Overground
   icon: mdi:train
 
-sensor.victoria:
+sensor.london_underground_victoria:
   friendly_name: Victoria Line
   icon: mdi:subway-variant
 

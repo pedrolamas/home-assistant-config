@@ -14,11 +14,6 @@
 #  destination: zone.home
 #  travel_mode: transit
 
-- platform: london_underground
-  line:
-    - Windrush
-    - Victoria
-
 - platform: london_air
   locations:
     - Islington
