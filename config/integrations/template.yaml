@@ -1,0 +1,239 @@
+- binary_sensor:
+    name: lg_smart_tv_is_watching_live_tv
+    icon: mdi:television-classic
+    state: >-
+      {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') }}
+
+- binary_sensor:
+    name: lg_smart_tv_is_watching_prime_video
+    icon: si:prime
+    state: >-
+      {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Amazon Prime Video') }}
+
+- binary_sensor:
+    name: lg_smart_tv_is_watching_xbox_series_x
+    icon: mdi:microsoft-xbox
+    state: >-
+      {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Xbox Series X') }}
+
+- binary_sensor:
+    name: lg_smart_tv_is_watching_netflix
+    icon: mdi:netflix
+    state: >-
+      {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Netflix') }}
+
+- binary_sensor:
+    name: lg_smart_tv_is_watching_plex
+    icon: mdi:plex
+    state: >-
+      {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Plex') }}
+
+- binary_sensor:
+    name: lg_smart_tv_is_watching_youtube
+    icon: mdi:youtube
+    state: >-
+      {{ is_state_attr('media_player.lg_smart_tv', 'source', 'YouTube') }}
+
+- binary_sensor:
+    name: lg_smart_tv_is_watching_bbc_iplayer
+    icon: mdi:television-guide
+    state: >-
+      {{ is_state_attr('media_player.lg_smart_tv', 'source', 'BBC iPlayer') }}
+
+- binary_sensor:
+    name: lg_smart_tv_is_watching_all_4
+    icon: mdi:television-guide
+    state: >-
+      {{ is_state_attr('media_player.lg_smart_tv', 'source', 'All 4') }}
+
+- binary_sensor:
+    name: lg_smart_tv_is_watching_bbc_one
+    icon: mdi:television-classic
+    state: >-
+      {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') and state_attr('media_player.lg_smart_tv', 'media_title') in ['BBC ONE Lon', 'BBC ONE Lon HD'] }}
+
+- binary_sensor:
+    name: lg_smart_tv_is_watching_channel_4
+    icon: mdi:television-classic
+    state: >-
+      {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') and state_attr('media_player.lg_smart_tv', 'media_title') in ['Channel 4', 'Channel 4 HD'] }}
+
+- binary_sensor:
+    name: lg_smart_tv_is_watching_bbc_news
+    icon: mdi:television-classic
+    state: >-
+      {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') and state_attr('media_player.lg_smart_tv', 'media_title') in ['BBC NEWS', 'BBC NEWS HD'] }}
+
+- binary_sensor:
+    name: lg_smart_tv_is_watching_cbeebies
+    icon: mdi:television-classic
+    state: >-
+      {{ is_state_attr('media_player.lg_smart_tv', 'source', 'Live TV') and state_attr('media_player.lg_smart_tv', 'media_title') in ['CBeebies', 'CBeebies HD'] }}
+
+- binary_sensor:
+    name: external_ip_detected
+    icon: >-
+      {{ 'mdi:cloud-off-outline' if is_state('sensor.external_ip', 'unknown') else 'mdi:cloud-outline' }}
+    state: >-
+      {{ not(is_state('sensor.external_ip', 'unknown')) }}
+
+- binary_sensor:
+    name: washing_machine_program_running
+    icon: mdi:washing-machine
+    state: >-
+      {{ states('sensor.washing_machine_smart_plug_power') | float(default=0) > 1.5 }}
+    delay_off: "00:02:30"
+    delay_on: "00:00:30"
+
+- binary_sensor:
+    name: mains_powered
+    device_class: power
+    state: >-
+      {{ states('sensor.ups_input_voltage') | float(default=0) > 1 }}
+
+- binary_sensor:
+    name: ender_3_v2_printing
+    state: >-
+      {{ states('sensor.ender_3_v2_current_state') in ['printing', 'paused'] }}
+
+- binary_sensor:
+    name: trident_300_printing
+    state: >-
+      {{ states('sensor.trident_300_current_state') in ['printing', 'paused'] }}
+
+- sensor:
+    name: lg_smart_tv_is_playing
+    icon: >-
+      {{ 'mdi:pause' if is_state('media_player.lg_smart_tv', 'playing') else 'mdi:play' }}
+    state: 0
+
+- sensor:
+    name: ender_3_v2_target_extruder_temp
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state: >-
+      {{ states.sensor.ender_3_v2_status.attributes['extruder']['target'] | round(1, default=0) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+
+- sensor:
+    name: ender_3_v2_actual_extruder_temp
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state: >-
+      {{ states.sensor.ender_3_v2_status.attributes['extruder']['temperature'] | round(1, default=0) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+
+- sensor:
+    name: ender_3_v2_target_bed_temp
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state: >-
+      {{ states.sensor.ender_3_v2_status.attributes['heater_bed']['target'] | round(1, default=0) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+
+- sensor:
+    name: ender_3_v2_actual_bed_temp
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state: >-
+      {{ states.sensor.ender_3_v2_status.attributes['heater_bed']['temperature'] | round(1, default=0) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+
+- sensor:
+    name: ender_3_v2_current_state
+    icon: mdi:printer-3d
+    state: >-
+      {{ states.sensor.ender_3_v2_status.attributes['print_stats']['state'] if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+
+- sensor:
+    name: ender_3_v2_job_percentage
+    unit_of_measurement: "%"
+    icon: mdi:file-percent
+    state: >-
+      {{ (states.sensor.ender_3_v2_status.attributes['display_status']['progress'] * 100) | round(1, default=0) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+
+- sensor:
+    name: ender_3_v2_time_elapsed
+    icon: mdi:clock-start
+    state: >-
+      {{ states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration'] | timestamp_custom('%H:%M:%S', 0, default='') if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+
+- sensor:
+    name: ender_3_v2_time_remaining
+    icon: mdi:clock-end
+    state: >-
+      {{ (((states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration'] / states.sensor.ender_3_v2_status.attributes['display_status']['progress'] - states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration']) if states.sensor.ender_3_v2_status.attributes['display_status']['progress'] > 0 else 0) | timestamp_custom('%H:%M:%S', 0, default='')) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+
+- sensor:
+    name: ender_3_v2_eta
+    state: >-
+      {{ ((as_timestamp(now()) + 2 * 60 * 60 + ((states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration'] / states.sensor.ender_3_v2_status.attributes['display_status']['progress'] - states.sensor.ender_3_v2_status.attributes['print_stats']['print_duration']) if states.sensor.ender_3_v2_status.attributes['display_status']['progress'] > 0 else 0)) | timestamp_custom("%H:%M:%S", 0, default='')) if is_state('sensor.ender_3_v2_status', 'OK') else None }}
+
+- sensor:
+    name: trident_300_target_extruder_temp
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state: >-
+      {{ states.sensor.trident_300_status.attributes['extruder']['target'] | round(1, default=0) if is_state('sensor.trident_300_status', 'OK') else None }}
+
+- sensor:
+    name: trident_300_actual_extruder_temp
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state: >-
+      {{ states.sensor.trident_300_status.attributes['extruder']['temperature'] | round(1, default=0) if is_state('sensor.trident_300_status', 'OK') else None }}
+
+- sensor:
+    name: trident_300_target_bed_temp
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state: >-
+      {{ states.sensor.trident_300_status.attributes['heater_bed']['target'] | round(1, default=0) if is_state('sensor.trident_300_status', 'OK') else None }}
+
+- sensor:
+    name: trident_300_actual_bed_temp
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state: >-
+      {{ states.sensor.trident_300_status.attributes['heater_bed']['temperature'] | round(1, default=0) if is_state('sensor.trident_300_status', 'OK') else None }}
+
+- sensor:
+    name: trident_300_current_state
+    icon: mdi:printer-3d
+    state: >-
+      {{ states.sensor.trident_300_status.attributes['print_stats']['state'] if is_state('sensor.trident_300_status', 'OK') else None }}
+
+- sensor:
+    name: trident_300_job_percentage
+    unit_of_measurement: "%"
+    icon: mdi:file-percent
+    state: >-
+      {{ (states.sensor.trident_300_status.attributes['display_status']['progress'] * 100) | round(1, default=0) if is_state('sensor.trident_300_status', 'OK') else None }}
+
+- sensor:
+    name: trident_300_time_elapsed
+    icon: mdi:clock-start
+    state: >-
+      {{ states.sensor.trident_300_status.attributes['print_stats']['print_duration'] | timestamp_custom('%H:%M:%S', 0, default='') if is_state('sensor.trident_300_status', 'OK') else None }}
+
+- sensor:
+    name: trident_300_time_remaining
+    icon: mdi:clock-end
+    state: >-
+      {{ (((states.sensor.trident_300_status.attributes['print_stats']['print_duration'] / states.sensor.trident_300_status.attributes['display_status']['progress'] - states.sensor.trident_300_status.attributes['print_stats']['print_duration']) if states.sensor.trident_300_status.attributes['display_status']['progress'] > 0 else 0) | timestamp_custom('%H:%M:%S', 0, default='')) if is_state('sensor.trident_300_status', 'OK') else None }}
+
+- sensor:
+    name: trident_300_eta
+    state: >-
+      {{ ((as_timestamp(now()) + 2 * 60 * 60 + ((states.sensor.trident_300_status.attributes['print_stats']['print_duration'] / states.sensor.trident_300_status.attributes['display_status']['progress'] - states.sensor.trident_300_status.attributes['print_stats']['print_duration']) if states.sensor.trident_300_status.attributes['display_status']['progress'] > 0 else 0)) | timestamp_custom("%H:%M:%S", 0, default='')) if is_state('sensor.trident_300_status', 'OK') else None }}
+
+- switch:
+    name: lg_smart_tv_volume_mute
+    state: >-
+      {{ is_state_attr('media_player.lg_smart_tv', 'is_volume_muted', true) }}
+    turn_on:
+      service: media_player.volume_mute
+      data:
+        entity_id: media_player.lg_smart_tv
+        is_volume_muted: true
+    turn_off:
+      service: media_player.volume_mute
+      data:
+        entity_id: media_player.lg_smart_tv
+        is_volume_muted: false

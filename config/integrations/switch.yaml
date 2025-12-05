@@ -17,19 +17,3 @@
     Content-Type: "application/json"
   is_on_template: >-
     {{ 'result' in value_json and (value_json.result.values() | list | first == "on") }}
-
-- platform: template
-  switches:
-    lg_smart_tv_volume_mute:
-      value_template: >-
-        {{ is_state_attr('media_player.lg_smart_tv', 'is_volume_muted', true) }}
-      turn_on:
-        service: media_player.volume_mute
-        data:
-          entity_id: media_player.lg_smart_tv
-          is_volume_muted: true
-      turn_off:
-        service: media_player.volume_mute
-        data:
-          entity_id: media_player.lg_smart_tv
-          is_volume_muted: false

@@ -9,7 +9,7 @@ device_tracker.pedro_pixel9pro:
   icon: mdi:cellphone
 
 device_tracker.joana_pixel9pro:
-  friendly_name: Joana Google Pixel 7 Pro GPS
+  friendly_name: Joana Google Pixel 9 Pro GPS
   icon: mdi:cellphone
 
 device_tracker.google_pixel_9_pro_pedro:
@@ -17,7 +17,7 @@ device_tracker.google_pixel_9_pro_pedro:
   icon: mdi:cellphone
 
 device_tracker.google_pixel_9_pro_joana:
-  friendly_name: Joana Google Pixel 7 Pro WiFi
+  friendly_name: Joana Google Pixel 9 Pro WiFi
   icon: mdi:cellphone
 
 binary_sensor.back_door_contact:
@@ -48,3 +48,108 @@ sensor.london_underground_victoria:
 
 sensor.islington:
   friendly_name: Air Polution
+
+binary_sensor.lg_smart_tv_is_watching_live_tv:
+  friendly_name: Live TV
+
+binary_sensor.lg_smart_tv_is_watching_prime_video:
+  friendly_name: Prime Video
+
+binary_sensor.lg_smart_tv_is_watching_xbox_series_x:
+  friendly_name: Xbox Series X
+
+binary_sensor.lg_smart_tv_is_watching_netflix:
+  friendly_name: Netflix
+
+binary_sensor.lg_smart_tv_is_watching_plex:
+  friendly_name: Plex
+
+binary_sensor.lg_smart_tv_is_watching_youtube:
+  friendly_name: YouTube
+
+binary_sensor.lg_smart_tv_is_watching_bbc_iplayer:
+  friendly_name: BBC iPlayer
+
+binary_sensor.lg_smart_tv_is_watching_all_4:
+  friendly_name: All 4
+
+binary_sensor.lg_smart_tv_is_watching_bbc_one:
+  friendly_name: BBC One
+
+binary_sensor.lg_smart_tv_is_watching_channel_4:
+  friendly_name: Channel 4
+
+binary_sensor.lg_smart_tv_is_watching_bbc_news:
+  friendly_name: BBC News
+
+binary_sensor.lg_smart_tv_is_watching_cbeebies:
+  friendly_name: CBeebies
+
+binary_sensor.external_ip_detected:
+  friendly_name: External IP detected
+
+binary_sensor.washing_machine_program_running:
+  friendly_name: Washing Machine
+
+binary_sensor.mains_powered:
+  friendly_name: Mains Power
+
+binary_sensor.ender_3_v2_printing:
+  friendly_name: Ender-3 V2 Printing
+
+binary_sensor.trident_300_printing:
+  friendly_name: Trident 300 Printing
+
+sensor.ender_3_v2_target_extruder_temp:
+  friendly_name: Ender-3 V2 target extruder temp
+
+sensor.ender_3_v2_actual_extruder_temp:
+  friendly_name: Ender-3 V2 actual extruder temp
+
+sensor.ender_3_v2_target_bed_temp:
+  friendly_name: Ender-3 V2 target bed temp
+
+sensor.ender_3_v2_actual_bed_temp:
+  friendly_name: Ender-3 V2 actual bed temp
+
+sensor.ender_3_v2_current_state:
+  friendly_name: Ender-3 V2 Current State
+
+sensor.ender_3_v2_job_percentage:
+  friendly_name: Ender-3 V2 Job Percentage
+
+sensor.ender_3_v2_time_elapsed:
+  friendly_name: Ender-3 V2 Time Elapsed
+
+sensor.ender_3_v2_time_remaining:
+  friendly_name: Ender-3 V2 Time Remaining
+
+sensor.ender_3_v2_eta:
+  friendly_name: Ender-3 V2 ETA
+
+sensor.trident_300_target_extruder_temp:
+  friendly_name: Trident 300 target extruder temp
+
+sensor.trident_300_actual_extruder_temp:
+  friendly_name: Trident 300 actual extruder temp
+
+sensor.trident_300_target_bed_temp:
+  friendly_name: Trident 300 target bed temp
+
+sensor.trident_300_actual_bed_temp:
+  friendly_name: Trident 300 actual bed temp
+
+sensor.trident_300_current_state:
+  friendly_name: Trident 300 Current State
+
+sensor.trident_300_job_percentage:
+  friendly_name: Trident 300 Job Percentage
+
+sensor.trident_300_time_elapsed:
+  friendly_name: Trident 300 Time Elapsed
+
+sensor.trident_300_time_remaining:
+  friendly_name: Trident 300 Time Remaining
+
+sensor.trident_300_eta:
+  friendly_name: Trident 300 ETA
