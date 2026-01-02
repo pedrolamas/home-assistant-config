@@ -1,13 +1,15 @@
 import logging
 import json
+from typing import Any
 import aiohttp
 from asyncio import TimeoutError
 from datetime import (datetime, timedelta, time, timezone)
 from threading import RLock
+from zoneinfo import ZoneInfo
 
 from homeassistant.util.dt import (as_utc, now, as_local, parse_datetime, parse_date)
 
-from ..const import INTEGRATION_VERSION
+from ..const import INTEGRATION_VERSION, INTELLIGENT_DEVICE_KIND_ELECTRIC_VEHICLE_CHARGERS
 
 from ..utils import (
   is_day_night_tariff,
@@ -214,20 +216,21 @@ intelligent_settings_query = '''query {{
 	}}
 }}'''
 
-intelligent_settings_mutation = '''mutation vehicleChargingPreferences {{
-  setVehicleChargePreferences(
-    input: {{
-      accountNumber: "{account_id}"
-      weekdayTargetSoc: {weekday_target_percentage}
-      weekendTargetSoc: {weekend_target_percentage}
-      weekdayTargetTime: "{weekday_target_time}"
-      weekendTargetTime: "{weekend_target_time}"
-    }}
-  ) {{
-     krakenflexDevice {{
-			 krakenflexDeviceId
-		}}
+intelligent_settings_mutation = '''mutation {{
+  setDevicePreferences(input: {{
+    deviceId: "{device_id}"
+    mode: CHARGE
+    unit: PERCENTAGE
+    schedules: [{schedules}]
+  }}) {{
+    id
   }}
+}}'''
+
+intelligent_settings_mutation_schedule = '''{{
+  dayOfWeek: {day_of_week}
+  time: "{target_time}"
+  max: {target_percentage}
 }}'''
 
 intelligent_turn_on_bump_charge_mutation = '''mutation {{
@@ -249,27 +252,21 @@ intelligent_turn_off_bump_charge_mutation = '''mutation {{
 }}'''
 
 intelligent_turn_on_smart_charge_mutation = '''mutation {{
-	resumeControl(
-    input: {{
-      accountNumber: "{account_id}"
-    }}
-  ) {{
-		krakenflexDevice {{
-			 krakenflexDeviceId
-		}}
-	}}
+  updateDeviceSmartControl(input: {{
+    deviceId: "{device_id}"
+    action: UNSUSPEND
+  }}) {{
+    id
+  }}
 }}'''
 
 intelligent_turn_off_smart_charge_mutation = '''mutation {{
-	suspendControl(
-    input: {{
-      accountNumber: "{account_id}"
-    }}
-  ) {{
-		krakenflexDevice {{
-			 krakenflexDeviceId
-		}}
-	}}
+  updateDeviceSmartControl(input: {{
+    deviceId: "{device_id}"
+    action: SUSPEND
+  }}) {{
+    id
+  }}
 }}'''
 
 octoplus_points_query = '''query octoplus_points {
@@ -329,13 +326,12 @@ wheel_of_fortune_mutation = '''mutation {{
   }}
 }}'''
 
-greenness_forecast_query = '''query {
-  greennessForecast {
-    validFrom
-    validTo
+greener_night_forecast_query = '''query {
+  greenerNightsForecast {
+    date
+    isGreenerNight
     greennessScore
     greennessIndex
-    highlightFlag
   }
 }'''
 
@@ -643,6 +639,58 @@ class RequestException(ApiException):
 
 class AuthenticationException(RequestException): ...
 
+class IntelligentBoostChargeException(RequestException):
+  refusal_reason: str | None
+
+  def __init__(self, message: str, errors: list[str], refusal_reason: str | None):
+    super().__init__(message, errors)
+    self.refusal_reason = refusal_reason
+
+def process_boost_charge_refusal(reason: str):
+  if reason == "BC_DEVICE_NOT_YET_LIVE":
+    return "Device is not yet live"
+  if reason == "BC_DEVICE_RETIRED":
+    return "Device is retired"
+  if reason == "BC_DEVICE_SUSPENDED":
+    return "Device is suspended"
+  if reason == "BC_DEVICE_DISCONNECTED":
+    return "Device is disconnected"
+  if reason == "BC_DEVICE_NOT_AT_HOME":
+    return "Device is not at home"
+  if reason == "BC_BOOST_CHARGE_IN_PROGRESS":
+    return "Boost charge already in progress"
+  if reason == "BC_DEVICE_FULLY_CHARGED":
+    return "Device is already fully charged"
+  
+  return None
+
+def process_graphql_response(data: Any, url: str, request_context: str, ignore_errors: bool, accepted_error_codes: list[str]):
+  if ("graphql" in url and "errors" in data and ignore_errors == False):
+    msg = f'Errors in request ({url}) ({request_context}): {data["errors"]}'
+    errors = list(map(lambda error: error["message"].strip(".,!"), data["errors"]))
+    errors_as_string = ', '.join(errors)
+    _LOGGER.warning(msg)
+
+    for error in data["errors"]:
+      if ("extensions" in error and
+          "errorCode" in error["extensions"] and
+          error["extensions"]["errorCode"] in ("KT-CT-1139", "KT-CT-1111", "KT-CT-1143", "KT-CT-1134", "KT-CT-1135")):
+        raise AuthenticationException(f"Authentication failed - {errors_as_string}. See logs for more details.", errors)
+
+      if ("extensions" in error and
+          "errorCode" in error["extensions"] and
+          error["extensions"]["errorCode"] in accepted_error_codes):
+        return None
+
+      if ("extensions" in error and
+          "boostChargeRefusalReasons" in error["extensions"]):
+        refusal_reason = process_boost_charge_refusal(error["extensions"]["boostChargeRefusalReasons"])
+        raise IntelligentBoostChargeException(f"Boost failed - {refusal_reason} - {errors_as_string}. See logs for more details.", errors, refusal_reason)
+
+    raise RequestException(f"Failed - {errors_as_string}. See logs for more details.", errors)
+  
+  return data
+
 class OctopusEnergyApiClient:
   _refresh_token_lock = RLock()
   _session_lock = RLock()
@@ -908,7 +956,7 @@ class OctopusEnergyApiClient:
       raise TimeoutException()
     
     return None
-  
+
   async def async_get_heat_pump_configuration_and_status(self, account_id: str, euid: str):
     """Get a heat pump configuration and status"""
     await self.async_refresh_token()
@@ -922,20 +970,20 @@ class OctopusEnergyApiClient:
       async with client.post(url, json=payload, headers=headers) as heat_pump_response:
         response = await self.__async_read_response__(heat_pump_response, url)
 
-        if (response is not None 
-            and "data" in response 
-            and "octoHeatPumpControllerConfiguration" in response["data"] 
+        if (response is not None
+            and "data" in response
+            and "octoHeatPumpControllerConfiguration" in response["data"]
             and "octoHeatPumpControllerStatus" in response["data"]
             and "octoHeatPumpLivePerformance" in response["data"]
             and "octoHeatPumpLifetimePerformance" in response["data"]):
-          return HeatPumpResponse.parse_obj(response["data"])
-        
+          return HeatPumpResponse.model_validate(response["data"])
+
       return None
-    
+
     except TimeoutError:
       _LOGGER.warning(f'Failed to connect. Timeout of {self._timeout} exceeded.')
       raise TimeoutException()
-    
+
   async def async_set_heat_pump_flow_temp_config(self, euid: str, weather_comp_enabled: bool, weather_comp_min_temperature: float, weather_comp_max_temperature: float, fixed_flow_temperature: float):
     """Sets the flow temperature for a given heat pump zone"""
     await self.async_refresh_token()
@@ -991,28 +1039,33 @@ class OctopusEnergyApiClient:
     except TimeoutError:
       _LOGGER.warning(f'Failed to connect. Timeout of {self._timeout} exceeded.')
       raise TimeoutException()
-  
-  async def async_get_greenness_forecast(self) -> list[GreennessForecast]:
+    
+  async def async_get_greener_nights_forecast(self) -> list[GreennessForecast]:
     """Get the latest greenness forecast"""
     await self.async_refresh_token()
 
     try:
-      request_context = "greenness-forecast"
+      request_context = "greener-night-forecast"
       client = self._create_client_session()
-      url = f'{self._base_url}/v1/graphql/'
-      payload = { "query": greenness_forecast_query }
+      url = f'{self._backend_base_url}/v1/graphql/'
+      payload = { "query": greener_night_forecast_query }
       headers = { "Authorization": f"JWT {self._graphql_token}", integration_context_header: request_context }
-      async with client.post(url, json=payload, headers=headers) as greenness_forecast_response:
+      async with client.post(url, json=payload, headers=headers) as greener_night_forecast_response:
 
-        response_body = await self.__async_read_response__(greenness_forecast_response, url)
-        if (response_body is not None and "data" in response_body and "greennessForecast" in response_body["data"]):
-          forecast = list(map(lambda item: GreennessForecast(as_utc(parse_datetime(item["validFrom"])),
-                                                             as_utc(parse_datetime(item["validTo"])),
-                                                             int(item["greennessScore"]),
-                                                             item["greennessIndex"],
-                                                             item["highlightFlag"]),
-                          response_body["data"]["greennessForecast"]))
-          forecast.sort(key=lambda item: (item.start.timestamp(), item.start.fold))
+        response_body = await self.__async_read_response__(greener_night_forecast_response, url)
+        if (response_body is not None and "data" in response_body and "greenerNightsForecast" in response_body["data"]):
+          london_tz = ZoneInfo("Europe/London")
+          forecast = list(
+            map(lambda item: GreennessForecast(
+              parse_datetime(f"{item["date"]}T23:00:00").astimezone(london_tz),
+              parse_datetime(f"{item["date"]}T06:00:00").astimezone(london_tz) + timedelta(days=1),
+              int(item["greennessScore"]),
+              item["greennessIndex"],
+              item["isGreenerNight"]
+            ),
+            response_body["data"]["greenerNightsForecast"])
+          )
+          forecast.sort(key=lambda item: item.start)
           return forecast
     
     except TimeoutError:
@@ -1574,12 +1627,12 @@ class OctopusEnergyApiClient:
       client = self._create_client_session()
       url = f'{self._base_url}/v1/graphql/'
       payload = { "query": intelligent_settings_mutation.format(
-        account_id=account_id,
-        weekday_target_percentage=target_percentage,
-        weekend_target_percentage=target_percentage,
-        weekday_target_time=settings.ready_time_weekday.strftime("%H:%M"),
-        weekend_target_time=settings.ready_time_weekend.strftime("%H:%M")
-      ) }
+          device_id=device_id,
+          schedules=self.__intelligent_settings_schedules__(target_percentage, settings.ready_time_weekday if settings is not None else time(hour=7, minute=0))
+        )
+      }
+
+      _LOGGER.debug(f'Payload for intelligent settings mutation: {payload}')
 
       headers = { "Authorization": f"JWT {self._graphql_token}", integration_context_header: request_context }
       async with client.post(url, json=payload, headers=headers) as response:
@@ -1605,12 +1658,10 @@ class OctopusEnergyApiClient:
       client = self._create_client_session()
       url = f'{self._base_url}/v1/graphql/'
       payload = { "query": intelligent_settings_mutation.format(
-        account_id=account_id,
-        weekday_target_percentage=settings.charge_limit_weekday,
-        weekend_target_percentage=settings.charge_limit_weekend,
-        weekday_target_time=target_time.strftime("%H:%M"),
-        weekend_target_time=target_time.strftime("%H:%M")
-      ) }
+          device_id=device_id,
+          schedules=self.__intelligent_settings_schedules__(settings.charge_limit_weekday if settings is not None else 100, target_time)
+        )
+      }
 
       headers = { "Authorization": f"JWT {self._graphql_token}", integration_context_header: request_context }
       async with client.post(url, json=payload, headers=headers) as response:
@@ -1619,6 +1670,13 @@ class OctopusEnergyApiClient:
     except TimeoutError:
       _LOGGER.warning(f'Failed to connect. Timeout of {self._timeout} exceeded.')
       raise TimeoutException()
+
+  def __intelligent_settings_schedules__(self, target_percentage: int, target_time: time) -> str:
+    daysOfWeek = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
+    return ", ".join(list(map(lambda day: intelligent_settings_mutation_schedule
+                    .format(day_of_week=day,
+                            target_percentage=target_percentage,
+                            target_time=target_time.strftime("%H:%M")), daysOfWeek)))
 
   async def async_turn_on_intelligent_bump_charge(
       self, device_id: str,
@@ -1665,7 +1723,7 @@ class OctopusEnergyApiClient:
       raise TimeoutException()
 
   async def async_turn_on_intelligent_smart_charge(
-      self, account_id: str,
+      self, device_id: str,
     ):
     """Turn on an intelligent smart charge"""
     await self.async_refresh_token()
@@ -1675,7 +1733,7 @@ class OctopusEnergyApiClient:
       client = self._create_client_session()
       url = f'{self._base_url}/v1/graphql/'
       payload = { "query": intelligent_turn_on_smart_charge_mutation.format(
-        account_id=account_id,
+        device_id=device_id,
       ) }
 
       headers = { "Authorization": f"JWT {self._graphql_token}", integration_context_header: request_context }
@@ -1687,7 +1745,7 @@ class OctopusEnergyApiClient:
       raise TimeoutException()
 
   async def async_turn_off_intelligent_smart_charge(
-      self, account_id: str,
+      self, device_id: str,
     ):
     """Turn off an intelligent smart charge"""
     await self.async_refresh_token()
@@ -1697,7 +1755,7 @@ class OctopusEnergyApiClient:
       client = self._create_client_session()
       url = f'{self._base_url}/v1/graphql/'
       payload = { "query": intelligent_turn_off_smart_charge_mutation.format(
-        account_id=account_id,
+        device_id=device_id,
       ) }
 
       headers = { "Authorization": f"JWT {self._graphql_token}", integration_context_header: request_context }
@@ -1708,7 +1766,7 @@ class OctopusEnergyApiClient:
       _LOGGER.warning(f'Failed to connect. Timeout of {self._timeout} exceeded.')
       raise TimeoutException()
   
-  async def async_get_intelligent_device(self, account_id: str) -> IntelligentDevice:
+  async def async_get_intelligent_devices(self, account_id: str) -> list[IntelligentDevice]:
     """Get the user's intelligent device"""
     await self.async_refresh_token()
 
@@ -1730,14 +1788,14 @@ class OctopusEnergyApiClient:
             if (device["deviceType"] != "ELECTRIC_VEHICLES" or device["status"]["current"] != "LIVE"):
               continue
 
-            is_charger = device["__typename"] == "SmartFlexChargePoint"
-
             make = device["make"]
             model = device["model"]
             vehicleBatterySizeInKwh = None
             chargePointPowerInKw = None
+            device_type = device["__typename"]
+            is_charger = device["__typename"] == "SmartFlexChargePoint"
 
-            if is_charger:
+            if device_type == "SmartFlexChargePoint":
               if "chargePointVariants" in response_body["data"] and response_body["data"]["chargePointVariants"] is not None:
                 for charger in response_body["data"]["chargePointVariants"]:
                   if charger["make"] == make:
@@ -1748,7 +1806,7 @@ class OctopusEnergyApiClient:
                           break
 
                     break
-            else:
+            elif device_type == "SmartFlexVehicle":
               if "electricVehicles" in response_body["data"] and response_body["data"]["electricVehicles"] is not None:
                 for charger in response_body["data"]["electricVehicles"]:
                   if charger["make"] == make:
@@ -1759,6 +1817,8 @@ class OctopusEnergyApiClient:
                           break
 
                     break
+            else:
+              continue
 
             result.append(IntelligentDevice(
               device["id"],
@@ -1767,17 +1827,14 @@ class OctopusEnergyApiClient:
               model,
               vehicleBatterySizeInKwh,
               chargePointPowerInKw,
-              is_charger
+              INTELLIGENT_DEVICE_KIND_ELECTRIC_VEHICLE_CHARGERS if is_charger else device["deviceType"]
             ))
 
-          if len(result) > 1:
-            _LOGGER.warning("Multiple intelligent devices discovered. Picking first one")
-
-          return result[0] if len(result) > 0 else None
+          return result
         else:
           _LOGGER.error("Failed to retrieve intelligent device")
       
-      return None
+      return []
 
     except TimeoutError:
       _LOGGER.warning(f'Failed to connect. Timeout of {self._timeout} exceeded.')
@@ -1917,22 +1974,4 @@ class OctopusEnergyApiClient:
     except:
       raise Exception(f'Failed to extract response json: {url}; {text}')
     
-    if ("graphql" in url and "errors" in data_as_json and ignore_errors == False):
-      msg = f'Errors in request ({url}) ({request_context}): {data_as_json["errors"]}'
-      errors = list(map(lambda error: error["message"], data_as_json["errors"]))
-      _LOGGER.warning(msg)
-
-      for error in data_as_json["errors"]:
-        if ("extensions" in error and
-            "errorCode" in error["extensions"] and
-            error["extensions"]["errorCode"] in ("KT-CT-1139", "KT-CT-1111", "KT-CT-1143", "KT-CT-1134", "KT-CT-1135")):
-          raise AuthenticationException(msg, errors)
-
-        if ("extensions" in error and
-            "errorCode" in error["extensions"] and
-            error["extensions"]["errorCode"] in accepted_error_codes):
-          return None
-
-      raise RequestException(msg, errors)
-    
-    return data_as_json
+    return process_graphql_response(data_as_json, url, request_context, ignore_errors, accepted_error_codes)

@@ -2,28 +2,21 @@ from datetime import datetime, timedelta
 import logging
 from typing import Callable, Any
 
-from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.update_coordinator import (
   CoordinatorEntity,
 )
 from homeassistant.util.dt import (as_utc)
+from homeassistant.helpers import issue_registry as ir
 
-from ..const import (
-  DOMAIN,
-)
-
-from ..api_client import OctopusEnergyApiClient
 
 from ..utils import (
+  Tariff,
   get_active_tariff
 )
 from ..utils.rate_information import get_min_max_average_rates
 from ..utils.requests import calculate_next_refresh
-
-from ..const import (
-  DOMAIN,
-  DATA_KNOWN_TARIFF,
-)
+from ..const import DOMAIN, REPAIR_TARIFF_RATES_EMPTY
+from ..utils.repairs import safe_repair_key
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -57,27 +50,6 @@ class BaseCoordinatorResult:
     self.next_refresh = calculate_next_refresh(last_evaluated, request_attempts, refresh_rate_in_minutes)
     self.last_error = last_error
     _LOGGER.debug(f'last_evaluated: {last_evaluated}; last_retrieved: {last_retrieved}; request_attempts: {request_attempts}; refresh_rate_in_minutes: {refresh_rate_in_minutes}; next_refresh: {self.next_refresh}; last_error: {self.last_error}')
-
-async def async_check_valid_product(hass, account_id: str, client: OctopusEnergyApiClient, product_code: str, is_electricity: bool):
-  tariff_key = f'{DATA_KNOWN_TARIFF}_{product_code}'
-  try:
-    _LOGGER.debug(f"Retrieving product information for '{product_code}'")
-    product = await client.async_get_product(product_code)
-    if product is None:
-      ir.async_create_issue(
-        hass,
-        DOMAIN,
-        f"unknown_product_{product_code}",
-        is_fixable=False,
-        severity=ir.IssueSeverity.ERROR,
-        learn_more_url="https://bottlecapdave.github.io/HomeAssistant-OctopusEnergy/repairs/unknown_product",
-        translation_key="unknown_product",
-        translation_placeholders={ "type": "Electricity" if is_electricity else "Gas", "product_code": product_code },
-      )
-    else:
-      hass.data[DOMAIN][account_id][tariff_key] = True
-  except:
-    _LOGGER.debug(f"Failed to retrieve product info for '{product_code}'")
 
 def __raise_rate_event(event_key: str,
                        rates: list,
@@ -161,3 +133,18 @@ def combine_rates(old_rates: list | None, new_rates: list | None, period_from: d
     combined_rates.sort(key=lambda x: x["start"])
 
   return combined_rates
+
+def raise_rates_empty(hass, account_id: str, tariff: Tariff, mprn_mpan: str, serial_number: str, is_electricity: bool):
+  ir.async_create_issue(
+    hass,
+    DOMAIN,
+    safe_repair_key(REPAIR_TARIFF_RATES_EMPTY, account_id, tariff.code),
+    is_fixable=False,
+    severity=ir.IssueSeverity.WARNING,
+    learn_more_url="https://bottlecapdave.github.io/HomeAssistant-OctopusEnergy/repairs/tariff_rates_empty",
+    translation_key="tariff_rates_empty",
+    translation_placeholders={ "account_id": account_id, "product_code": tariff.product, "tariff_code": tariff.code, "product_code": tariff.product, "mprn_mpan": mprn_mpan, "serial_number": serial_number, "meter_type": "electricity" if is_electricity else "gas" },
+  )
+
+def clear_rates_empty(hass, account_id: str, tariff: Tariff):
+  ir.async_delete_issue(hass, DOMAIN, safe_repair_key(REPAIR_TARIFF_RATES_EMPTY, account_id, tariff.code))

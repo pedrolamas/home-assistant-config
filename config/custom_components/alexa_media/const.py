@@ -15,7 +15,6 @@ from homeassistant.const import (
     PERCENTAGE,
 )
 
-__version__ = "5.7.5"
 PROJECT_URL = "https://github.com/alandtse/alexa_media_player/"
 ISSUE_URL = f"{PROJECT_URL}issues"
 NOTIFY_URL = f"{PROJECT_URL}wiki/Configuration%3A-Notification-Component#use-the-notifyalexa_media-service"
@@ -66,10 +65,12 @@ DEFAULT_PUBLIC_URL = ""
 DEFAULT_QUEUE_DELAY = 1.5
 DEFAULT_SCAN_INTERVAL = 60
 
+# Service name constants used by services.py SERVICE_DEFS
 SERVICE_UPDATE_LAST_CALLED = "update_last_called"
 SERVICE_RESTORE_VOLUME = "restore_volume"
 SERVICE_GET_HISTORY_RECORDS = "get_history_records"
 SERVICE_FORCE_LOGOUT = "force_logout"
+SERVICE_ENABLE_NETWORK_DISCOVERY = "enable_network_discovery"
 
 RECURRING_PATTERN = {
     None: "Never Repeat",
@@ -111,6 +112,7 @@ RECURRING_PATTERN_ISO_SET = {
 
 ATTR_MESSAGE = "message"
 ATTR_EMAIL = "email"
+ATTR_ENTITY_ID = "entity_id"
 ATTR_NUM_ENTRIES = "entries"
 STREAMING_ERROR_MESSAGE = (
     "Sorry, direct music streaming isn't supported. "
@@ -119,14 +121,15 @@ STREAMING_ERROR_MESSAGE = (
 PUBLIC_URL_ERROR_MESSAGE = (
     "To send TTS, please set the public URL in integration configuration."
 )
-STARTUP = f"""
--------------------------------------------------------------------
-{DOMAIN}
-Version: {__version__}
-This is a custom component
-If you have any issues with this you need to open an issue here:
-{ISSUE_URL}
--------------------------------------------------------------------
+STARTUP_MESSAGE = """
+----------------------- {name} -------------------------
+If you have any issues with this custom component, you need to open
+an issue here: {ISSUE_URL}
+Domain: {DOMAIN}
+Version: {version}
+API Library: alexapy
+Version: {alexapy_version}
+--------------------------------------------------------------------
 """
 
 AUTH_CALLBACK_PATH = "/auth/alexamedia/callback"
@@ -144,8 +147,20 @@ ALEXA_ICON_CONVERSION = {
     "Alexa.AirQuality.CarbonMonoxide": "mdi:molecule-co",
     "Alexa.AirQuality.Humidity": "mdi:water-percent",
     "Alexa.AirQuality.IndoorAirQuality": "mdi:numeric",
+    "Alexa.AirQuality.ParticulateMatter": "mdi:blur",
+    "Alexa.AirQuality.VolatileOrganicCompounds": "mdi:air-filter",
 }
 ALEXA_ICON_DEFAULT = "mdi:molecule"
+
+# Device class mapping for air quality sensors
+# Maps Alexa sensor types to Home Assistant SensorDeviceClass
+ALEXA_AIR_QUALITY_DEVICE_CLASS = {
+    "Alexa.AirQuality.ParticulateMatter": "pm25",
+    "Alexa.AirQuality.CarbonMonoxide": "carbon_monoxide",
+    "Alexa.AirQuality.IndoorAirQuality": "aqi",
+    "Alexa.AirQuality.VolatileOrganicCompounds": "aqi",
+    "Alexa.AirQuality.Humidity": "humidity",
+}
 
 UPLOAD_PATH = "www/alexa_tts"
 
@@ -230,7 +245,7 @@ MODEL_IDS = {
     "A2RU4B77X9R9NZ": "Echo Link Amp",
     "A2TF17PFR55MTB": "Alexa Mobile Voice Android",
     "A2TTLILJHVNI9X": "LG TV",
-    "A2U21SRK4QGSE1": "Echo Dot Clock (Gen4)",
+    "A2U21SRK4QGSE1": "Echo Dot (Gen4)",
     "A2UONLFQW0PADH": "Echo Show 8 (Gen3)",
     "A2V9UEGZ82H4KZ": "Fire Tablet HD 10",
     "A2VAXZ7UNGY4ZH": "Wyze Headphones",

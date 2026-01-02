@@ -1,5 +1,7 @@
+from datetime import datetime
 import logging
 
+from custom_components.octopus_energy.const import DOMAIN
 from homeassistant.const import (
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
@@ -8,7 +10,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.exceptions import ServiceValidationError
 
-from homeassistant.util.dt import (utcnow)
+from homeassistant.util.dt import (utcnow, as_local)
 from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
 )
@@ -16,10 +18,12 @@ from homeassistant.helpers.restore_state import RestoreEntity
 
 from ..intelligent import (
   dispatches_to_dictionary_list,
+  get_applicable_dispatch_periods,
+  get_applicable_intelligent_dispatch_history,
+  get_current_and_next_dispatching_periods,
   simple_dispatches_to_dictionary_list
 )
 
-from ..utils import get_off_peak_times
 from .base import OctopusEnergyIntelligentSensor
 from ..coordinators.intelligent_dispatches import IntelligentDispatchDataUpdateCoordinator, IntelligentDispatchesCoordinatorResult
 from ..utils.attributes import dict_to_typed_dict
@@ -31,16 +35,22 @@ _LOGGER = logging.getLogger(__name__)
 class OctopusEnergyIntelligentDispatching(MultiCoordinatorEntity, BinarySensorEntity, OctopusEnergyIntelligentSensor, RestoreEntity):
   """Sensor for determining if an intelligent is dispatching."""
 
-  def __init__(self, hass: HomeAssistant, coordinator: IntelligentDispatchDataUpdateCoordinator, rates_coordinator, mpan: str, device: IntelligentDevice, account_id: str):
+  def __init__(self,
+               hass: HomeAssistant,
+               coordinator: IntelligentDispatchDataUpdateCoordinator,
+               device: IntelligentDevice,
+               account_id: str,
+               intelligent_rate_mode: str,
+               manually_refresh_dispatches: bool):
     """Init sensor."""
 
-    MultiCoordinatorEntity.__init__(self, coordinator, [rates_coordinator])
+    MultiCoordinatorEntity.__init__(self, coordinator, [])
     OctopusEnergyIntelligentSensor.__init__(self, device)
   
-    self._rates_coordinator = rates_coordinator
-    self._mpan = mpan
     self._account_id = account_id
     self._state = None
+    self._intelligent_rate_mode = intelligent_rate_mode
+    self._manually_refresh_dispatches = manually_refresh_dispatches
     self.__init_attributes__([], [], [])
 
     self.entity_id = generate_entity_id("binary_sensor.{}", self.unique_id, hass=hass)
@@ -48,12 +58,12 @@ class OctopusEnergyIntelligentDispatching(MultiCoordinatorEntity, BinarySensorEn
   @property
   def unique_id(self):
     """The id of the sensor."""
-    return f"octopus_energy_{self._account_id}_intelligent_dispatching"
+    return f"octopus_energy_{self._device.id}_intelligent_dispatching"
     
   @property
   def name(self):
     """Name of the sensor."""
-    return f"Intelligent Dispatching ({self._account_id})"
+    return f"Intelligent Dispatching ({self._device.id})"
 
   @property
   def icon(self):
@@ -81,56 +91,47 @@ class OctopusEnergyIntelligentDispatching(MultiCoordinatorEntity, BinarySensorEn
       "current_end": None,
       "next_start": None,
       "next_end": None,
+      "manually_refresh_dispatches": self._manually_refresh_dispatches
     }
   
   @callback
   def _handle_coordinator_update(self) -> None:
     """Determine if OE is currently dispatching energy."""
     result: IntelligentDispatchesCoordinatorResult = self.coordinator.data if self.coordinator is not None else None
-    rates = self._rates_coordinator.data.rates if self._rates_coordinator is not None and self._rates_coordinator.data is not None else None
-
-    # Skip if no rates are available otherwise our sensor can go off after a restart when it should be restored as one
-    if rates is None:
-      return
 
     current_date = utcnow()
     
+    started_dispatches = result.dispatches.started if result is not None and result.dispatches is not None else []
     self.__init_attributes__(
       dispatches_to_dictionary_list(result.dispatches.planned, ignore_none=True) if result is not None else [],
       dispatches_to_dictionary_list(result.dispatches.completed if result is not None and result.dispatches is not None else [], ignore_none=False) if result is not None else [],
-      simple_dispatches_to_dictionary_list(result.dispatches.started if result is not None and result.dispatches is not None else []) if result is not None else [],
+      simple_dispatches_to_dictionary_list(started_dispatches) if result is not None else [],
     )
 
-    off_peak_times = get_off_peak_times(current_date, rates, True)
-    off_peak_times_snapshot = off_peak_times.copy()
-    is_dispatching = False
-    
-    if off_peak_times is not None and len(off_peak_times) > 0:
-      time = off_peak_times.pop(0)
-      if time.start <= current_date:
-        self._attributes["current_start"] = time.start
-        self._attributes["current_end"] = time.end
-        is_dispatching = True
+    applicable_dispatches = get_applicable_dispatch_periods(result.dispatches.planned if result is not None and result.dispatches is not None else [],
+                                                            result.dispatches.started if result is not None and result.dispatches is not None else [],
+                                                            self._intelligent_rate_mode)
 
-        if len(off_peak_times) > 0:
-          self._attributes["next_start"] = off_peak_times[0].start
-          self._attributes["next_end"] = off_peak_times[0].end
-        else:
-          self._attributes["next_start"] = None
-          self._attributes["next_end"] = None
-      else:
-        self._attributes["current_start"] = None
-        self._attributes["current_end"] = None
-        self._attributes["next_start"] = time.start
-        self._attributes["next_end"] = time.end
+    (current_dispatch, next_dispatch) = get_current_and_next_dispatching_periods(current_date, applicable_dispatches)
+
+    is_dispatching = False
+    if current_dispatch is not None:
+      self._attributes["current_start"] = current_dispatch.start
+      self._attributes["current_end"] = current_dispatch.end
+      is_dispatching = True
     else:
       self._attributes["current_start"] = None
       self._attributes["current_end"] = None
+
+    if next_dispatch is not None:
+      self._attributes["next_start"] = next_dispatch.start
+      self._attributes["next_end"] = next_dispatch.end
+    else:
       self._attributes["next_start"] = None
       self._attributes["next_end"] = None
 
     if self._state != is_dispatching:
-      _LOGGER.debug(f"OctopusEnergyIntelligentDispatching state changed from {self._state} to {is_dispatching}; off peak times: {list(map(lambda x: x.to_dict(), off_peak_times_snapshot))}; rates: {rates}")
+      _LOGGER.debug(f"OctopusEnergyIntelligentDispatching state changed from {self._state} to {is_dispatching}; dispatches: {result.dispatches.to_dict() if result.dispatches is not None else None}; started_dispatches: {list(map(lambda x: x.to_dict(), started_dispatches)) if started_dispatches is not None else []}")
     
     self._state = is_dispatching
 
@@ -158,3 +159,33 @@ class OctopusEnergyIntelligentDispatching(MultiCoordinatorEntity, BinarySensorEn
     result: IntelligentDispatchesCoordinatorResult = await self.coordinator.refresh_dispatches()
     if result is not None and result.last_error is not None:
       raise ServiceValidationError(result.last_error)
+    
+  @callback
+  async def async_get_point_in_time_intelligent_dispatch_history(self, point_in_time: datetime):
+    """Refresh dispatches"""
+    local_point_in_time = as_local(point_in_time)
+    result: IntelligentDispatchesCoordinatorResult = await self.coordinator.refresh_dispatches()
+    applicable_dispatches = get_applicable_intelligent_dispatch_history(result.history if result is not None else None, local_point_in_time)
+    if applicable_dispatches is not None:
+      return applicable_dispatches.to_dict()
+    
+    earliest_timestamp = (as_local(result.history.history[0].timestamp).isoformat()
+                          if result is not None and
+                          result.history is not None and
+                          result.history.history is not None and
+                          len(result.history.history) > 0 
+                          else None)
+    
+    if earliest_timestamp is not None:
+      raise ServiceValidationError(
+        translation_domain=DOMAIN,
+        translation_key="point_in_time_intelligent_dispatch_history_data_out_of_bounds",
+        translation_placeholders={ 
+          "earliest_timestamp": earliest_timestamp,
+        },
+      )
+    
+    raise ServiceValidationError(
+        translation_domain=DOMAIN,
+        translation_key="point_in_time_intelligent_dispatch_history_data_unavailable",
+      )

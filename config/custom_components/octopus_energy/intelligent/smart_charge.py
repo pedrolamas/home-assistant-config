@@ -41,12 +41,12 @@ class OctopusEnergyIntelligentSmartCharge(CoordinatorEntity, SwitchEntity, Octop
   @property
   def unique_id(self):
     """The id of the sensor."""
-    return f"octopus_energy_{self._account_id}_intelligent_smart_charge"
+    return f"octopus_energy_{self._device.id}_intelligent_smart_charge"
     
   @property
   def name(self):
     """Name of the sensor."""
-    return f"Intelligent Smart Charge ({self._account_id})"
+    return f"Intelligent Smart Charge ({self._device.id})"
 
   @property
   def icon(self):
@@ -79,7 +79,7 @@ class OctopusEnergyIntelligentSmartCharge(CoordinatorEntity, SwitchEntity, Octop
     """Turn on the switch."""
     try:
       await self._client.async_turn_on_intelligent_smart_charge(
-        self._account_id
+        self._device.id
       )
     except Exception as e:
       if self._is_mocked:
@@ -95,7 +95,7 @@ class OctopusEnergyIntelligentSmartCharge(CoordinatorEntity, SwitchEntity, Octop
     """Turn off the switch."""
     try:
       await self._client.async_turn_off_intelligent_smart_charge(
-        self._account_id
+        self._device.id
       )
     except Exception as e:
       if self._is_mocked:

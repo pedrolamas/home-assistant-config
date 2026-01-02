@@ -301,6 +301,43 @@ boost_heat_pump_zone:
           step: 0.5
           mode: box
 
+boost_water_heater:
+  name: Boost water heater
+  description: Boost a given heat pump water heater for a given time period
+  target:
+    entity:
+      integration: octopus_energy
+      domain: water_heater
+  fields:
+    hours:
+      name: Hours
+      description: The number of hours to boost for
+      required: true
+      selector:
+        number:
+          step: 1
+          min: 0
+          max: 12
+          mode: box
+    minutes:
+      name: Minutes
+      description: The number of minutes to boost for
+      required: true
+      selector:
+        number:
+          step: 15
+          min: 0
+          max: 45
+          mode: box
+    target_temperature:
+      name: Target Temperature
+      description: The optional target temperature to boost to. If not supplied, then the current target temperature will be used
+      required: false
+      selector:
+        number:
+          step: 0.5
+          mode: box
+
 set_heat_pump_flow_temp_config:
   name: Set heat pump flow temperature configuration
   description: Sets the full flow temperature configuration for fixed and weather compensated flow temperatures, with the option to select which is active. Changing this configuration without a good understanding of heat loss and emitter output can cause cycling, defrosting, or incorrect heat delivery.
@@ -353,3 +390,18 @@ refresh_intelligent_dispatches:
     entity:
       integration: octopus_energy
       domain: binary_sensor
+
+get_point_in_time_intelligent_dispatch_history:
+  name: Get point in time intelligent dispatch history
+  description:
+    Retrieve the intelligent dispatch history which was active for a given point in time based on up to the last 48 hours of intelligent dispatches that have been captured locally. For more information please see https://bottlecapdave.github.io/HomeAssistant-OctopusEnergy/services/#octopus_energyget_intelligent_dispatch_history.
+  target:
+    entity:
+      integration: octopus_energy
+      domain: binary_sensor
+  fields:
+    point_in_time:
+      name: Point in time
+      description: The datetime of the point in time to retrieve the application intelligent dispatch history for
+      selector:
+        datetime:
