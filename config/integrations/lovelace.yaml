@@ -1,6 +1,13 @@
-mode: yaml
+resource_mode: yaml
 resources:
   - url: /hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js
     type: module
   - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
     type: module
+dashboards:
+  lovelace:
+    mode: yaml
+    filename: ui-lovelace.yaml
+    title: Overview
+    icon: mdi:view-dashboard
+    show_in_sidebar: true
