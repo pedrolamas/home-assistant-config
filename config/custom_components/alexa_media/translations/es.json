@@ -1,19 +1,19 @@
 {
   "config": {
     "abort": {
-      "forgot_password": "Se ha detectado la página de \"Ha olvidado su contraseña\". Normalmente esto ocurre si has intentado iniciar sesión varias veces de forma fallida. Amazon puede que te pida alguna acción adicional antes de poder volver a intentar iniciar sesión.",
+      "forgot_password": "Se detectó la página de Olvidé mi contraseña. Normalmente, esto es el resultado de demasiados intentos fallidos de inicio de sesión. Amazon puede requerir acción antes de que se pueda intentar iniciar sesión nuevamente.",
       "login_failed": "Alexa Media Player no pudo iniciar sesión.",
       "reauth_successful": "Alexa Media Player se volvió a autenticar con éxito. Ignore el mensaje \"Cancelado\" de HA."
     },
     "error": {
-      "2fa_key_invalid": "Invalid Built-In 2FA key",
+      "2fa_key_invalid": "{otp_secret} no es válido",
       "connection_error": "Error al conectar, verifique la red y vuelva a intentarlo",
       "identifier_exists": "Correo electrónico para la URL de Alexa ya registrado",
       "invalid_auth": "No se pudo iniciar sesión correctamente. Por favor, revise su correo electrónico, contraseña y clave de autenticación.",
       "invalid_credentials": "Credenciales no válidas",
       "invalid_url": "La URL no es válida: {message}",
       "oauth_error": "No se pudo completar el inicio de sesión de OAuth. Inténtalo de nuevo.",
-      "unable_to_connect_hass_url": "No se puede conectar con la URL de Home Assistant. Verifique la URL externa en Configuración -> General",
+      "unable_to_connect_hass_url": "No se puede conectar a la URL local de Home Assistant. Verifique la URL en Ajustes > Sistema > Red > URL de Home Assistant > Red local.",
       "unknown_error": "Error desconocido: {message}"
     },
     "step": {
@@ -21,41 +21,88 @@
         "data": {
           "proxy_warning": "Ignorar y continuar: entiendo que no se proporciona soporte para problemas de inicio de sesión para eludir esta advertencia."
         },
-        "description": "El servidor HA no puede conectarse a la URL proporcionada: {hass_url} .\n > {error} \n\n Para solucionar esto, confirme que su **servidor HA** puede llegar a {hass_url} . Este campo es de la URL externa en Configuración - > General, pero puede probar su URL interna. \n\n Si está **seguro** de que su cliente puede acceder a esta URL, puede omitir esta advertencia.",
+        "description": "El servidor HA no puede conectarse a la URL proporcionada: {hass_url}.\n> {error}\n\nPara solucionar esto, confirme que su navegador pueda acceder a {hass_url}. Este campo se encuentra en Ajustes > Sistema > Red > URL de Home Assistant.\n\nSi está **seguro** de que su navegador puede acceder a esta URL, puede omitir esta advertencia.",
         "title": "Alexa Media Player: no se puede conectar a la URL de alta disponibilidad"
       },
       "totp_register": {
         "data": {
-          "registered": "OTP from the Built-in 2FA App Key confirmed successfully."
+          "registered": "Sí, el código OTP fue verificado"
         },
-        "description": "**{email} - alexa.{url}**  \nHave you successfully confirmed an OTP from the Built-in 2FA App Key with Amazon?  \n >OTP Code {message}",
-        "title": "Alexa Media Player - OTP Confirmation"
+        "description": "**{email} - alexa.{url}** \n¿Has verificado el código OTP en Amazon 2SV?\n>Código OTP: {message}",
+        "title": "Alexa Media Player - OTP Confirmación"
       },
       "user": {
         "data": {
           "debug": "Depuración avanzada",
           "email": "Dirección de correo electrónico",
-          "exclude_devices": "Dispositivo excluido (separado por comas)",
-          "extended_entity_discovery": "Incluir dispositivos conectados vía Echo",
-          "hass_url": "Url para acceder a Home Assistant",
-          "include_devices": "Dispositivo incluido (separado por comas)",
-          "otp_secret": "Clave de aplicación 2FA incorporada (genera automáticamente códigos 2FA). Esto no tiene seis dígitos.",
+          "exclude_devices": "o Excluir estos dispositivos de todos (separados por comas)",
+          "extended_entity_discovery": "Incluye sensores, interruptores y luces adicionales.",
+          "hass_url": "URL de red local para acceder a Home Assistant",
+          "include_devices": "Incluya solo estos dispositivos (separados por comas)",
+          "otp_secret": "Clave de aplicación de autenticación de 52 caracteres para la verificación en dos pasos de Amazon",
           "password": "Contraseña",
           "public_url": "URL pública compartida con servicios alojados externos",
-          "queue_delay": "Segundos a esperar para agrupar comandos",
-          "scan_interval": "Segundos entre escaneos",
-          "securitycode": "Código 2FA (recomendado para evitar problemas de inicio de sesión)",
+          "queue_delay": "Retraso para poner en cola varios comandos juntos (segundos)",
+          "scan_interval": "Intervalo de sondeo programado (segundos)",
+          "securitycode": "Contraseña de un solo uso (OTP)",
           "should_get_network": "Descubra la red Alexa",
           "url": "Región del dominio de Amazon (por ejemplo, amazon.es)"
         },
-        "description": "Por favor, confirme la información a continuación. Para la configuración heredada, deshabilite la opción 'Usar método de proxy de inicio de sesión'.",
-        "title": "Alexa Media Player - Configuración"
+        "data_description": {
+          "debug": "Habilita un registro de nivel de seguimiento muy detallado para la resolución de problemas avanzada. \n No se recomienda para el funcionamiento normal debido al aumento del volumen de registro. \n Asegúrese de que los niveles del registrador estén configurados en DEBUG para obtener una salida completa.",
+          "otp_secret": "Ejemplo: 35T5 LQSY I5IO 3EFQ LGAJ I6YB JWBY JJPR PYT7 XPPW IDAK SQBJ CVXA"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "air_quality": {
+        "name": "Calidad del aire"
+      },
+      "air_quality_carbon_monoxide": {
+        "name": "Monóxido de carbono"
+      },
+      "air_quality_humidity": {
+        "name": "Humedad"
+      },
+      "air_quality_indoor_air_quality": {
+        "name": "Calidad del aire interior"
+      },
+      "air_quality_particulate_matter": {
+        "name": "materia particulada"
+      },
+      "air_quality_volatile_organic_compounds": {
+        "name": "Compuestos orgánicos volátiles"
+      },
+      "next_alarm": {
+        "name": "Próxima alarma"
+      },
+      "next_reminder": {
+        "name": "Próximo recordatorio"
+      },
+      "next_timer": {
+        "name": "Próximo temporizador"
+      },
+      "temperature": {
+        "name": "Temperatura"
+      }
+    },
+    "switch": {
+      "do_not_disturb": {
+        "name": "No molestar"
+      },
+      "repeat": {
+        "name": "Repetir"
+      },
+      "shuffle": {
+        "name": "Barajar"
       }
     }
   },
   "issues": {
     "deprecated_yaml_configuration": {
-      "description": "La configuración YAML de Alexa Media Player está obsoleta \n y se eliminará en la versión 4.14.0. \n No habrá una importación automática de esto. \n Elimínelo de su configuración, reinicie Home Assistant y use la interfaz de usuario para configurarlo. \n Configuración > Dispositivos y servicios > Integraciones > AGREGAR INTEGRACIÓN",
+      "description": "La configuración YAML de Alexa Media Player está obsoleta.\nElimina `alexa_media` de tu configuración, reinicia Home Assistant y usa la interfaz de usuario para configurarlo.\nAjustes > Dispositivos y servicios > Integraciones > AÑADIR INTEGRACIÓN",
       "title": "La configuración de YAML está obsoleta"
     }
   },
@@ -64,15 +111,20 @@
       "init": {
         "data": {
           "debug": "Depuración avanzada",
-          "exclude_devices": "Dispositivo excluido (separado por comas)",
-          "extended_entity_discovery": "Incluir dispositivos conectados a través de Echo",
-          "include_devices": "Dispositivo incluido (separado por comas)",
-          "public_url": "URL pública para acceder a Home Assistant (incluyendo la '/' final)",
-          "queue_delay": "Segundos a esperar para agrupar comandos",
-          "scan_interval": "Segundos entre escaneos",
+          "exclude_devices": "o Excluir estos dispositivos de todos (separados por comas)",
+          "extended_entity_discovery": "Incluye sensores, interruptores y luces adicionales.",
+          "include_devices": "Incluya solo estos dispositivos (separados por comas)",
+          "otp_secret": "Clave de aplicación de autenticación de 52 caracteres para la verificación en dos pasos de Amazon",
+          "public_url": "URL pública compartida con servicios alojados externos",
+          "queue_delay": "Retraso para poner en cola varios comandos juntos (segundos)",
+          "scan_interval": "Frecuencia de sondeo programada (segundos)",
           "should_get_network": "Descubra la red Alexa"
         },
-        "description": "Obligatorio*",
+        "data_description": {
+          "debug": "Habilita un registro de nivel de seguimiento muy detallado para la resolución de problemas avanzada. \n No se recomienda para el funcionamiento normal debido al aumento del volumen de registro. \n Asegúrese de que los niveles del registrador estén configurados en DEBUG para obtener una salida completa.",
+          "otp_secret": "Ejemplo: 35T5 LQSY I5IO 3EFQ LGAJ I6YB JWBY JJPR PYT7 XPPW IDAK SQBJ CVXA"
+        },
+        "description": "* Entradas obligatorias",
         "title": "Alexa Media Player - Reconfiguración"
       }
     }

@@ -1,7 +1,7 @@
 {
   "config": {
     "abort": {
-      "forgot_password": "The Forgot Password page was detected. This normally is the result of too may failed logins. Amazon may require action before a relogin can be attempted.",
+      "forgot_password": "The Forgot Password page was detected. This normally is the result of too many failed logins. Amazon may require action before a relogin can be attempted.",
       "login_failed": "Alexa Media Player failed to login.",
       "reauth_successful": "Alexa Media Player successfully reauthenticated. Please ignore the \"Aborted\" message from HA."
     },
@@ -18,23 +18,25 @@
     },
     "step": {
       "user": {
-        "title": "Alexa Media Player - Configuration",
-        "description": "* Required entries\nNote: **Extended entity discovery** requires **Discover Alexa network** to be enabled.",
         "data": {
-          "url": "Amazon region domain (e.g., amazon.co.uk)",
+          "debug": "Advanced debug",
           "email": "Email Address",
-          "password": "Password",
-          "securitycode": "[%key_id:55616596%]",
-          "otp_secret": "Amazon 2SV Authenticator App Key",
-          "hass_url": "Local network URL to access Home Assistant",
-          "public_url": "Public URL shared with external hosted services",
-          "include_devices": "Only include these devices (comma separated)",
           "exclude_devices": "or Exclude these devices from all (comma separated)",
-          "scan_interval": "Scheduled polling interval (seconds)",
-          "queue_delay": "Delay to queue multiple commands together (seconds)",
-          "should_get_network": "Discover Alexa network",
           "extended_entity_discovery": "Include additional sensors, switches and lights",
-          "debug": "Advanced debugging"
+          "hass_url": "Local network URL to access Home Assistant",
+          "include_devices": "Only include these devices (comma separated)",
+          "otp_secret": "52-character Authenticator App Key for Amazon 2SV",
+          "password": "Password",
+          "public_url": "Public URL shared with external hosted services",
+          "queue_delay": "Delay to queue multiple commands together (seconds)",
+          "scan_interval": "Scheduled polling interval (seconds)",
+          "securitycode": "One-time password (OTP)",
+          "should_get_network": "Discover Alexa network",
+          "url": "Amazon region domain (e.g., amazon.co.uk)"
+        },
+        "data_description": {
+          "debug": "Enables very verbose, trace-level logging for advanced troubleshooting.\nNot recommended for normal operation due to increased log volume.\nEnsure logger levels are set to DEBUG for full output.",
+          "otp_secret": "Example: 35T5 LQSY I5IO 3EFQ LGAJ I6YB JWBY JJPR PYT7 XPPW IDAK SQBJ CVXA"
         }
       },
       "proxy_warning": {
@@ -57,16 +59,21 @@
     "step": {
       "init": {
         "title": "Alexa Media Player - Reconfiguration",
-        "description": "* Required entries\nNote: **Extended entity discovery** requires **Discover Alexa network** to be enabled.",
+        "description": "* Required entry",
         "data": {
-          "public_url": "Public URL shared with external hosted services",
-          "include_devices": "Only include these devices (comma separated)",
+          "debug": "Advanced debug",
           "exclude_devices": "or Exclude these devices from all (comma separated)",
-          "scan_interval": "Scheduled polling frequency (seconds)",
-          "queue_delay": "Delay to queue multiple commands together (seconds)",
-          "should_get_network": "Discover Alexa network",
           "extended_entity_discovery": "Include additional sensors, switches and lights",
-          "debug": "Advanced debugging"
+          "include_devices": "Only include these devices (comma separated)",
+          "otp_secret": "52-character Authenticator App Key for Amazon 2SV",
+          "public_url": "Public URL shared with external hosted services",
+          "queue_delay": "Delay to queue multiple commands together (seconds)",
+          "scan_interval": "Scheduled polling interval (seconds)",
+          "should_get_network": "Discover Alexa network"
+        },
+        "data_description": {
+          "debug": "Enables very verbose, trace-level logging for advanced troubleshooting.\nNot recommended for normal operation due to increased log volume.\nEnsure logger levels are set to DEBUG for full output.",
+          "otp_secret": "Example: 35T5 LQSY I5IO 3EFQ LGAJ I6YB JWBY JJPR PYT7 XPPW IDAK SQBJ CVXA"
         }
       }
     }
@@ -127,10 +134,55 @@
       }
     }
   },
+  "entity": {
+    "switch": {
+      "do_not_disturb": {
+        "name": "Do not disturb"
+      },
+      "shuffle": {
+        "name": "Shuffle"
+      },
+      "repeat": {
+        "name": "Repeat"
+      }
+    },
+    "sensor": {
+      "temperature": {
+        "name": "Temperature"
+      },
+      "air_quality": {
+        "name": "Air quality"
+      },
+      "air_quality_carbon_monoxide": {
+        "name": "Carbon monoxide"
+      },
+      "air_quality_humidity": {
+        "name": "Humidity"
+      },
+      "air_quality_indoor_air_quality": {
+        "name": "Indoor air quality"
+      },
+      "air_quality_particulate_matter": {
+        "name": "Particulate matter"
+      },
+      "air_quality_volatile_organic_compounds": {
+        "name": "Volatile organic compounds"
+      },
+      "next_alarm": {
+        "name": "Next alarm"
+      },
+      "next_timer": {
+        "name": "Next timer"
+      },
+      "next_reminder": {
+        "name": "Next reminder"
+      }
+    }
+  },
   "issues": {
     "deprecated_yaml_configuration": {
       "title": "YAML configuration is deprecated",
-      "description": "YAML configuration of Alexa Media Player is deprecated\nand will be removed in version 4.14.0.\nThere will be no automatic import of this.\nPlease remove it from your configuration, restart Home Assistant and use the UI to configure it instead.\nSettings > Devices & services > Integrations > ADD INTEGRATION"
+      "description": "YAML configuration of Alexa Media Player is deprecated.\nPlease remove `alexa_media` from your configuration, restart Home Assistant and use the UI to configure it instead.\nSettings > Devices & services > Integrations > ADD INTEGRATION"
     }
   }
 }

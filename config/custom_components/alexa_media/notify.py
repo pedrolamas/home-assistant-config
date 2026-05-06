@@ -151,7 +151,7 @@ class AlexaNotificationService(BaseNotificationService):
         devices = {}
         for email, account_dict in self.hass.data[DATA_ALEXAMEDIA]["accounts"].items():
             if "entities" not in account_dict:
-                return devices
+                continue
             last_called_entity = None
             for _, entity in account_dict["entities"]["media_player"].items():
                 if entity is None or entity.entity_id is None:
@@ -161,37 +161,25 @@ class AlexaNotificationService(BaseNotificationService):
                 if self.last_called and entity.extra_state_attributes.get(
                     "last_called"
                 ):
+                    attrs = entity.extra_state_attributes
+                    try:
+                        ts = int(attrs.get("last_called_timestamp") or 0)
+                    except (TypeError, ValueError):
+                        ts = 0
                     if last_called_entity is None:
-                        _LOGGER.debug(
-                            "%s: Found last_called %s called at %s",
-                            hide_email(email),
-                            entity,
-                            entity.extra_state_attributes.get("last_called_timestamp"),
-                        )
                         last_called_entity = entity
-                    elif last_called_entity.extra_state_attributes.get(
-                        "last_called_timestamp"
-                    ) < entity.extra_state_attributes.get("last_called_timestamp"):
-                        _LOGGER.debug(
-                            "%s: Found newer last_called %s called at %s",
-                            hide_email(email),
-                            entity,
-                            entity.extra_state_attributes.get("last_called_timestamp"),
-                        )
-                        last_called_entity = entity
+                    else:
+                        best_attrs = last_called_entity.extra_state_attributes
+                        try:
+                            best_ts = int(best_attrs.get("last_called_timestamp") or 0)
+                        except (TypeError, ValueError):
+                            best_ts = 0
+                        if ts > best_ts:
+                            last_called_entity = entity
             if last_called_entity is not None:
                 entity_name = (last_called_entity.entity_id).split(".")[1]
                 entity_name_last_called = (
                     f"last_called{'_'+ email if entity_name[-1:].isdigit() else ''}"
-                )
-                _LOGGER.debug(
-                    "%s: Creating last_called target %s using %s called at %s",
-                    hide_email(email),
-                    entity_name_last_called,
-                    last_called_entity,
-                    last_called_entity.extra_state_attributes.get(
-                        "last_called_timestamp"
-                    ),
                 )
                 devices[entity_name_last_called] = last_called_entity.unique_id
         return devices
@@ -202,7 +190,7 @@ class AlexaNotificationService(BaseNotificationService):
         devices = []
         if (
             "accounts" not in self.hass.data[DATA_ALEXAMEDIA]
-            and not self.hass.data[DATA_ALEXAMEDIA]["accounts"].items()
+            or not self.hass.data[DATA_ALEXAMEDIA]["accounts"].items()
         ):
             return devices
         for _, account_dict in self.hass.data[DATA_ALEXAMEDIA]["accounts"].items():
@@ -211,7 +199,7 @@ class AlexaNotificationService(BaseNotificationService):
 
     async def async_send_message(self, message="", **kwargs):
         # pylint: disable=too-many-branches
-        """Send a message to a Alexa device."""
+        """Send a message to an Alexa device."""
         _LOGGER.debug("Message: %s, kwargs: %s", message, kwargs)
         _LOGGER.debug("Target type: %s", type(kwargs.get(ATTR_TARGET)))
         kwargs["message"] = message
@@ -237,11 +225,46 @@ class AlexaNotificationService(BaseNotificationService):
                         map(lambda x: x.strip(), target.split(","))
                     )
                     _LOGGER.debug("Processed Target by string: %s", processed_targets)
+        # Expand media_player group entities into their member entity IDs before
+        # passing to convert(). The convert() method only resolves alexa-specific
+        # identifiers (entity_id, name, serial); it has no knowledge of HA groups.
+        # We expand here — before convert() — where targets are still plain strings.
+        #
+        # Scope: media_player groups only (identified by a media_player.* entity_id
+        # whose state contains an "entity_id" attribute listing member entities).
+        # Areas, floors, and generic group.* entities are intentionally out of scope.
+        #
+        # Note: The expand_entity_ids() call that previously appeared after convert()
+        # has been removed. It operated on already-converted alexa objects (not entity
+        # ID strings), causing it to throw ValueError on every call, which was silently
+        # swallowed — it never successfully expanded anything.
+        expanded_targets = []
+        for target in processed_targets:
+            if (
+                isinstance(target, str)
+                and target.startswith("media_player.")
+                and (state := self.hass.states.get(target)) is not None
+                and "entity_id" in state.attributes
+            ):
+                # This is a media_player group — expand to its member entity IDs
+                members = state.attributes["entity_id"]
+                _LOGGER.debug(
+                    "Expanding media_player group %s to members: %s", target, members
+                )
+                if isinstance(members, (list, tuple)):
+                    expanded_targets.extend(members)
+                else:
+                    _LOGGER.debug(
+                        "Skipping expansion for media_player group %s: "
+                        "entity_id attribute is not a list (%s), using group as-is",
+                        target,
+                        type(members).__name__,
+                    )
+                    expanded_targets.append(target)
+            else:
+                expanded_targets.append(target)
+        processed_targets = expanded_targets
         entities = self.convert(processed_targets, type_="entities")
-        try:
-            entities.extend(expand_entity_ids(self.hass, entities))
-        except ValueError:
-            _LOGGER.debug("Invalid Home Assistant entity in %s", entities)
         tasks = []
         for account, account_dict in self.hass.data[DATA_ALEXAMEDIA][
             "accounts"

@@ -1,4 +1,5 @@
 
+import logging
 import re
 from datetime import datetime, timedelta
 
@@ -9,6 +10,8 @@ from ..const import (
 )
 from ..utils.conversions import value_inc_vat_to_pounds
 from .rate_information import get_current_rate_information
+
+_LOGGER = logging.getLogger(__name__)
 
 class TariffParts:
   energy: str
@@ -138,6 +141,8 @@ def get_off_peak_times(current: datetime, rates: list, include_intelligent_adjus
       end = rates[-1]["end"]
       if end >= current:
         times.append(OffPeakTime(start, end))
+  else:
+    _LOGGER.debug(f"Unable to determine off-peak times for current time '{current}' as we couldn't find an off-peak value or rates were null")
 
   return times
 
@@ -159,6 +164,28 @@ def private_rates_to_public_rates(rates: list):
       
     if "is_intelligent_adjusted" in rate:
       new_rate["is_intelligent_adjusted"] = rate["is_intelligent_adjusted"]
+
+    new_rates.append(new_rate)
+
+  return new_rates
+
+def private_rates_to_target_timeframe_data(rates: list):
+  new_rates = []
+
+  for rate in rates:
+    metadata = {}
+    if "is_capped" in rate:
+      metadata["is_capped"] = rate["is_capped"]
+      
+    if "is_intelligent_adjusted" in rate:
+      metadata["is_intelligent_adjusted"] = rate["is_intelligent_adjusted"]
+
+    new_rate = {
+      "start": as_local(rate["start"]),
+      "end": as_local(rate["end"]),
+      "value": rate["value_inc_vat"],
+      "metadata": metadata
+    }
 
     new_rates.append(new_rate)
 

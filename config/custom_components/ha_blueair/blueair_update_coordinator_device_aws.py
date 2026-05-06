@@ -3,7 +3,13 @@ from __future__ import annotations
 
 import logging
 
-from blueair_api import ModelEnum, DeviceAws
+from math import ceil
+from homeassistant.util.color import (
+    value_to_brightness,
+    brightness_to_value,
+)
+
+from blueair_api import DeviceAws
 
 from .blueair_update_coordinator import BlueairUpdateCoordinator
 
@@ -16,8 +22,8 @@ class BlueairUpdateCoordinatorDeviceAws(BlueairUpdateCoordinator):
 
     @property
     def model(self) -> str:
-        """Return api package enum of device model."""
-        return self.blueair_api_device.model
+        """Return human-readable product name for device registry."""
+        return self.blueair_api_device.model_name
 
     @property
     def hw_version(self) -> str:
@@ -39,26 +45,7 @@ class BlueairUpdateCoordinatorDeviceAws(BlueairUpdateCoordinator):
     @property
     def speed_count(self) -> int:
         """Return the max fan speed."""
-        if self.blueair_api_device.model in [
-            ModelEnum.MAX_211I,
-            ModelEnum.MAX_311I,
-            ModelEnum.MAX_311I_PLUS,
-            ModelEnum.MAX_3250I,
-            ModelEnum.MAX_3650I,
-            ModelEnum.PROTECT_7440I,
-            ModelEnum.PROTECT_7470I
-        ]:
-            return 91
-        if self.blueair_api_device.model in [
-            ModelEnum.T10I,
-        ]:
-            return 4
-        if self.blueair_api_device.model in [
-            ModelEnum.HUMIDIFIER_H35I,
-            ModelEnum.HUMIDIFIER_H76I,
-        ]:
-            return 3
-        return 100
+        return self.blueair_api_device.fan_speed_count
 
     @property
     def is_on(self) -> bool | None | NotImplemented:
@@ -167,6 +154,30 @@ class BlueairUpdateCoordinatorDeviceAws(BlueairUpdateCoordinator):
         return 100 - self.blueair_api_device.wick_usage_percentage
 
     @property
+    def water_refresher_life(self) -> int | None | NotImplemented:
+        if self.blueair_api_device.water_refresher_usage_percentage in (NotImplemented, None):
+            return self.blueair_api_device.water_refresher_usage_percentage
+        return 100 - self.blueair_api_device.water_refresher_usage_percentage
+
+    @property
+    def water_level(self) -> int | None | NotImplemented:
+        return self.blueair_api_device.water_level
+
+    @property
+    def mood_brightness_scale(self) -> tuple[int, int]:
+        return (1, self.blueair_api_device.mood_brightness_max)
+
+    @property
+    def mood_brightness(self) -> int | None | NotImplemented:
+        if self.blueair_api_device.mood_brightness not in (None, NotImplemented):
+            return value_to_brightness(self.mood_brightness_scale, self.blueair_api_device.mood_brightness)
+        return self.blueair_api_device.mood_brightness
+
+    @property
+    def mood_brightness_is_on(self) -> int | None | NotImplemented:
+        return self.blueair_api_device.mood_brightness != 0
+
+    @property
     def main_mode(self) -> int | None | NotImplemented:
         return self.blueair_api_device.main_mode
 
@@ -222,6 +233,16 @@ class BlueairUpdateCoordinatorDeviceAws(BlueairUpdateCoordinator):
         # Convert Home Assistant brightness (0-255) to Abode brightness (0-99)
         # If 100 is sent to Abode, response is 99 causing an error
         await self.blueair_api_device.set_brightness(round(brightness * 100 / 255.0))
+        await self.async_request_refresh()
+
+    async def set_mood_brightness(self, mood_brightness) -> None:
+        desired_brightness_in_range = ceil(brightness_to_value(self.mood_brightness_scale, mood_brightness))
+
+        await self.blueair_api_device.set_mood_brightness(desired_brightness_in_range)
+        await self.async_request_refresh()
+
+    async def turn_off_mood_brightness(self) -> None:
+        await self.blueair_api_device.set_mood_brightness(0)
         await self.async_request_refresh()
 
     async def set_germ_shield(self, enabled: bool) -> None:

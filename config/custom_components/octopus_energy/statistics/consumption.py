@@ -4,10 +4,11 @@ import datetime
 from . import (build_consumption_statistics, async_get_last_sum)
 
 from homeassistant.core import HomeAssistant
-from homeassistant.components.recorder.models import StatisticMetaData
+from homeassistant.components.recorder.models import StatisticMetaData, StatisticMeanType
 from homeassistant.components.recorder.statistics import (
     async_add_external_statistics
 )
+from homeassistant.util.unit_conversion import EnergyConverter, VolumeConverter
 
 from ..const import DOMAIN
 from ..utils.rate_information import get_peak_name, get_peak_type, get_unique_rates, has_peak_rates
@@ -60,6 +61,14 @@ async def async_import_external_statistics_from_consumption(
 
   statistics = build_consumption_statistics(current, consumptions, rates, consumption_key, latest_total_sum)
 
+  unit_class = (
+    EnergyConverter.UNIT_CLASS 
+    if unit_of_measurement in EnergyConverter.VALID_UNITS 
+    else VolumeConverter.UNIT_CLASS 
+      if unit_of_measurement in VolumeConverter.VALID_UNITS 
+      else None
+  )
+
   async_add_external_statistics(
     hass,
     StatisticMetaData(
@@ -69,6 +78,8 @@ async def async_import_external_statistics_from_consumption(
       source=DOMAIN,
       statistic_id=statistic_id,
       unit_of_measurement=unit_of_measurement,
+      mean_type=StatisticMeanType.NONE,
+      unit_class=unit_class,
     ),
     statistics
   )
@@ -95,6 +106,8 @@ async def async_import_external_statistics_from_consumption(
           source=DOMAIN,
           statistic_id=peak_statistic_id,
           unit_of_measurement=unit_of_measurement,
+          mean_type=StatisticMeanType.NONE,
+          unit_class=unit_class,
         ),
         peak_statistics
       )
