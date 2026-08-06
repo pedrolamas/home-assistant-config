@@ -34,6 +34,16 @@ class BlueairUpdateCoordinatorDeviceAws(BlueairUpdateCoordinator):
         return self.blueair_api_device.firmware
 
     @property
+    def overall_firmware(self) -> str | None | NotImplemented:
+        """Overall firmware version (AWS shadow field ``ofv``).
+
+        Distinct from ``sw_version`` (Wi-Fi firmware) and ``hw_version``
+        (MCU firmware); surfaced as a diagnostic sensor since the device
+        registry only has the two version slots.
+        """
+        return self.blueair_api_device.overall_firmware
+
+    @property
     def serial_number(self) -> str:
         return self.blueair_api_device.serial_number
 
@@ -91,6 +101,24 @@ class BlueairUpdateCoordinatorDeviceAws(BlueairUpdateCoordinator):
     @property
     def auto_regulated_humidity(self) -> int | None | NotImplemented:
         return self.blueair_api_device.auto_regulated_humidity
+
+    @property
+    def humidifier_mode(self) -> bool | None | NotImplemented:
+        """Humidification on/off for 2-in-1 combo devices (e.g. DH3i).
+
+        Independent of the purifier running state (standby), so toggling
+        humidification does not power down the fan.
+        """
+        return self.blueair_api_device.humidifier_mode
+
+    @property
+    def combo_mode(self) -> int | None | NotImplemented:
+        """Operating mode for 2-in-1 combo devices (e.g. DH3i).
+
+        Values follow the device firmware's mode enum: 1=Manual, 2=Auto,
+        3=Night. Used to surface fan presets on the combo fan entity.
+        """
+        return self.blueair_api_device.combo_mode
 
     @property
     def voc(self) -> int | None | NotImplemented:
@@ -225,6 +253,39 @@ class BlueairUpdateCoordinatorDeviceAws(BlueairUpdateCoordinator):
         except (TypeError, ValueError):
             return raw
 
+    @property
+    def rssi(self) -> int | None | NotImplemented:
+        return self.blueair_api_device.rssi
+
+    @property
+    def night_light_brightness_scale(self) -> tuple[int, int]:
+        return (1, 100)
+
+    @property
+    def night_light_brightness(self) -> int | None | NotImplemented:
+        if self.blueair_api_device.night_light_brightness not in (None, NotImplemented):
+            return value_to_brightness(
+                self.night_light_brightness_scale,
+                self.blueair_api_device.night_light_brightness,
+            )
+        return self.blueair_api_device.night_light_brightness
+
+    @property
+    def night_light_brightness_is_on(self) -> bool | None | NotImplemented:
+        return self.blueair_api_device.night_light_brightness != 0
+
+    @property
+    def timer_state(self) -> int | None | NotImplemented:
+        return self.blueair_api_device.timer_state
+
+    @property
+    def timer_duration(self) -> int | None | NotImplemented:
+        return self.blueair_api_device.timer_duration
+
+    @property
+    def hour_format(self) -> bool | None | NotImplemented:
+        return self.blueair_api_device.hour_format
+
     async def set_running(self, running) -> None:
         await self.blueair_api_device.set_standby(not running)
         await self.async_request_refresh()
@@ -265,6 +326,14 @@ class BlueairUpdateCoordinatorDeviceAws(BlueairUpdateCoordinator):
         await self.blueair_api_device.set_auto_regulated_humidity(value)
         await self.async_request_refresh()
 
+    async def set_humidifier_mode(self, value: bool) -> None:
+        await self.blueair_api_device.set_humidifier_mode(value)
+        await self.async_request_refresh()
+
+    async def set_combo_mode(self, value: int) -> None:
+        await self.blueair_api_device.set_combo_mode(value)
+        await self.async_request_refresh()
+
     async def set_main_mode(self, value: int) -> None:
         await self.blueair_api_device.set_main_mode(value)
         await self.async_request_refresh()
@@ -302,4 +371,23 @@ class BlueairUpdateCoordinatorDeviceAws(BlueairUpdateCoordinator):
 
     async def set_fan_speed_0(self, value: int) -> None:
         await self.blueair_api_device.set_fan_speed_0(value)
+        await self.async_request_refresh()
+
+    async def set_night_light_brightness(self, night_light_brightness) -> None:
+        desired_brightness_in_range = ceil(
+            brightness_to_value(self.night_light_brightness_scale, night_light_brightness)
+        )
+        await self.blueair_api_device.set_night_light_brightness(desired_brightness_in_range)
+        await self.async_request_refresh()
+
+    async def turn_off_night_light_brightness(self) -> None:
+        await self.blueair_api_device.set_night_light_brightness(0)
+        await self.async_request_refresh()
+
+    async def set_timer_duration(self, value: int) -> None:
+        await self.blueair_api_device.set_timer_duration(value)
+        await self.async_request_refresh()
+
+    async def set_hour_format(self, value: bool) -> None:
+        await self.blueair_api_device.set_hour_format(value)
         await self.async_request_refresh()

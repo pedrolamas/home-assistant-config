@@ -119,6 +119,31 @@ class BlueairUpdateCoordinatorDevice(BlueairUpdateCoordinator):
             return NotImplemented
         return self.blueair_api_device.fan_auto_mode
 
+    # ----- Stubs for AWS-only sensor attributes (issue #356) -----
+    # The legacy REST device does not expose these fields, but the
+    # abstract base requires every subclass to declare them so that
+    # entity is_implemented() checks can safely call getattr().
+
+    @property
+    def timer_duration(self) -> int | None | NotImplemented:
+        return NotImplemented
+
+    @property
+    def timer_state(self) -> int | None | NotImplemented:
+        return NotImplemented
+
+    @property
+    def rssi(self) -> int | None | NotImplemented:
+        return NotImplemented
+
+    @property
+    def night_light_brightness(self) -> int | None | NotImplemented:
+        return NotImplemented
+
+    @property
+    def hour_format(self) -> bool | None | NotImplemented:
+        return NotImplemented
+
     @property
     def wick_dry_mode(self) -> bool | None | NotImplemented:
         return NotImplemented
@@ -188,6 +213,12 @@ class BlueairUpdateCoordinatorDevice(BlueairUpdateCoordinator):
         raise NotImplementedError
 
     async def turn_off_mood_brightness(self) -> None:
+        raise NotImplementedError
+
+    async def set_night_light_brightness(self, night_light_brightness: int) -> None:
+        raise NotImplementedError
+
+    async def turn_off_night_light_brightness(self) -> None:
         raise NotImplementedError
 
     async def set_germ_shield(self, enabled: bool) -> None:
